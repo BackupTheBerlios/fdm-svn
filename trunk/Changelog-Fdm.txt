@@ -1,0 +1,7 @@
+$$$ 0.01 $$$
+Pothead
+Added PCRE 6.4
+Added Sqlite 
+Added CppSQLite3
+Ripped a few DCplusplus files, so can have own Language and Settings files.
+Added a sample database
