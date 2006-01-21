@@ -289,25 +289,34 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	if(dcapp.IsAnotherInstanceRunning()) {
 		HWND hOther = NULL;
-		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
+		// FDM Revision 7 (Carraya) - Allow for more than one instance - Start
+		bool multiple = false;
+		if(_tcslen(lpstrCmdLine) == 0) {
+			if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), 
+				_T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES) {
+					multiple = true;
+				}
+		}
 
-#ifndef _DEBUG
-		if( hOther != NULL ) {
-#else
-		if( hOther != NULL && _tcslen(lpstrCmdLine) > 0 ) {
-#endif
-			// pop up
-			::SetForegroundWindow(hOther);
+		if(multiple == false) {
+			HWND hOther = NULL;
+			EnumWindows(searchOtherInstance, (LPARAM)&hOther);
 
-			if( IsIconic(hOther)) {
-				// restore
-				::ShowWindow(hOther, SW_RESTORE);
+			if( hOther != NULL ) {
+				// PopUp
+				::SetForegroundWindow(hOther);
+
+				if( IsIconic(hOther)) {
+					// Restore
+					::ShowWindow(hOther, SW_RESTORE);
+				}
+				sendCmdLine(hOther, lpstrCmdLine);
 			}
-			sendCmdLine(hOther, lpstrCmdLine);
-			return FALSE;
+		return FALSE;
 		}
 	}
-	
+	// FDM Revision 7 (Carraya) - Allow for more than one instance - End
+
 	// For SHBrowseForFolder, UPnP
 	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
 #ifdef _DEBUG

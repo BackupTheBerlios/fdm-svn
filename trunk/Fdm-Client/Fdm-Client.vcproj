@@ -199,6 +199,9 @@
 				RelativePath=".\Fdm-UserDatabase.h">
 			</File>
 			<File
+				RelativePath=".\dcplusplus-rips\Fdm-Version.h">
+			</File>
+			<File
 				RelativePath=".\Fdm.h">
 			</File>
 		</Filter>

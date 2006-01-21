@@ -27,6 +27,9 @@
 #include "autoconf.h"
 #endif
 
+// FDM Revision 7 (Carraya) - Including Fdm-config
+#include "../Fdm-Client/dcplusplus-rips/Fdm-Config.h"
+
 // Changing this number will change the maximum number of simultaneous users
 // we can handle (when using select)...
 #define FD_SETSIZE 4096
