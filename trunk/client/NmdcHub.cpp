@@ -495,6 +495,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				feat.push_back("NoHello");
 				feat.push_back("UserIP2");
 				feat.push_back("TTHSearch");
+				feat.push_back("ZLine");
 
 				if(BOOLSETTING(COMPRESS_TRANSFERS))
 					feat.push_back("GetZBlock");
@@ -649,6 +650,78 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		fire(ClientListener::GetPassword(), this);
 	} else if(cmd == "$BadPass") {
 		fire(ClientListener::BadPassword(), this);
+	} else if(cmd == "$Z") {
+		string::size_type i = x + 1, j = x + 1;
+		bool corrupt = false;
+		string rawParam;
+		rawParam.reserve(aLine.size());
+
+		// unescape \\ to \ and \P to |
+		while((i = aLine.find("\\", i)) != string::npos) {
+			if (i + 1 > aLine.size()) {
+				corrupt = true;
+				break;
+			}
+			rawParam += aLine.substr(j, i - j);
+			switch (aLine[i+1]) {
+				case '\\':
+					rawParam += '\\';
+					break;
+				case 'P':
+					rawParam += '|';
+					break;
+				default:
+					corrupt = true;
+					break;
+			}
+			i += 2;
+			j = i;
+		}
+		rawParam += aLine.substr(j);
+
+		if (!corrupt) {
+			// unzip the ZBlock
+			UnZFilter filter;
+			string lines = "";
+			bool more = true;
+			string::size_type j, readFromPos = 0, estOutSize = rawParam.size() * 4;
+			AutoArray<u_int8_t> temp(estOutSize);
+
+			while (more) {
+				j = estOutSize;
+				try {
+					more = filter(rawParam.c_str() + readFromPos, i, temp, j);
+				} catch(...){
+					dcdebug("Error during Zline decompression\n");
+					break;
+				}
+				lines += string((char*)(u_int8_t*)temp, j);
+				readFromPos += i;
+
+				// split lines up into indiviual commands
+				StringTokenizer<string> st(lines, '|');
+ 
+				// if there is more data, keep the last token, it might not be complete
+				if(more) {
+					lines = st.getTokens().back();
+					st.getTokens().pop_back();
+				}
+
+				for (StringList::iterator k = st.getTokens().begin(); k < st.getTokens().end(); k++) {
+					// "fire" the lines, ignoring any included ZLines
+					if ((*k).compare(0, 3, "$Z "))
+						onLine(*k);
+				}
+ 
+				// a nmdc command over 1mb ?
+				if (lines.size() > 1048576) {
+					dcdebug("Malicious data found during ZLine decompression\n");
+					break;
+				}
+			}
+		} else {
+			dcdebug("Corrupt Zline datastream\n");
+		}
 	} else {
 		dcassert(cmd[0] == '$');
 		dcdebug("NmdcHub::onLine Unknown command %s\n", aLine.c_str());
