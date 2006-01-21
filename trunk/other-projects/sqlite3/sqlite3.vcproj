@@ -33,11 +33,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../app/sqlite3.dll"
+				OutputFile="../../app/sqlite3.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="sqlite3.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="../app/$(ProjectName).pdb"
+				ProgramDatabaseFile="../../app/$(ProjectName).pdb"
 				SubSystem="2"
 				ImportLibrary="$(OutDir)/sqlite3.lib"
 				TargetMachine="1"/>
