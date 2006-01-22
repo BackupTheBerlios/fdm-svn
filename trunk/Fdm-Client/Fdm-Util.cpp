@@ -20,6 +20,7 @@
 #include "../client/DCPlusPlus.h"
 
 #include "Fdm-Util.h"
+#include "dcplusplus-rips/Fdm-Version.h"
 
 // Move to Fdm-Windows\Fdm-WinUtil.h when complete
 bool FdmUtil::allowMoreInstances(size_t amountOfProcesses) {

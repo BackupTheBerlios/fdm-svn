@@ -172,9 +172,6 @@
 				RelativePath="..\other-projects\CppSQLite\CppSQLite3.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Config.h">
-			</File>
-			<File
 				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h">
 			</File>
 			<File

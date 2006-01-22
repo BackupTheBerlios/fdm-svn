@@ -27,8 +27,6 @@
 #include "autoconf.h"
 #endif
 
-#include "../Fdm-Client/Fdm-Config.h"	// added for FDM mod
-
 // Changing this number will change the maximum number of simultaneous users
 // we can handle (when using select)...
 #define FD_SETSIZE 4096

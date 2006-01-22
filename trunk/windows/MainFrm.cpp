@@ -464,7 +464,6 @@ HWND MainFrame::createFdmToolbar() {
 
 	const int numButtons = 2;
 
-
 	TBBUTTON tb[numButtons];
 	memset(tb, 0, sizeof(tb));
 	int n = 0, bitmap = 0;

@@ -15,9 +15,10 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
-			ConfigurationType="1"
-			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			ConfigurationType="4"
+			UseOfATL="1"
+			CharacterSet="1"
+			ManagedExtensions="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -30,11 +31,8 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				AssemblyDebug="1"/>
+				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -49,8 +47,6 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -78,7 +74,8 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLibrarianTool"/>
+				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
