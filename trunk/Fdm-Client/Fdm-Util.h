@@ -27,7 +27,10 @@ class FdmUtil
 {
 public:
 	// Move to Fdm-Windows\Fdm-WinUtil.h when complete
-	static bool allowMoreInstances(LPTSTR lpstrCmdLine);
+	static bool allowMoreInstances(size_t amountOfProcesses);
+
+	// Move to Fdm-Windows\Fdm-WinUtil.h when complete
+	//HWND createFdmToolbar();
 };
 
 #endif // !defined(FDM_UTIL_H)

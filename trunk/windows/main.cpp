@@ -293,7 +293,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		HWND hOther = NULL;
 		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
 
-if (!FdmUtil::allowMoreInstances(lpstrCmdLine))	// added for FDM mod
+if (!FdmUtil::allowMoreInstances(_tcslen(lpstrCmdLine)))	// added for FDM mod
 
 #ifndef _DEBUG
 		if( hOther != NULL ) {
