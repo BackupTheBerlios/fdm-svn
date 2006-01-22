@@ -159,6 +159,9 @@
 				RelativePath=".\Fdm-UserDatabase.cpp">
 			</File>
 			<File
+				RelativePath=".\Fdm-Util.cpp">
+			</File>
+			<File
 				RelativePath=".\Fdm.cpp">
 			</File>
 		</Filter>
@@ -167,6 +170,9 @@
 			Filter="">
 			<File
 				RelativePath="..\other-projects\CppSQLite\CppSQLite3.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Config.h">
 			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h">
@@ -197,6 +203,9 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-UserDatabase.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Util.h">
 			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-Version.h">
