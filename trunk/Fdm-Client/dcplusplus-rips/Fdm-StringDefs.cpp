@@ -2,8 +2,8 @@
 #include "../../client/DCPlusPlus.h"
 #include "Fdm-ResourceManager.h"
 string FdmResourceManager::fdmstrings[] = {
-"Testing Testing 123", 
+"FDM Settings...", 
 };
 string FdmResourceManager::fdmnames[] = {
-"Test", 
+"MenuFdmSettings", 
 };

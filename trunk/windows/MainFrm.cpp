@@ -51,6 +51,8 @@
 #include "../client/ShareManager.h"
 #include "../client/version.h"
 
+#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
+
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
 closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL)
@@ -155,14 +157,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	HWND hWndToolBar = createToolbar();
 
-	// Carraya test extra toolbar
-	HWND hWndFdmToolBar = createFdmToolbar();
-
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 	
 	// Carraya test extra toolbar
+	HWND hWndFdmToolBar = createFdmToolbar();
 	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
 
 	CreateSimpleStatusBar();
@@ -790,7 +790,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 			// Carraya test extra toolbar
-			case ID_FDM_FILE_SETTINGS: stringId = ResourceManager::MENU_FDM_SETTINGS; break;
+			case ID_FDM_FILE_SETTINGS: stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
 		}
 		if(stringId != -1) {
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);

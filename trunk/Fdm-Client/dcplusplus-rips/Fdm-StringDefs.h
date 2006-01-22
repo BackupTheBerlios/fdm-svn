@@ -5,6 +5,6 @@
 // @FdmNames: string FdmResourceManager::fdmnames[]
 
 enum FdmStrings { // @DontAdd
-	TEST, // "Testing Testing 123"
+	MENU_FDM_SETTINGS, // "FDM Settings..."
 	LAST // @DontAdd
 };
