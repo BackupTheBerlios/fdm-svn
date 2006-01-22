@@ -61,13 +61,18 @@
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			UseOfATL="1"
+			CharacterSet="1"
+			ManagedExtensions="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
+				OptimizeForProcessor="3"
+				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
 			<Tool

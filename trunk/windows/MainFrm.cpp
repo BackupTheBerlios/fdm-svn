@@ -147,14 +147,24 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 
+	// Carraya test extra toolbar
+	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
+
 	// remove old menu
 	SetMenu(NULL);
 
 	HWND hWndToolBar = createToolbar();
 
+	// Carraya test extra toolbar
+	HWND hWndFdmToolBar = createFdmToolbar();
+
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+	
+	// Carraya test extra toolbar
+	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
+
 	CreateSimpleStatusBar();
 
 	ctrlStatus.Attach(m_hWndStatusBar);
@@ -434,6 +444,38 @@ HWND MainFrame::createToolbar() {
 	tb[n].idCommand = IDC_NOTEPAD;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	ctrlToolbar.SetButtonStructSize();
+	ctrlToolbar.AddButtons(numButtons, tb);
+	ctrlToolbar.AutoSize();
+
+	return ctrlToolbar.m_hWnd;
+}
+
+// Carraya test extra toolbar
+HWND MainFrame::createFdmToolbar() {
+	CToolBarCtrl ctrlToolbar;
+	largeImages.CreateFromImage(IDB_FDM_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	largeImagesHot.CreateFromImage(IDB_FDM_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+
+	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
+	ctrlToolbar.SetImageList(largeImages);
+	ctrlToolbar.SetHotImageList(largeImagesHot);
+
+	const int numButtons = 2;
+
+
+	TBBUTTON tb[numButtons];
+	memset(tb, 0, sizeof(tb));
+	int n = 0, bitmap = 0;
+
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = ID_FDM_FILE_SETTINGS;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].fsStyle = TBSTYLE_SEP;
 
 	ctrlToolbar.SetButtonStructSize();
 	ctrlToolbar.AddButtons(numButtons, tb);
@@ -747,6 +789,8 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
+			// Carraya test extra toolbar
+			case ID_FDM_FILE_SETTINGS: stringId = ResourceManager::MENU_FDM_SETTINGS; break;
 		}
 		if(stringId != -1) {
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);

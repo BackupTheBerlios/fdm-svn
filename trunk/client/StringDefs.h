@@ -262,6 +262,7 @@ enum Strings { // @DontAdd
 	MENU_SEARCH, // "&Search\tCtrl+S"
 	MENU_SEARCH_SPY, // "Search Spy"
 	MENU_SETTINGS, // "Settings..."
+	MENU_FDM_SETTINGS, // "FDM Settings..."
 	MENU_SHOW, // "Show"
 	MENU_STATUS_BAR, // "&Status bar\tCtrl+2"
 	MENU_SYSTEM_LOG, // "System Log"

@@ -1,7 +1,12 @@
 $$$ 0.01 $$$
 Pothead
-Added PCRE 6.4
-Added Sqlite 
-Added CppSQLite3
-Ripped a few DCplusplus files, so can have own Language and Settings files.
-Added a sample database
+	Added PCRE 6.4
+	Added Sqlite 
+	Added CppSQLite3
+	Ripped a few DCplusplus files, so can have own Language and Settings files.
+	Added a sample database
+
+Carraya
+	Added Fdm-Config file
+	Added Fdm-Version file
+	Changed DC++ code to ask for multiple instances

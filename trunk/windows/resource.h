@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Used by j:\DC++Sources\Fdm\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -54,6 +54,9 @@
 #define IDD_WINDOWSPAGE                 244
 #define IDD_QUEUEPAGE                   245
 #define IDD_CERTIFICATESPAGE            246
+#define IDB_FDM_TOOLBAR20               246
+#define IDB_BITMAP2                     247
+#define IDB_FDM_TOOLBAR20_HOT           247
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -443,6 +446,7 @@
 #define IDC_FOLLOW                      32784
 #define IDC_SEND_MESSAGE                32786
 #define IDC_FILTER_FOCUS                32788
+#define ID_FDM_FILE_SETTINGS            32789
 #define ID_WINDOW_MINIMIZE_ALL          57654
 #define ID_WINDOW_RESTORE_ALL           57655
 
@@ -451,7 +455,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        246
+#define _APS_NEXT_RESOURCE_VALUE        248
 #define _APS_NEXT_COMMAND_VALUE         32789
 #define _APS_NEXT_CONTROL_VALUE         1421
 #define _APS_NEXT_SYMED_VALUE           105
