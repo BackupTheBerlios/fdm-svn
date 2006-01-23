@@ -6,5 +6,6 @@
 
 enum FdmStrings { // @DontAdd
 	MENU_FDM_SETTINGS, // "FDM Settings..."
+	MENU_FDM_SETTINGS, // "FDM Settings..."
 	LAST // @DontAdd
 };
