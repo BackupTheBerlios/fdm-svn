@@ -51,6 +51,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fdm-Client", "Fdm-Client\Fd
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fdm-Windows", "Fdm-Windows\Fdm-Windows.vcproj", "{00A2876F-0224-4161-AD02-8DF829BE53B3}"
 	ProjectSection(ProjectDependencies) = postProject
+		{356AC6E6-D883-43FC-B2F5-B1E3E5252949} = {356AC6E6-D883-43FC-B2F5-B1E3E5252949}
 	EndProjectSection
 EndProject
 Global
