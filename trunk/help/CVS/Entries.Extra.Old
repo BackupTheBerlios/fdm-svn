@@ -28,13 +28,11 @@
 /favorite_hubs.html////*///
 /favorite_users.html////*///
 /fdl.html////*///
-/help.vcproj////*///
 /index.html////*///
 /settings_appearance.html////*///
 /settings_downloads.html////*///
 /settings_general.html////*///
 /toc.hhc////*///
-/changelog.html////*///
 /settings_advanced.html////*///
 /settings_certs.html////*///
 /settings_colors_and_sounds.html////*///
@@ -46,3 +44,5 @@
 /settings_sharing.html////*///
 /settings_usercommands.html////*///
 /settings_windows.html////*///
+/changelog.html////*///
+/help.vcproj////*///

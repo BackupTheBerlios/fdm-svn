@@ -1,14 +1,14 @@
-/buffer.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/cert_wrapper.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/crypto_wrapper.cpp/1.1/Sun Nov 27 19:23:08 2005//
-/lock.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/log.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/ssl.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/template_instnt.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/timer.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/yassl_error.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/yassl_imp.cpp/1.1/Sun Nov 27 19:23:07 2005//
-/yassl_int.cpp/1.1/Sun Nov 27 19:23:08 2005//
-/handshake.cpp/1.2/Fri Dec  9 12:18:56 2005//
-/socket_wrapper.cpp/1.2/Fri Dec  9 12:18:57 2005//
+/buffer.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/cert_wrapper.cpp/1.1/Sat Jan 21 16:41:14 2006//
+/crypto_wrapper.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/handshake.cpp/1.2/Sat Jan 21 16:41:13 2006//
+/lock.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/log.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/socket_wrapper.cpp/1.2/Sat Jan 21 16:41:13 2006//
+/ssl.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/template_instnt.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/timer.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/yassl_error.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/yassl_imp.cpp/1.1/Sat Jan 21 16:41:13 2006//
+/yassl_int.cpp/1.1/Sat Jan 21 16:41:13 2006//
 D

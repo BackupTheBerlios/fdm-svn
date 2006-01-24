@@ -1,3 +1,4 @@
+D/openssl///////
 /buffer.hpp////*///
 /cert_wrapper.hpp////*///
 /crypto_wrapper.hpp////*///
@@ -5,11 +6,10 @@
 /handshake.hpp////*///
 /lock.hpp////*///
 /log.hpp////*///
+/socket_wrapper.hpp////*///
 /timer.hpp////*///
 /yassl.hpp////*///
 /yassl_error.hpp////*///
 /yassl_imp.hpp////*///
 /yassl_int.hpp////*///
 /yassl_types.hpp////*///
-D/openssl///////
-/socket_wrapper.hpp////*///

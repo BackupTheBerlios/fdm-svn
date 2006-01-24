@@ -5,7 +5,6 @@
 /ExtendedTrace.h/1.8/Sun Apr 24 08:13:07 2005//
 /FavHubProperties.h/1.7/Sun Apr 24 08:13:05 2005//
 /FavoriteDirsPage.cpp/1.8/Sun Apr 24 08:13:03 2005//
-/GeneralPage.cpp/1.16/Sun Apr 24 08:13:03 2005//
 /HashProgressDlg.h/1.8/Sun Apr 24 08:13:03 2005//
 /LineDlg.h/1.10/Sun Apr 24 08:13:04 2005//
 /MagnetDlg.h/1.7/Sun Apr 24 08:13:03 2005//
@@ -78,7 +77,6 @@
 /UsersFrame.cpp/1.43/Thu Jan  5 20:06:41 2006//
 /WindowsPage.h/1.6/Thu Jan  5 20:06:41 2006//
 /main.cpp/1.40/Thu Jan  5 20:06:41 2006//
-/resource.h/1.101/Thu Jan  5 20:06:41 2006//
 /AdvancedPage.cpp/1.58/Sun Jan  8 23:10:50 2006//
 /SystemFrame.h/1.4/Sun Jan  8 23:10:50 2006//
 /WinUtil.cpp/1.95/Sun Jan  8 23:10:50 2006//
@@ -95,8 +93,10 @@
 /SearchFrm.cpp/1.109/Fri Jan 13 11:58:40 2006//
 /SystemFrame.cpp/1.5/Fri Jan 13 11:58:40 2006//
 /TypedListViewCtrl.h/1.18/Fri Jan 13 11:58:40 2006//
-/HubFrame.cpp/1.127/Mon Jan 16 13:27:52 2006//
 /HubFrame.h/1.73/Mon Jan 16 13:27:52 2006//
 /TransferView.cpp/1.61/Mon Jan 16 13:27:54 2006//
 /TransferView.h/1.25/Mon Jan 16 13:27:54 2006//
+/GeneralPage.cpp/1.17/Sat Jan 21 16:11:22 2006//
+/HubFrame.cpp/1.128/Sat Jan 21 16:11:22 2006//
+/resource.h/1.102/Sat Jan 21 16:11:22 2006//
 D

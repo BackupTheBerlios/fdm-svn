@@ -1,13 +1,12 @@
-/LICENSE/1.1/Mon Apr 22 14:00:28 2002//
-/blocksort.c/1.1/Mon Apr 22 14:00:28 2002//
-/bzip2.c/1.1/Mon Apr 22 14:00:28 2002//
-/bzip2.vcproj/1.1/Tue Sep 21 13:02:50 2004//
-/bzlib.c/1.1/Mon Apr 22 14:00:28 2002//
-/bzlib.h/1.2/Tue Mar  9 12:20:19 2004//
-/bzlib_private.h/1.1/Mon Apr 22 14:00:28 2002//
-/compress.c/1.1/Mon Apr 22 14:00:28 2002//
-/crctable.c/1.1/Mon Apr 22 14:00:28 2002//
-/decompress.c/1.1/Mon Apr 22 14:00:28 2002//
-/huffman.c/1.1/Mon Apr 22 14:00:28 2002//
-/randtable.c/1.1/Mon Apr 22 14:00:28 2002//
+/LICENSE/1.2/Thu Jul 21 13:43:21 2005//
+/blocksort.c/1.2/Thu Jul 21 13:43:21 2005//
+/bzip2.c/1.2/Thu Jul 21 13:43:21 2005//
+/bzlib.c/1.2/Thu Jul 21 13:43:21 2005//
+/bzlib.h/1.3/Thu Jul 21 13:43:21 2005//
+/bzlib_private.h/1.2/Thu Jul 21 13:43:21 2005//
+/compress.c/1.2/Thu Jul 21 13:43:21 2005//
+/crctable.c/1.2/Thu Jul 21 13:43:21 2005//
+/decompress.c/1.2/Thu Jul 21 13:43:21 2005//
+/huffman.c/1.2/Thu Jul 21 13:43:21 2005//
+/randtable.c/1.2/Thu Jul 21 13:43:21 2005//
 D

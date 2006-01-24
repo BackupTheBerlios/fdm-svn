@@ -98,7 +98,6 @@
 /ClientManager.cpp////*///
 /ClientManager.h////*///
 /ConnectionManager.cpp////*///
-/NmdcHub.cpp////*///
 /UserConnection.h////*///
 /BufferedSocket.cpp////*///
 /BufferedSocket.h////*///
@@ -109,3 +108,4 @@
 /StringDefs.cpp////*///
 /StringDefs.h////*///
 /version.h////*///
+/NmdcHub.cpp////*///

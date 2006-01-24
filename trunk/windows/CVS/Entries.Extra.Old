@@ -5,7 +5,6 @@
 /ExtendedTrace.h////*///
 /FavHubProperties.h////*///
 /FavoriteDirsPage.cpp////*///
-/GeneralPage.cpp////*///
 /HashProgressDlg.h////*///
 /LineDlg.h////*///
 /MagnetDlg.h////*///
@@ -78,7 +77,6 @@
 /UsersFrame.cpp////*///
 /WindowsPage.h////*///
 /main.cpp////*///
-/resource.h////*///
 /AdvancedPage.cpp////*///
 /SystemFrame.h////*///
 /WinUtil.cpp////*///
@@ -95,7 +93,9 @@
 /SearchFrm.cpp////*///
 /SystemFrame.cpp////*///
 /TypedListViewCtrl.h////*///
-/HubFrame.cpp////*///
 /HubFrame.h////*///
 /TransferView.cpp////*///
 /TransferView.h////*///
+/GeneralPage.cpp////*///
+/HubFrame.cpp////*///
+/resource.h////*///
