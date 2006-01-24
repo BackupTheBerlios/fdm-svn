@@ -135,6 +135,9 @@
 			<File
 				RelativePath=".\Fdm-WinUtil.cpp">
 			</File>
+			<File
+				RelativePath="..\windows\stdafx.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -148,6 +151,9 @@
 			</File>
 			<File
 				RelativePath=".\resource.h">
+			</File>
+			<File
+				RelativePath="..\windows\stdafx.h">
 			</File>
 		</Filter>
 		<Filter
