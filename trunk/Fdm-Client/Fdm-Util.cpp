@@ -23,14 +23,6 @@
 #include "dcplusplus-rips/Fdm-Version.h"
 
 // Move to Fdm-Windows\Fdm-WinUtil.h when complete
-bool FdmUtil::allowMoreInstances(size_t amountOfProcesses) {
-	if(amountOfProcesses == 0)
-		if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
-			return true;
-	return false;
-}
-
-// Move to Fdm-Windows\Fdm-WinUtil.h when complete
 // Carraya test extra toolbar
 /*
 HWND FdmUtil::createFdmToolbar() {

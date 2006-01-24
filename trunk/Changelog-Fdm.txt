@@ -10,3 +10,5 @@ Carraya
 	Added Fdm-Config file
 	Added Fdm-Version file
 	Changed DC++ code to ask for multiple instances
+	Added Fdm-Windows library
+	Added Fdm Toolbar

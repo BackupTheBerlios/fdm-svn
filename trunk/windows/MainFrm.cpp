@@ -52,6 +52,7 @@
 #include "../client/version.h"
 
 #include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
+#include "../Fdm-Windows/Fdm-WinUtil.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -667,6 +668,14 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			WinUtil::urlMagnetRegistered = false;
 		}
 	}
+	return 0;
+}
+
+// Carraya extra tool bar test
+LRESULT MainFrame::OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	FdmDlg dlg;
+	dlg.DoModal(m_hWnd);
 	return 0;
 }
 

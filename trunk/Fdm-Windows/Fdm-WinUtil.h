@@ -15,21 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+#include "FdmDlg.h"
 
-#if !defined(FDM_UTIL_H)
-#define FDM_UTIL_H
+#if !defined(FDM_WIN_UTIL_H)
+#define FDM_WIN_UTIL_H
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-class FdmUtil
+class FdmWinUtil
 {
 public:
-	// Move to Fdm-Windows\Fdm-WinUtil.h when complete
+	// For allowing for instances
+	static bool allowMoreInstances(size_t amountOfProcesses);
 
-	// Move to Fdm-Windows\Fdm-WinUtil.h when complete
-	//HWND createFdmToolbar();
 };
 
-#endif // !defined(FDM_UTIL_H)
+#endif // !defined(FDM_WIN_UTIL_H)
