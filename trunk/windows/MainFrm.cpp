@@ -774,6 +774,8 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	LPNMTTDISPINFO pDispInfo = (LPNMTTDISPINFO)pnmh;
 	pDispInfo->szText[0] = 0;
 
+	bool forFdm = false;
+
 	if((idCtrl != 0) && !(pDispInfo->uFlags & TTF_IDISHWND))
 	{
 		int stringId = -1;
@@ -795,9 +797,14 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 			// Carraya test extra toolbar
-			case ID_FDM_FILE_SETTINGS: stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
+			case ID_FDM_FILE_SETTINGS:
+				forFdm = true;
+				stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
 		}
 		if(stringId != -1) {
+			if (forFdm)
+				_tcsncpy(pDispInfo->lpszText, FDMCTSTRING_I((FdmResourceManager::FdmStrings)stringId), 79);
+			else
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);
 			pDispInfo->uFlags |= TTF_DI_SETITEM;
 		}

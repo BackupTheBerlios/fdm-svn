@@ -65,12 +65,12 @@ private:
 #define FDMCWSTRING_I(x) FdmResourceManager::getInstance()->getFdmStringW(x).c_str()
 
 #ifdef UNICODE
-#define FDMTSTRING WSTRING
-#define FDMCTSTRING CWSTRING
-#define FDMCTSTRING_I CWSTRING_I
+#define FDMTSTRING FDMWSTRING
+#define FDMCTSTRING FDMCWSTRING
+#define FDMCTSTRING_I FDMCWSTRING_I
 #else
-#define FDMTSTRING STRING
-#define FDMCTSTRING CSTRING
+#define FDMTSTRING FDMSTRING
+#define FDMCTSTRING FDMCSTRING
 #endif
 
 
