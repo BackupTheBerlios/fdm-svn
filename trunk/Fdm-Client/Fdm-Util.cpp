@@ -20,38 +20,3 @@
 #include "../client/DCPlusPlus.h"
 
 #include "Fdm-Util.h"
-#include "dcplusplus-rips/Fdm-Version.h"
-
-// Move to Fdm-Windows\Fdm-WinUtil.h when complete
-// Carraya test extra toolbar
-/*
-HWND FdmUtil::createFdmToolbar() {
-	CToolBarCtrl ctrlToolbar;
-	largeImages.CreateFromImage(IDB_FDM_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	largeImagesHot.CreateFromImage(IDB_FDM_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-
-	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrlToolbar.SetImageList(largeImages);
-	ctrlToolbar.SetHotImageList(largeImagesHot);
-
-	const int numButtons = 2;
-
-	TBBUTTON tb[numButtons];
-	memset(tb, 0, sizeof(tb));
-	int n = 0, bitmap = 0;
-
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FDM_FILE_SETTINGS;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	ctrlToolbar.SetButtonStructSize();
-	ctrlToolbar.AddButtons(numButtons, tb);
-	ctrlToolbar.AutoSize();
-
-	return ctrlToolbar.m_hWnd;
-}
-*/

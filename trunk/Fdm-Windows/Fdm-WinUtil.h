@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "FdmDlg.h"
 
 #if !defined(FDM_WIN_UTIL_H)
 #define FDM_WIN_UTIL_H
@@ -23,6 +22,8 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+
+#include "Fdm-Dlg.h"
 
 class FdmWinUtil
 {

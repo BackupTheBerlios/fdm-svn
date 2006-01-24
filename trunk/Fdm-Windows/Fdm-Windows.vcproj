@@ -144,7 +144,7 @@
 				RelativePath=".\Fdm-WinUtil.h">
 			</File>
 			<File
-				RelativePath=".\FdmDlg.h">
+				RelativePath=".\Fdm-Dlg.h">
 			</File>
 			<File
 				RelativePath=".\resource.h">
@@ -156,6 +156,12 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
 				RelativePath=".\Fdm-Windows.rc">
+			</File>
+			<File
+				RelativePath=".\res\fdm_toolbar20-highlight.bmp">
+			</File>
+			<File
+				RelativePath=".\res\fdm_toolbar20.bmp">
 			</File>
 		</Filter>
 	</Files>

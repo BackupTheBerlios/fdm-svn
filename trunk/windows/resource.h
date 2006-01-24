@@ -55,7 +55,6 @@
 #define IDD_QUEUEPAGE                   245
 #define IDD_CERTIFICATESPAGE            246
 #define IDB_FDM_TOOLBAR20               246
-#define IDB_BITMAP2                     247
 #define IDB_FDM_TOOLBAR20_HOT           247
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
