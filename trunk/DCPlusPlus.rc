@@ -40,7 +40,7 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "#include ""Fdm-Windows\\\\Fdm-Windows.rc""\0"
+    "#include ""Fdm-Windows.rc""\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -1029,7 +1029,7 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-#include "Fdm-Windows\\Fdm-Windows.rc"
+#include "Fdm-Windows.rc"
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

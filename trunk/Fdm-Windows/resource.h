@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by Fdm-Windows.rc
+// Used by C:\fdm\client\fdm\Fdm-Windows.rc
 //
 #define IDD_FDM_DIALOG                  103
 #define IDB_FDM_TOOLBAR20               104

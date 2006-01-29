@@ -34,7 +34,7 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="../windows/stdafx.h"
+				PrecompiledHeaderThrough="windows/stdafx.h"
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				WarningLevel="4"
 				DebugInformationFormat="4"
@@ -92,7 +92,7 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="../windows/stdafx.h"
+				PrecompiledHeaderThrough="windows/stdafx.h"
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerOutput="4"
 				WarningLevel="4"
@@ -133,7 +133,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\Fdm-WinUtil.cpp">
+				RelativePath=".\Fdm-Windows\Fdm-WinUtil.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -141,13 +141,13 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\Fdm-WinUtil.h">
+				RelativePath=".\Fdm-Windows\Fdm-WinUtil.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Dlg.h">
+				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath=".\Fdm-Windows\resource.h">
 			</File>
 		</Filter>
 		<Filter
@@ -158,10 +158,10 @@
 				RelativePath=".\Fdm-Windows.rc">
 			</File>
 			<File
-				RelativePath=".\res\fdm_toolbar20-highlight.bmp">
+				RelativePath=".\Fdm-Res\fdm_toolbar20-highlight.bmp">
 			</File>
 			<File
-				RelativePath=".\res\fdm_toolbar20.bmp">
+				RelativePath=".\Fdm-Res\fdm_toolbar20.bmp">
 			</File>
 		</Filter>
 	</Files>
