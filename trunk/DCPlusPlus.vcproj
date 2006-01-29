@@ -203,12 +203,6 @@
 				RelativePath="res\FavoriteUser.ico">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\res\fdm_toolbar20-highlight.bmp">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\res\fdm_toolbar20.bmp">
-			</File>
-			<File
 				RelativePath="res\FinishedDL.ico">
 			</File>
 			<File
