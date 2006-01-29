@@ -3,23 +3,23 @@
 ECHO ------------------------------------------------------------------------
 ECHO Preparing . . .
 cd..
-attrib +h /S /D Batch-Files
-attrib +h /S /D Fdm-Client
-attrib +h /S /D Fdm-Windows
-attrib +h /S /D Other-Projects
-attrib +h /S /D .svn
-attrib +h /S /D _svn
-attrib +h /S /D vc7
-attrib +h /S /D app
-attrib +h /S *.ncb
-attrib +h /S *.suo
-attrib +h /S *.aps
-attrib +h Changelog-Fdm.txt
-attrib +h Fdm-Example.xml
-attrib +h License-Fdm.txt
-attrib +h *.rar
-rd /s /q Temp
-xcopy /q /y /s *.* Temp\
+attrib +h /S /D Batch-Files > nul
+attrib +h /S /D Fdm-Client > nul
+attrib +h /S /D Fdm-Windows > nul
+attrib +h /S /D Other-Projects > nul
+attrib +h /S /D .svn > nul
+attrib +h /S /D _svn > nul
+attrib +h /S /D vc7 > nul
+attrib +h /S /D app > nul
+attrib +h /S *.ncb > nul
+attrib +h /S *.suo > nul
+attrib +h /S *.aps > nul
+attrib +h Changelog-Fdm.txt > nul
+attrib +h Fdm-Example.xml > nul
+attrib +h License-Fdm.txt > nul
+attrib +h *.rar > nul
+rd /s /q Temp > nul
+xcopy /q /y /s *.* Temp\ > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO Time To View.  Look In Temp Directory.
@@ -27,17 +27,17 @@ PAUSE
 
 ECHO ------------------------------------------------------------------------
 ECHO Cleaning Up . . .
-rd /s /q Temp
-attrib -h /S /D Batch-Files
-attrib -h /S /D Fdm-Client
-attrib -h /S /D Fdm-Windows
-attrib -h /S /D Other-Projects
-attrib -h /S /D vc7
-attrib -h /S /D app
-attrib -h /S *.ncb
-attrib -h /S *.suo
-attrib -h /S *.aps
-attrib -h Changelog-Fdm.txt
-attrib -h Fdm-Example.xml
-attrib -h License-Fdm.txt
-attrib -h *.rar
+rd /s /q Temp > nul
+attrib -h /S /D Batch-Files > nul
+attrib -h /S /D Fdm-Client > nul
+attrib -h /S /D Fdm-Windows > nul
+attrib -h /S /D Other-Projects > nul
+attrib -h /S /D vc7 > nul
+attrib -h /S /D app > nul
+attrib -h /S *.ncb > nul
+attrib -h /S *.suo > nul
+attrib -h /S *.aps > nul
+attrib -h Changelog-Fdm.txt > nul
+attrib -h Fdm-Example.xml > nul
+attrib -h License-Fdm.txt > nul
+attrib -h *.rar > nul

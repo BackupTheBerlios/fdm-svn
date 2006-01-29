@@ -40,8 +40,7 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "\r\n"
-    "\0"
+    "#include ""Fdm-Windows\\\\Fdm-Windows.rc""\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -58,8 +57,6 @@ IDB_USERS               BITMAP                  "res\\users.bmp"
 IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
 IDB_TOOLBAR20           BITMAP                  "res\\toolbar20.bmp"
 IDB_TOOLBAR20_HOT       BITMAP                  "res\\toolbar20-highlight.bmp"
-IDB_FDM_TOOLBAR20       BITMAP                  "Fdm-Windows\\res\\fdm_toolbar20.bmp"
-IDB_FDM_TOOLBAR20_HOT   BITMAP                  "Fdm-Windows\\res\\fdm_toolbar20-highlight.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1027,14 +1024,12 @@ END
 
 
 
-
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
-
+#include "Fdm-Windows\\Fdm-Windows.rc"
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

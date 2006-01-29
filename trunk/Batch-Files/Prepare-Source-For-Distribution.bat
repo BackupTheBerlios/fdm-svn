@@ -15,17 +15,17 @@ IF NOT EXIST "%PROGRAMFILES%\WinRAR\Rar.exe" (
 ECHO ------------------------------------------------------------------------
 ECHO Preparing Source
 cd..
-attrib +h /S /D .svn
-attrib +h /S /D _svn
-attrib +h /S /D CVS
-attrib +h /S /D vc7
-attrib +h /S /D app
-attrib +h /S *.ncb
-attrib +h /S *.suo
-attrib +h /S *.aps
-attrib +h *.rar
-rd /s /q Temp
-xcopy /q /y /s *.* Temp\
+attrib +h /S /D .svn > nul
+attrib +h /S /D _svn > nul
+attrib +h /S /D CVS > nul
+attrib +h /S /D vc7 > nul
+attrib +h /S /D app > nul
+attrib +h /S *.ncb > nul
+attrib +h /S *.suo > nul
+attrib +h /S *.aps > nul
+attrib +h *.rar > nul
+rd /s /q Temp > nul
+xcopy /q /y /s *.* Temp\ > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO packing source...
@@ -33,14 +33,14 @@ ECHO packing source...
 
 ECHO ------------------------------------------------------------------------
 ECHO cleaning up
-rd /s /q Temp
-attrib -h /S /D CVS
-attrib -h /S /D vc7
-attrib -h /S /D app
-attrib -h /S *.ncb
-attrib -h /S *.suo
-attrib -h /S *.aps
-attrib -h *.rar
+rd /s /q Temp > nul
+attrib -h /S /D CVS > nul
+attrib -h /S /D vc7 > nul
+attrib -h /S /D app > nul
+attrib -h /S *.ncb > nul
+attrib -h /S *.suo > nul
+attrib -h /S *.aps > nul
+attrib -h *.rar > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO finished!

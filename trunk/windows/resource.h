@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by j:\DC++Sources\Fdm\DCPlusPlus.rc
+// Used by c:\fdm\client\fdm\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -54,8 +54,6 @@
 #define IDD_WINDOWSPAGE                 244
 #define IDD_QUEUEPAGE                   245
 #define IDD_CERTIFICATESPAGE            246
-#define IDB_FDM_TOOLBAR20               246
-#define IDB_FDM_TOOLBAR20_HOT           247
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
