@@ -444,6 +444,7 @@
 #define IDC_SEND_MESSAGE                32786
 #define IDC_FILTER_FOCUS                32788
 #define ID_FDM_FILE_SETTINGS            32789
+#define ID_FDM_TEST_FRAME				32790
 #define ID_WINDOW_MINIMIZE_ALL          57654
 #define ID_WINDOW_RESTORE_ALL           57655
 

@@ -53,6 +53,7 @@
 
 #include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 #include "../Fdm-Windows/Fdm-WinUtil.h"
+#include "../Fdm-Windows/Fdm-NotepadFrame.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -152,6 +153,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	// Carraya test extra toolbar
 	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
+	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
 
 	// remove old menu
 	SetMenu(NULL);
@@ -463,7 +465,7 @@ HWND MainFrame::createFdmToolbar() {
 	ctrlToolbar.SetImageList(largeImages);
 	ctrlToolbar.SetHotImageList(largeImagesHot);
 
-	const int numButtons = 2;
+	const int numButtons = 3;
 
 	TBBUTTON tb[numButtons];
 	memset(tb, 0, sizeof(tb));
@@ -476,6 +478,12 @@ HWND MainFrame::createFdmToolbar() {
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = ID_FDM_TEST_FRAME;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	ctrlToolbar.SetButtonStructSize();
 	ctrlToolbar.AddButtons(numButtons, tb);
@@ -676,6 +684,12 @@ LRESULT MainFrame::OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	return 0;
 }
 
+LRESULT MainFrame::OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	FdmNotepadFrame::openWindow();
+	return 0;
+}
+
 void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, const string&) throw() {
 	try {
 		SimpleXML xml;
@@ -800,6 +814,9 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case ID_FDM_FILE_SETTINGS:
 				forFdm = true;
 				stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
+			case ID_FDM_TEST_FRAME:
+				forFdm = true;
+				stringId = FdmResourceManager::MENU_TEST_FRAME; break;
 		}
 		if(stringId != -1) {
 			if (forFdm)

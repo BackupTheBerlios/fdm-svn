@@ -133,6 +133,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\Fdm-Windows\Fdm-NotepadFrame.cpp">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\Fdm-WinUtil.cpp">
 			</File>
 		</Filter>
@@ -141,10 +144,13 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-WinUtil.h">
+				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
+				RelativePath=".\Fdm-Windows\Fdm-NotepadFrame.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\Fdm-WinUtil.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\resource.h">
