@@ -10,6 +10,8 @@
 #include "../windows/FlatTabCtrl.h"
 #include "../windows/WinUtil.h"
 
+#include "ColourUtil.h"
+
 #define FDM_NOTEPAD_MESSAGE_MAP 13
 
 class FdmNotepadFrame : public MDITabChildWindowImpl<FdmNotepadFrame>, public StaticFrame<FdmNotepadFrame, FdmResourceManager::FDM_NOTEPAD>
@@ -42,9 +44,9 @@ public:
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
 		if(hWnd == ctrlPad.m_hWnd) {
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
+			::SetBkColor(hDC, ColourUtil::m_ChatTextGeneral.crBackColor);
+			::SetTextColor(hDC, ColourUtil::m_ChatTextGeneral.crTextColor);
+			return (LRESULT)ColourUtil::bgBrush;
 		}
 		bHandled = FALSE;
 		return FALSE;
