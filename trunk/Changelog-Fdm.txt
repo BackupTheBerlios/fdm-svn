@@ -5,6 +5,7 @@ Pothead
 	Added CppSQLite3
 	Ripped a few DCplusplus files, so can have own Language and Settings files.
 	Added a sample database
+	Fixed tooltips
 
 Carraya
 	Added Fdm-Config file
