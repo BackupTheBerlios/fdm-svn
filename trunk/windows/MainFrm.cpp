@@ -52,9 +52,6 @@
 #include "../client/version.h"
 
 #include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../Fdm-Windows/Fdm-WinUtil.h"
-#include "../Fdm-Windows/Fdm-Dlg.h"
-#include "../Fdm-Windows/Fdm-NotepadFrame.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -165,7 +162,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 	
 	// Carraya test extra toolbar
-	HWND hWndFdmToolBar = createFdmToolbar();
+	HWND hWndFdmToolBar = FdmWinUtil::createFdmToolbar(m_hWnd, largeImages, largeImagesHot);
 	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
 
 	CreateSimpleStatusBar();
@@ -455,43 +452,6 @@ HWND MainFrame::createToolbar() {
 	return ctrlToolbar.m_hWnd;
 }
 
-// Carraya test extra toolbar
-HWND MainFrame::createFdmToolbar() {
-	CToolBarCtrl ctrlToolbar;
-	largeImages.CreateFromImage(IDB_FDM_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	largeImagesHot.CreateFromImage(IDB_FDM_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-
-	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrlToolbar.SetImageList(largeImages);
-	ctrlToolbar.SetHotImageList(largeImagesHot);
-
-	const int numButtons = 3;
-
-	TBBUTTON tb[numButtons];
-	memset(tb, 0, sizeof(tb));
-	int n = 0, bitmap = 0;
-
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FDM_FILE_SETTINGS;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FDM_TEST_FRAME;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	ctrlToolbar.SetButtonStructSize();
-	ctrlToolbar.AddButtons(numButtons, tb);
-	ctrlToolbar.AutoSize();
-
-	return ctrlToolbar.m_hWnd;
-}
-
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		
 	if(wParam == DOWNLOAD_LISTING) {
@@ -673,20 +633,6 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			WinUtil::urlMagnetRegistered = false;
 		}
 	}
-	return 0;
-}
-
-// Carraya extra tool bar test
-LRESULT MainFrame::OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	FdmDlg dlg;
-	dlg.DoModal(m_hWnd);
-	return 0;
-}
-
-LRESULT MainFrame::OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	FdmNotepadFrame::openWindow();
 	return 0;
 }
 

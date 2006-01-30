@@ -26,11 +26,16 @@
 class FdmWinUtil
 {
 public:
+
 	// For allowing for instances
 	static bool allowMoreInstances(size_t amountOfProcesses);
 
-	// Carraya Extra Toolbar Test
+	// Carraya test extra toolbar
+	static LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	static LRESULT OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	static void extraToolBarCommmands(CMDICommandBarCtrl& m_CmdBar);
+	static HWND createFdmToolbar(HWND& m_hWnd, CImageList& largeImages, CImageList largeImagesHot);
 };
 
 #endif // !defined(FDM_WIN_UTIL_H)
