@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include "../Fdm-Windows/Resource.h"
+
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
 #include "../client/FavoriteManager.h"

@@ -19,7 +19,7 @@
 #include "../client/stdinc.h"
 #include "../client/DCPlusPlus.h"
 
-#include "Fdm-UserDatabase.h"
+#include "UserDatabase.h"
 
 #include "../client/Util.h"
 #include "../client/File.h"
@@ -31,7 +31,7 @@ using namespace std;
 const string userDataFile = Util::getAppPath() + "user.db";  
 const char* userDatabase = userDataFile.c_str();  
 
-void FdmUserDatabase::createUserDB() {
+void UserDatabase::createUserDB() {
 	//try {
 		CppSQLite3DB db;
 		removeUserDB();
@@ -51,7 +51,7 @@ void FdmUserDatabase::createUserDB() {
 	//}
 }
 
-void FdmUserDatabase::removeUserDB() {
+void UserDatabase::removeUserDB() {
 	if (File::getSize(userDatabase) != -1)
 		remove(userDatabase);
 }

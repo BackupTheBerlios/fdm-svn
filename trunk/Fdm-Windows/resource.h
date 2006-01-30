@@ -6,6 +6,8 @@
 #define IDB_FDM_TOOLBAR20               104
 #define IDB_FDM_TOOLBAR20_HOT           105
 #define IDC_FDM_SETTINGS_TEXT           1001
+#define ID_FDM_FILE_SETTINGS            32000
+#define ID_FDM_TEST_FRAME				32001
 
 // Next default values for new objects
 // 

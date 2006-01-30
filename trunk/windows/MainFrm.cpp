@@ -53,6 +53,7 @@
 
 #include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 #include "../Fdm-Windows/Fdm-WinUtil.h"
+#include "../Fdm-Windows/Fdm-Dlg.h"
 #include "../Fdm-Windows/Fdm-NotepadFrame.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
@@ -152,8 +153,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 
 	// Carraya test extra toolbar
-	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
-	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
+	FdmWinUtil::extraToolBarCommmands(m_CmdBar);
 
 	// remove old menu
 	SetMenu(NULL);

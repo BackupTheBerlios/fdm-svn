@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
+ * Copyright (C) 2006 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,4 +28,9 @@ bool FdmWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 		if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
 			return true;
 	return false;
+}
+
+void FdmWinUtil::extraToolBarCommmands(CMDICommandBarCtrl& m_CmdBar) {
+	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
+	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
 }

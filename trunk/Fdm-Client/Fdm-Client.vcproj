@@ -156,7 +156,7 @@
 				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp">
 			</File>
 			<File
-				RelativePath=".\Fdm-UserDatabase.cpp">
+				RelativePath=".\UserDatabase.cpp">
 			</File>
 			<File
 				RelativePath=".\Fdm-Util.cpp">
@@ -199,7 +199,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Fdm-UserDatabase.h">
+				RelativePath=".\UserDatabase.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Util.h">

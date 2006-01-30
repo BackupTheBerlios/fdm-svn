@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FDMUSERDATABASE_H)
-#define FDMUSERDATABASE_H
+#if !defined(USERDATABASE_H)
+#define USERDATABASE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,14 +25,14 @@
 
 #include "../client/Singleton.h"
 
-class FdmUserDatabase : public Singleton<FdmUserDatabase>
+class UserDatabase : public Singleton<UserDatabase>
 {
 public:
-	FdmUserDatabase() {
+	UserDatabase() {
 		createUserDB();
 	};
 
-	virtual ~FdmUserDatabase() throw() {
+	virtual ~UserDatabase() throw() {
 		removeUserDB();
 	};
 
@@ -40,4 +40,4 @@ public:
 	static void removeUserDB();
 };
 
-#endif // !defined(FDMUSERDATABASE_H)
+#endif // !defined(USERDATABASE_H)

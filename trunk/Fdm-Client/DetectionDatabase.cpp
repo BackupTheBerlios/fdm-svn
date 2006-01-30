@@ -20,7 +20,7 @@
 #include "../client/DCPlusPlus.h"
 #include "Fdm.h"
 
-#include "Fdm-DetectionDatabase.h"
+#include "DetectionDatabase.h"
 
 #include "../client/Util.h"
 #include "../client/File.h"
@@ -32,7 +32,7 @@ using namespace std;
 const string detectionDataFile = Util::getAppPath() + "detection.db";  
 const char* detectionDatabase = detectionDataFile.c_str();  
 
-void FdmDetectionDatabase::createDetectionDB() {
+void DetectionDatabase::createDetectionDB() {
 	//try {
 		CppSQLite3DB db;
 		removeDetectionDB();
@@ -45,7 +45,7 @@ void FdmDetectionDatabase::createDetectionDB() {
 	//}
 }
 
-void FdmDetectionDatabase::removeDetectionDB() {
+void DetectionDatabase::removeDetectionDB() {
 	if (File::getSize(detectionDatabase) != -1)
 		remove(detectionDatabase);
 }

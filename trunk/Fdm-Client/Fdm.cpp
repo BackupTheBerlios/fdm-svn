@@ -26,7 +26,7 @@
 #include "dcplusplus-rips/Fdm-ResourceManager.h"
 #include "dcplusplus-rips/Fdm-SettingsManager.h"
 
-#include "Fdm-UserDatabase.h"
+#include "UserDatabase.h"
 
 void Fdm::startUpFdm() {
 	FdmResourceManager::newInstance();
@@ -38,11 +38,11 @@ void Fdm::startUpFdm() {
 		FdmResourceManager::getInstance()->loadLanguage(FDMSETTING(FDM_LANGUAGE_FILE));
 	}
 
-	FdmUserDatabase::newInstance();
+	UserDatabase::newInstance();
 }
 
 void Fdm::shutDownFdm() {
-	FdmUserDatabase::deleteInstance();
+	UserDatabase::deleteInstance();
 
 	FdmSettingsManager::getInstance()->save();
 

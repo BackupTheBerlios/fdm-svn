@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
+ * Copyright (C) 2006 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Fdm-Dlg.h"
-
 class FdmWinUtil
 {
 public:
 	// For allowing for instances
 	static bool allowMoreInstances(size_t amountOfProcesses);
 
+	// Carraya Extra Toolbar Test
+	static void extraToolBarCommmands(CMDICommandBarCtrl& m_CmdBar);
 };
 
 #endif // !defined(FDM_WIN_UTIL_H)
