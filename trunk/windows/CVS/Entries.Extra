@@ -40,7 +40,6 @@
 /GeneralPage.cpp////*///
 /GeneralPage.h////*///
 /HashProgressDlg.h////*///
-/HubFrame.cpp////*///
 /HubFrame.h////*///
 /LineDlg.h////*///
 /ListViewArrows.h////*///
@@ -99,3 +98,4 @@
 /WindowsPage.h////*///
 /stdafx.cpp////*///
 /stdafx.h////*///
+/HubFrame.cpp////*///

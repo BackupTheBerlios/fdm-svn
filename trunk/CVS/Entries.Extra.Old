@@ -8,7 +8,6 @@ D/zlib///////
 D/yassl///////
 D/stlport///////
 D/wtl///////
-/DCPlusPlus.vcproj///////
 /DCPlusPlus.rc///////
 /COPYING.TXT////*///
 /Compile.txt///////
@@ -22,11 +21,12 @@ D/wtl///////
 /Makefile.am///////
 /acinclude.m4///////
 /bootstrap///////
-/bzip2.vcproj///////
-/changelog.txt///////
-/client.vcproj///////
 /configure.ac///////
 /magnet.exe///////
 /makedefs.py///////
+/DCPlusPlus.vcproj///////
+/bzip2.vcproj///////
+/changelog.txt///////
+/client.vcproj///////
 /zlib.vcproj///////
 D/MakeDefs///////
