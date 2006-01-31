@@ -136,10 +136,10 @@
 				RelativePath=".\Fdm-Windows\ColourUtil.cpp">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-MainFrame.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.cpp">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-NotepadFrame.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.cpp">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\Fdm-WinUtil.cpp">
@@ -156,10 +156,10 @@
 				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-MainFrame.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-NotepadFrame.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\Fdm-WinUtil.h">

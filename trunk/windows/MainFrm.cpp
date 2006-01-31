@@ -51,9 +51,7 @@
 #include "../client/ShareManager.h"
 #include "../client/version.h"
 
-#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../Fdm-Windows/Resource.h"
-#include "../Fdm-Windows/Fdm-MainFrame.h"
+#include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -735,8 +733,6 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	LPNMTTDISPINFO pDispInfo = (LPNMTTDISPINFO)pnmh;
 	pDispInfo->szText[0] = 0;
 
-	bool forFdm = false;
-
 	if((idCtrl != 0) && !(pDispInfo->uFlags & TTF_IDISHWND))
 	{
 		int stringId = -1;
@@ -757,18 +753,8 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
-			// Carraya test extra toolbar
-			case ID_FDM_FILE_SETTINGS:
-				forFdm = true;
-				stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
-			case ID_FDM_TEST_FRAME:
-				forFdm = true;
-				stringId = FdmResourceManager::MENU_TEST_FRAME; break;
 		}
 		if(stringId != -1) {
-			if (forFdm)
-				_tcsncpy(pDispInfo->lpszText, FDMCTSTRING_I((FdmResourceManager::FdmStrings)stringId), 79);
-			else
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);
 			pDispInfo->uFlags |= TTF_DI_SETITEM;
 		}

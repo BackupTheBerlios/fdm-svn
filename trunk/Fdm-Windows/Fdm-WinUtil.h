@@ -23,19 +23,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class FdmWinUtil
+namespace FdmWinUtil
 {
-public:
-
 	// For allowing for instances
-	static bool allowMoreInstances(size_t amountOfProcesses);
-
-	// Carraya test extra toolbar
-	static LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	static LRESULT OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	static void extraToolBarCommmands(CMDICommandBarCtrl& m_CmdBar);
-	static HWND createFdmToolbar(HWND& m_hWnd, CImageList& largeImages, CImageList largeImagesHot);
+	bool allowMoreInstances(size_t amountOfProcesses);
 };
 
 #endif // !defined(FDM_WIN_UTIL_H)
