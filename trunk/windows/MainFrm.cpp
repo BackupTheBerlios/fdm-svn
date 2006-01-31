@@ -52,6 +52,8 @@
 #include "../client/version.h"
 
 #include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
+#include "../Fdm-Windows/Resource.h"
+#include "../Fdm-Windows/Fdm-MainFrame.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -149,9 +151,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 
-	// Carraya test extra toolbar
-	FdmWinUtil::extraToolBarCommmands(m_CmdBar);
-
 	// remove old menu
 	SetMenu(NULL);
 
@@ -160,10 +159,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-	
-	// Carraya test extra toolbar
-	HWND hWndFdmToolBar = FdmWinUtil::createFdmToolbar(m_hWnd, largeImages, largeImagesHot);
-	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
 
 	CreateSimpleStatusBar();
 
@@ -181,6 +176,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	WinUtil::mdiClient = m_hWndMDIClient;
+
+	FdmMainFrame fdmMainFrame;
+	fdmMainFrame.Create(m_hWnd);
+	SetSplitterPanes(m_hWndMDIClient, fdmMainFrame.m_hWnd);
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	FdmMainFrame::openWindow();
 
 	ctrlTab.Create(m_hWnd, rcDefault);
 	WinUtil::tabCtrl = &ctrlTab;

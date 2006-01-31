@@ -1,5 +1,4 @@
 /main.cpp/1.40/Thu Jan  5 20:06:41 2006//
-/resource.h/1.102/Sat Jan 21 16:11:22 2006//
 /ADLSProperties.cpp/1.10/Sat Jan 21 16:23:59 2006//
 /ADLSProperties.h/1.4/Sat Jan 21 16:24:00 2006//
 /ADLSearchFrame.cpp/1.26/Sat Jan 21 16:23:59 2006//
@@ -47,7 +46,6 @@
 /LogPage.h/1.5/Sat Jan 21 16:23:59 2006//
 /MagnetDlg.h/1.7/Sat Jan 21 16:24:00 2006//
 /MainFrm.cpp/1.109/Result of merge//
-/MainFrm.h/1.66/Result of merge//
 /NetworkPage.cpp/1.8/Sat Jan 21 16:23:59 2006//
 /NetworkPage.h/1.6/Sat Jan 21 16:24:00 2006//
 /NotepadFrame.cpp/1.23/Sat Jan 21 16:23:59 2006//
@@ -99,4 +97,6 @@
 /stdafx.cpp/1.16/Sat Jan 21 16:24:00 2006//
 /stdafx.h/1.12/Sat Jan 21 16:23:59 2006//
 /HubFrame.cpp/1.129/Mon Jan 30 13:04:33 2006//
+/resource.h/1.102/Tue Jan 31 13:08:10 2006//
+/MainFrm.h/1.66/Tue Jan 31 18:52:42 2006//
 D

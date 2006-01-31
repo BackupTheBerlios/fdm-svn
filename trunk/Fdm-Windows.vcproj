@@ -136,6 +136,9 @@
 				RelativePath=".\Fdm-Windows\ColourUtil.cpp">
 			</File>
 			<File
+				RelativePath=".\Fdm-Windows\Fdm-MainFrame.cpp">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\Fdm-NotepadFrame.cpp">
 			</File>
 			<File
@@ -151,6 +154,9 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\Fdm-MainFrame.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\Fdm-NotepadFrame.h">

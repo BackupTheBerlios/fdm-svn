@@ -1,70 +1,70 @@
-/* 
- * Copyright (C) 2006 Michael J Jones, mrmikejj at hotmail dot com
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
-
-#if !defined(FDM_MAIN_FRAME_H)
-#define FDM_MAIN_FRAME_H
+#if !defined(FDM_MAINFRAME_H)
+#define FDM_MAINFRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSplitterImpl<FdmMainFrame, false>
+#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
+#include "../windows/FlatTabCtrl.h"
+#include "../windows/WinUtil.h"
+#include "Fdm-WinUtil.h"
+
+#include "ColourUtil.h"
+
+#define FDM_MAINFRAME_MESSAGE_MAP 25
+
+class FdmMainFrame : public MDITabChildWindowImpl<FdmMainFrame>, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 {
 public:
-	DECLARE_WND_CLASS(_T("FdmToolBar"))
+	DECLARE_FRAME_WND_CLASS_EX(_T("FdmMainFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
-	FdmMainFrame();
-	virtual ~FdmMainFrame();
-
-	CMDICommandBarCtrl m_CmdBar;
-
-	virtual BOOL PreTranslateMessage(MSG* pMsg)
-	{
-		if(CMDIFrameWindowImpl<FdmMainFrame>::PreTranslateMessage(pMsg))
-			return TRUE;
-		
-		HWND hWnd = MDIGetActive();
-		if(hWnd != NULL)
-			return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);
-		
-		return FALSE;
-	}
+	FdmMainFrame() : dirty(false),
+		ctrlClientContainer(_T("edit"), this, FDM_MAINFRAME_MESSAGE_MAP) { }
+	virtual ~FdmMainFrame() { }
 	
-	virtual BOOL OnIdle()
-	{
-		return FALSE;
-	}
-
-	typedef CSplitterImpl<FdmMainFrame, false> splitterBase;
+	typedef MDITabChildWindowImpl<FdmMainFrame> baseClass;
 	BEGIN_MSG_MAP(FdmMainFrame)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		// Carraya test extra toolbar
+		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, FdmWinUtil::OnFdmFileSettings)
+		COMMAND_ID_HANDLER(ID_FDM_TEST_FRAME, FdmWinUtil::OnFdmTestFrame)
 	END_MSG_MAP()
 
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
-	static void extraToolBarCommmands(CMDICommandBarCtrl& m_CmdBar);
-
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+	
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlPad.m_hWnd) {
+			::SetBkColor(hDC, ColourUtil::m_ChatTextGeneral.crBackColor);
+			::SetTextColor(hDC, ColourUtil::m_ChatTextGeneral.crTextColor);
+			return (LRESULT)ColourUtil::bgBrush;
+		}
+		bHandled = FALSE;
+		return FALSE;
+	};
+	
+	
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		ctrlPad.SetFocus();
+		return 0;
+	}
+	CMDICommandBarCtrl m_CmdBar;
 private:
+	
+	bool dirty;
+	CEdit ctrlPad;
+	CContainedWindow ctrlClientContainer;
 	CImageList images;
 	CImageList largeImages, largeImagesHot;
-
-	HWND createFdmToolbar();
 };
 
-#endif // !defined(FDM_MAIN_FRAME_H)
+#endif // !defined(FDM_MAINFRAME_H)

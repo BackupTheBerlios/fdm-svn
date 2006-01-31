@@ -1,5 +1,4 @@
 /main.cpp////*///
-/resource.h////*///
 /ADLSProperties.cpp////*///
 /ADLSProperties.h////*///
 /ADLSearchFrame.cpp////*///
@@ -47,7 +46,6 @@
 /LogPage.h////*///
 /MagnetDlg.h////*///
 /MainFrm.cpp////*///
-/MainFrm.h////*///
 /NetworkPage.cpp////*///
 /NetworkPage.h////*///
 /NotepadFrame.cpp////*///
@@ -99,3 +97,5 @@
 /stdafx.cpp////*///
 /stdafx.h////*///
 /HubFrame.cpp////*///
+/resource.h////*///
+/MainFrm.h////*///

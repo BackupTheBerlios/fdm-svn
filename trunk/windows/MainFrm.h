@@ -23,9 +23,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "../Fdm-Windows/Resource.h"  // bad ?? probably
-#include "../Fdm-Windows/Fdm-WinUtil.h"
-
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
 #include "../client/FavoriteManager.h"
@@ -141,9 +138,6 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_QUICK_CONNECT, onQuickConnect)
 		COMMAND_ID_HANDLER(IDC_HASH_PROGRESS, onHashProgress)
 		COMMAND_ID_HANDLER(IDC_SYSTEM_LOG, onSystemLog)
-		// Carraya test extra toolbar
-		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, FdmWinUtil::OnFdmFileSettings)
-		COMMAND_ID_HANDLER(ID_FDM_TEST_FRAME, FdmWinUtil::OnFdmTestFrame)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
