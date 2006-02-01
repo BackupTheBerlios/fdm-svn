@@ -16,17 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FDM_WIN_UTIL_H)
-#define FDM_WIN_UTIL_H
+#if !defined(MORE_WIN_UTIL_H)
+#define MORE_WIN_UTIL_H
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-namespace FdmWinUtil
+namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
 };
 
-#endif // !defined(FDM_WIN_UTIL_H)
+#endif // !defined(MORE_WIN_UTIL_H)

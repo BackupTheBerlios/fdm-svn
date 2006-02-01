@@ -112,6 +112,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 // Bitmap
 //
 
+IDB_FDM_TOOLBAR         BITMAP                  "Fdm-Res\\fdm_toolbar.bmp"
 IDB_FDM_TOOLBAR20       BITMAP                  "Fdm-Res\\fdm_toolbar20.bmp"
 IDB_FDM_TOOLBAR20_HOT   BITMAP                  "Fdm-Res\\fdm_toolbar20-highlight.bmp"
 #endif    // English (U.K.) resources

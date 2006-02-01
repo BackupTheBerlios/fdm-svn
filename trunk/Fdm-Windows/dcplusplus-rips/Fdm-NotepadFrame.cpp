@@ -43,7 +43,7 @@ LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		tmp = SETTING(NOTEPAD_TEXT);
 		if(!tmp.empty()) {
 			dirty = true;
-			SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, Util::emptyString);
+//			SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, Util::emptyString);
 		}
 	}
 

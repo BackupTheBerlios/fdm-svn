@@ -7,10 +7,11 @@
 
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 
- // Why won't it work without this included.  i guess a dupe will figure that out
 #include "../../windows/FlatTabCtrl.h"
+//#include "Fdm-FlatTabCtrl.h"
+#include "../resource.h"
+#include "../../windows/resource.h"
 
-#include "../Resource.h"
 #include "../ColourUtil.h"
 
 #define FDM_MAINFRAME_MESSAGE_MAP 25
@@ -23,8 +24,7 @@ public:
 	FdmMainFrame() : dirty(false),
 		ctrlClientContainer(_T("edit"), this, FDM_MAINFRAME_MESSAGE_MAP) { }
 	virtual ~FdmMainFrame();
-	
-	typedef MDITabChildWindowImpl<FdmMainFrame> baseClass;
+
 	BEGIN_MSG_MAP(FdmMainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -46,8 +46,8 @@ private:
 	bool dirty;
 	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;
-	CImageList images;
-	CImageList largeImages, largeImagesHot;
+	CImageList fdmImages;
+	CImageList fdmLargeImages, fdmLargeImagesHot;
 	HWND createFdmToolbar();
 };
 

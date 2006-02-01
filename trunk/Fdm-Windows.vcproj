@@ -160,7 +160,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-WinUtil.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-WinUtil.cpp">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\MoreWinUtil.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -174,6 +177,9 @@
 				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
 			</File>
 			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-FlatTabCtrl.h">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h">
 			</File>
 			<File
@@ -183,7 +189,10 @@
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\Fdm-WinUtil.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-WinUtil.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\MoreWinUtil.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\resource.h">
@@ -195,6 +204,9 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
 				RelativePath=".\Fdm-Windows.rc">
+			</File>
+			<File
+				RelativePath=".\Fdm-Res\fdm_toolbar.bmp">
 			</File>
 			<File
 				RelativePath=".\Fdm-Res\fdm_toolbar20-highlight.bmp">

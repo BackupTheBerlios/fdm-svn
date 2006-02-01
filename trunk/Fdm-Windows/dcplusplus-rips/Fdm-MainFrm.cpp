@@ -18,21 +18,19 @@
 
 #include "Fdm-stdafx.h"
 #include "../../client/DCPlusPlus.h"
-#include "../Resource.h"
-#include "../../windows/Resource.h"
+#include "../resource.h"
+#include "../../windows/resource.h"
 
 #include "Fdm-MainFrm.h"
-#include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-
 #include "../Fdm-Dlg.h"
 #include "Fdm-NotepadFrame.h"
 
 FdmMainFrame::~FdmMainFrame() {
 	m_CmdBar.m_hImageList = NULL;
 
-	images.Destroy();
-	largeImages.Destroy();
-	largeImagesHot.Destroy();
+	fdmImages.Destroy();
+	fdmLargeImages.Destroy();
+	fdmLargeImagesHot.Destroy();
 }
 
 LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -49,8 +47,8 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	// FIXME
 	// load command bar images
-	images.CreateFromImage(IDB_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	m_CmdBar.m_hImageList = images;
+	fdmImages.CreateFromImage(IDB_FDM_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	m_CmdBar.m_hImageList = fdmImages;
 
 	HWND hWndToolBar = createFdmToolbar();
 	
@@ -102,12 +100,12 @@ LRESULT FdmMainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/)
 
 HWND FdmMainFrame::createFdmToolbar() {
 	CToolBarCtrl ctrlToolbar;
-	largeImages.CreateFromImage(IDB_FDM_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	largeImagesHot.CreateFromImage(IDB_FDM_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	fdmLargeImages.CreateFromImage(IDB_FDM_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	fdmLargeImagesHot.CreateFromImage(IDB_FDM_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
 	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrlToolbar.SetImageList(largeImages);
-	ctrlToolbar.SetHotImageList(largeImagesHot);
+	ctrlToolbar.SetImageList(fdmLargeImages);
+	ctrlToolbar.SetHotImageList(fdmLargeImagesHot);
 
 	const int numButtons = 3;
 

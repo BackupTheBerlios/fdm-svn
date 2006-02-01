@@ -27,7 +27,7 @@
 
 #include "../client/MerkleTree.h"
 
-#include "../Fdm-Windows/Fdm-WinUtil.h"
+#include "../Fdm-Windows/MoreWinUtil.h"
 
 #include <delayimp.h>
 CAppModule _Module;
@@ -293,7 +293,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		HWND hOther = NULL;
 		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
 
-if (!FdmWinUtil::allowMoreInstances(_tcslen(lpstrCmdLine)))	// added for FDM mod
+if (!MoreWinUtil::allowMoreInstances(_tcslen(lpstrCmdLine)))	// added for FDM mod
 
 #ifndef _DEBUG
 		if( hOther != NULL ) {
