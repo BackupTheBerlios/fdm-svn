@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,20 @@
  */
 
 #include "Fdm-stdinc.h"
-#include "../client/DCPlusPlus.h"
 
-#include "Fdm-Util.h"
+#ifdef HAS_STLPORT
+
+#if (_STLPORT_VERSION != 0x462)
+#error STLPort not correctly installed, read compile.txt
+#endif
+
+#ifndef _STLP_NO_IOSTREAMS
+#error You're not using the STLPort from the DC++ homepage, that uses a different configuration than the original one. Remove this line only if you know what you're doing.
+#endif
+
+#endif // HAS_STLPORT
+
+/**
+ * @file
+ * $Id: stdinc.cpp,v 1.8 2005/04/24 08:13:36 arnetheduck Exp $
+ */
