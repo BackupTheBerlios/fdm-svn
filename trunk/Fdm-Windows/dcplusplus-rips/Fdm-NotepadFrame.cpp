@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "../windows/stdafx.h"
-#include "../client/DCPlusPlus.h"
+#include "Fdm-stdafx.h"
+#include "../../client/DCPlusPlus.h"
 #include "Resource.h"
-#include "../windows/Resource.h"
+#include "../../windows/Resource.h"
 
 #include "Fdm-NotepadFrame.h"
-#include "../windows/WinUtil.h"
-#include "../client/File.h"
+#include "../../windows/WinUtil.h"
+#include "../../client/File.h"
 
 LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {

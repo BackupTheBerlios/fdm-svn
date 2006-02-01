@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2006 Michael J Jones, mrmikejj at hotmail dot com
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,19 @@
  */
 
 #include "Fdm-stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "resource.h"
+#include "../Resource.h"
 
-#include "../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
-#include "Fdm-WinUtil.h"
+// Only need this for older ATL:s
+#if _ATL_VER < 0x0700
+#include <atlimpl.cpp>
+#endif
 
-bool FdmWinUtil::allowMoreInstances(size_t amountOfProcesses) {
-	if(amountOfProcesses == 0)
-		if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
-			return true;
-	return false;
-}
+// Basic sanity check
+#if (_WTL_VER < 0x750)
+#error WTL not correctly installed, read compile.txt
+#endif
+
+/**
+ * @file
+ * $Id: stdafx.cpp,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
+ */

@@ -33,9 +33,8 @@
 				EnableFunctionLevelLinking="TRUE"
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="windows/stdafx.h"
-				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
+				UsePrecompiledHeader="3"
+				PrecompiledHeaderThrough="Fdm-stdafx.h"
 				WarningLevel="4"
 				DebugInformationFormat="4"
 				CallingConvention="0"
@@ -55,7 +54,9 @@
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCResourceCompilerTool"
+				Culture="2057"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -70,7 +71,9 @@
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			UseOfATL="0"
+			UseOfMFC="0"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="1"
 			ManagedExtensions="FALSE">
 			<Tool
@@ -91,9 +94,8 @@
 				EnableFunctionLevelLinking="TRUE"
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="windows/stdafx.h"
-				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
+				UsePrecompiledHeader="3"
+				PrecompiledHeaderThrough="Fdm-stdafx.h"
 				AssemblerOutput="4"
 				WarningLevel="4"
 				DebugInformationFormat="3"
@@ -114,6 +116,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				Culture="2057"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -142,6 +145,21 @@
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\Fdm-WinUtil.cpp">
 			</File>
 		</Filter>
@@ -160,6 +178,9 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\Fdm-WinUtil.h">
