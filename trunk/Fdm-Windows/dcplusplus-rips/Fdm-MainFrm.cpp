@@ -20,10 +20,18 @@
 #include "../../client/DCPlusPlus.h"
 #include "../resource.h"
 #include "../../windows/resource.h"
+#include "Fdm-FlatTabCtrl.h"
+#include "Fdm-WinUtil.h"
 
 #include "Fdm-MainFrm.h"
 #include "../Fdm-Dlg.h"
 #include "Fdm-NotepadFrame.h"
+
+
+FdmMainFrame::FdmMainFrame()
+{ 
+
+};
 
 FdmMainFrame::~FdmMainFrame() {
 	m_CmdBar.m_hImageList = NULL;
@@ -31,15 +39,22 @@ FdmMainFrame::~FdmMainFrame() {
 	fdmImages.Destroy();
 	fdmLargeImages.Destroy();
 	fdmLargeImagesHot.Destroy();
+
+	FdmWinUtil::uninit();
 }
 
 LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-	WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE);
-	
+	FdmWinUtil::init(m_hWnd);
+
+	ctrlFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE, WS_EX_CLIENTEDGE);
+
+//	ctrlFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+//	WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE);
+
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 
+	m_hMenu = FdmWinUtil::fdmMainMenu;
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
@@ -56,6 +71,15 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
+	ctrlFdmTab.Create(m_hWnd, rcDefault);
+	FdmWinUtil::fdmTabCtrl = &ctrlFdmTab;
+
+//	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
+	//ctrlStatus.Attach(m_hWndStatusBar);
+//	statusContainer.SubclassWindow(ctrlStatus.m_hWnd);
+
+//	UpdateLayout();
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -66,17 +90,21 @@ LRESULT FdmMainFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 }
 
-void FdmMainFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
-{
-	CRect rc;
+void FdmMainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+{	
+/*	RECT rect;
+	GetClientRect(&rect);
 
-	GetClientRect(rc);
+	UpdateBarsPosition(rect, bResizeBars);
+
+	CRect rc = rect;
+	rc.top = rc.bottom - ctrlFdmTab.getFdmHeight();
+	if(ctrlFdmTab.IsWindow())
+		ctrlFdmTab.MoveWindow(rc);
 	
-	rc.bottom -= 1;
-	rc.top += 1;
-	rc.left +=1;
-	rc.right -=1;
-	ctrlPad.MoveWindow(rc);	
+	CRect rc2 = rect;
+	rc2.bottom = rc.top;
+	SetSplitterRect(rc2);*/
 }
 
 LRESULT FdmMainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {

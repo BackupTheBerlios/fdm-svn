@@ -18,11 +18,11 @@
 
 #include "Fdm-stdafx.h"
 #include "../../client/DCPlusPlus.h"
-#include "Resource.h"
-#include "../../windows/Resource.h"
+#include "../resource.h"
 
 #include "Fdm-NotepadFrame.h"
-#include "../../windows/WinUtil.h"
+//#include "../../windows/WinUtil.h"
+#include "Fdm-WinUtil.h"
 #include "../../client/File.h"
 
 LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -30,7 +30,7 @@ LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 	
-	ctrlPad.LimitText(0);
+/*	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
 	string tmp;
 	try {
@@ -50,13 +50,13 @@ LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
 	ctrlPad.EmptyUndoBuffer();
 	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
-
+*/
 	bHandled = FALSE;
 	return 1;
 }
 
 LRESULT FdmNotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	
+	/*
 	if(dirty || ctrlPad.GetModify()) {
 		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
@@ -67,7 +67,7 @@ LRESULT FdmNotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			// Oops...
 		}
 	}
-
+*/
 	bHandled = FALSE;
 	return 0;
 	
@@ -88,7 +88,7 @@ void FdmNotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 }
 
 LRESULT FdmNotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	HWND focus = GetFocus();
+/*	HWND focus = GetFocus();
 	bHandled = false;
 	if(focus == ctrlPad.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
@@ -101,7 +101,7 @@ LRESULT FdmNotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
-	return 0;
+*/	return 0;
 }
 
 /**

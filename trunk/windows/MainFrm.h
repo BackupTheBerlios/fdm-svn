@@ -36,6 +36,8 @@
 #include "TransferView.h"
 #include "UPnP.h"
 
+#include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
+
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
@@ -77,6 +79,9 @@ public:
 		return FALSE;
 	}
 	typedef CSplitterImpl<MainFrame, false> splitterBase;
+	CHorSplitterWindow splitFdmMainFrame;
+	CHorSplitterWindow splitTransferFrame;
+
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
@@ -320,6 +325,7 @@ private:
 	};
 	
 	TransferView transferView;
+	FdmMainFrame fdmMainFrame;
 
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;

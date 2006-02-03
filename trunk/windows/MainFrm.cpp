@@ -52,6 +52,7 @@
 #include "../client/version.h"
 
 #include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
+//#include "../Fdm-Windows/dcplusplus-rips/Fdm-WinUtil.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -182,6 +183,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlTab.Create(m_hWnd, rcDefault);
 	WinUtil::tabCtrl = &ctrlTab;
+
+//	fdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN , WS_EX_CLIENTEDGE);
+//	splitFdmMainFrame.Create(m_hWnd);
+//	splitFdmMainFrame.SetSplitterPanes(fdmMainFrame.m_hWnd, m_hWndMDIClient, true);
+//	splitFdmMainFrame.SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+//	splitFdmMainFrame.SetSplitterPos(200);
+//	FdmMainFrame::openWindow();
 
 	transferView.Create(m_hWnd);
 

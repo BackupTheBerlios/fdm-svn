@@ -8,7 +8,7 @@
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 
 #include "../../windows/FlatTabCtrl.h"
-//#include "Fdm-FlatTabCtrl.h"
+#include "Fdm-FlatTabCtrl.h"
 #include "../resource.h"
 #include "../../windows/resource.h"
 
@@ -16,21 +16,25 @@
 
 #define FDM_MAINFRAME_MESSAGE_MAP 25
 
-class FdmMainFrame : public MDITabChildWindowImpl<FdmMainFrame>, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
+class FdmMainFrame : public MDITabChildWindowImpl<FdmMainFrame>, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public CSplitterImpl<FdmMainFrame, false>
+//class FdmMainFrame : public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public CSplitterImpl<FdmMainFrame, false>
+//class FdmMainFrame : public FdmStaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("FdmMainFrame"), IDR_FDM_MAINFRAME, 0, COLOR_3DFACE);
 
-	FdmMainFrame() : dirty(false),
-		ctrlClientContainer(_T("edit"), this, FDM_MAINFRAME_MESSAGE_MAP) { }
+	FdmMainFrame();
 	virtual ~FdmMainFrame();
 
+//	typedef CSplitterImpl<FdmMainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(FdmMainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, OnFdmFileSettings)
 		COMMAND_ID_HANDLER(ID_FDM_TEST_FRAME, OnFdmTestFrame)
+//		CHAIN_MDI_CHILD_COMMANDS()
+//		CHAIN_MSG_MAP(splitterBase);
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -44,8 +48,10 @@ public:
 private:
 	
 	bool dirty;
-	CEdit ctrlPad;
-	CContainedWindow ctrlClientContainer;
+	FdmFlatTabCtrl ctrlFdmTab;
+	CEdit ctrlFdmMainFrame;
+	CContainedWindow statusContainer;
+	CStatusBarCtrl ctrlStatus;
 	CImageList fdmImages;
 	CImageList fdmLargeImages, fdmLargeImagesHot;
 	HWND createFdmToolbar();
