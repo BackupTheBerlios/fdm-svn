@@ -586,6 +586,8 @@ bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser
 		wantConnection = false;
 	}
 
+	aUser->setFlag(User::SAVE_NICK);
+
 	fire(QueueManagerListener::SourcesUpdated(), qi);
 	setDirty();
 
@@ -955,7 +957,7 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 	if(flags & QueueItem::FLAG_MATCH_QUEUE) {
 		AutoArray<char> tmp(STRING(MATCHED_FILES).size() + 16);
 		sprintf(tmp, CSTRING(MATCHED_FILES), matchListing(dirList));
-		LogManager::getInstance()->message(user->getFirstNick() + ": " + string(tmp));			
+		LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(user->getCID())) + ": " + string(tmp));			
 	}
 }
 
@@ -1150,14 +1152,9 @@ void QueueManager::saveQueue() throw() {
 
 				for(QueueItem::Source::List::const_iterator j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
-					if(!s->getUser()->getCID().isZero()) {
-						s->getUser()->setFlag(User::SAVE_NICK);
-						f.write(STRINGLEN("\t\t<Source CID=\""));
-						f.write(s->getUser()->getCID().toBase32());
-					} else {
-						f.write(STRINGLEN("\t\t<Source Nick=\""));
-						f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
-					}
+					f.write(STRINGLEN("\t\t<Source CID=\""));
+					f.write(s->getUser()->getCID().toBase32());
+
 					if(!s->getPath().empty() && (!s->getUser()->isSet(User::TTH_GET) || !qi->getTTH()) ) {
 						f.write(STRINGLEN("\" Path=\""));
 						f.write(CHECKESCAPE(s->getPath()));
@@ -1280,16 +1277,15 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			if(!simple)
 				cur = qi;
 		} else if(cur != NULL && name == sSource) {
-			const string& nick = getAttrib(attribs, sNick, 0);
-			const string& cid = getAttrib(attribs, sCID, 1);
+			const string& cid = getAttrib(attribs, sCID, 0);
+			if(cid.length() != 39) {
+				// Skip loading this source - sorry old users
+				return;
+			}
 			const string& path = getAttrib(attribs, sPath, 1);
 			const string& utf8 = getAttrib(attribs, sUtf8, 2);
 			bool isUtf8 = (utf8 == "1");
-			User::Ptr user;
-			if(!cid.empty())
-				user = ClientManager::getInstance()->getUser(CID(cid));
-			else
-				user = ClientManager::getInstance()->getLegacyUser(nick);
+			User::Ptr user = ClientManager::getInstance()->getUser(CID(cid));
 
 			try {
 				if(qm->addSource(cur, path, user, 0, isUtf8) && user->isOnline())
@@ -1328,9 +1324,10 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			// Size compare to avoid popular spoof
 			bool found = (*qi->getTTH() == *sr->getTTH()) && (qi->getSize() == sr->getSize());
 
-			if(found) {
+			if(found && !qi->isSource(sr->getUser())) {
 				try {
-					wantConnection = addSource(qi, sr->getFile(), sr->getUser(), 0, false);
+					if(!BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
+						wantConnection = addSource(qi, sr->getFile(), sr->getUser(), 0, false);
 					added = true;
 				} catch(const Exception&) {
 					// ...
@@ -1384,5 +1381,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.142 2006/01/23 08:00:49 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.144 2006/02/05 17:02:37 arnetheduck Exp $
  */

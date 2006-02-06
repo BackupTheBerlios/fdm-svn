@@ -8,12 +8,10 @@ D/zlib////
 D/yassl////
 D/stlport////
 D/wtl////
-/DCPlusPlus.rc/1.169/Sat Jan 21 16:11:17 2006//
 /COPYING.TXT/1.1/Sat Jan 21 16:45:38 2006//
 /Compile.txt/1.25/Sat Jan 21 16:45:38 2006//
 /DCPlusPlus.nsi/1.17/Sat Jan 21 16:45:38 2006//
 /Doxyfile/1.1/Sat Jan 21 16:45:38 2006//
-/Example.xml/1.161/Sun Jan 22 12:32:04 2006//
 /Extensions.txt/1.16/Sat Jan 21 16:45:38 2006//
 /LICENSE-GeoIP.txt/1.1/Sat Jan 21 16:45:38 2006//
 /License.txt/1.1/Sat Jan 21 16:45:38 2006//
@@ -26,7 +24,9 @@ D/wtl////
 /makedefs.py/1.7/Sat Jan 21 16:45:38 2006//
 /DCPlusPlus.vcproj/1.59/Mon Jan 30 13:04:10 2006//
 /bzip2.vcproj/1.19/Mon Jan 30 13:04:10 2006//
-/changelog.txt/1.307/Mon Jan 30 13:04:10 2006//
 /client.vcproj/1.41/Mon Jan 30 13:04:11 2006//
 /zlib.vcproj/1.15/Mon Jan 30 13:04:11 2006//
+/DCPlusPlus.rc/1.170/Result of merge//
+/Example.xml/1.162/Mon Feb  6 03:53:03 2006//
+/changelog.txt/1.309/Mon Feb  6 03:53:04 2006//
 D/MakeDefs////

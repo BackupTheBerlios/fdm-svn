@@ -16,7 +16,6 @@
 /CertificatesPage.h/1.2/Sat Jan 21 16:23:59 2006//
 /CommandDlg.cpp/1.18/Sat Jan 21 16:24:00 2006//
 /CommandDlg.h/1.14/Sat Jan 21 16:23:59 2006//
-/DirectoryListingFrm.cpp/1.78/Tue Jan 24 11:15:25 2006//
 /DirectoryListingFrm.h/1.60/Tue Jan 24 11:15:25 2006//
 /DownloadPage.cpp/1.18/Sat Jan 21 16:23:59 2006//
 /DownloadPage.h/1.15/Sat Jan 21 16:24:00 2006//
@@ -36,7 +35,6 @@
 /FinishedULFrame.cpp/1.32/Sat Jan 21 16:23:59 2006//
 /FinishedULFrame.h/1.21/Sat Jan 21 16:23:59 2006//
 /FlatTabCtrl.h/1.40/Sat Jan 21 16:23:59 2006//
-/GeneralPage.cpp/1.17/Sat Jan 21 16:23:59 2006//
 /GeneralPage.h/1.15/Sat Jan 21 16:23:59 2006//
 /HashProgressDlg.h/1.8/Sat Jan 21 16:23:59 2006//
 /HubFrame.h/1.73/Sat Jan 21 16:23:58 2006//
@@ -45,13 +43,10 @@
 /LogPage.cpp/1.6/Sat Jan 21 16:23:59 2006//
 /LogPage.h/1.5/Sat Jan 21 16:23:59 2006//
 /MagnetDlg.h/1.7/Sat Jan 21 16:24:00 2006//
-/MainFrm.cpp/1.109/Result of merge//
-/MainFrm.h/1.66/Result of merge//
 /NetworkPage.cpp/1.8/Sat Jan 21 16:23:59 2006//
 /NetworkPage.h/1.6/Sat Jan 21 16:24:00 2006//
 /NotepadFrame.cpp/1.23/Sat Jan 21 16:23:59 2006//
 /NotepadFrame.h/1.15/Sat Jan 21 16:24:00 2006//
-/PrivateFrame.cpp/1.60/Sat Jan 21 16:24:00 2006//
 /PrivateFrame.h/1.38/Sat Jan 21 16:24:00 2006//
 /PropPage.cpp/1.14/Sat Jan 21 16:23:59 2006//
 /PropPage.h/1.11/Sat Jan 21 16:24:00 2006//
@@ -75,7 +70,6 @@
 /SystemFrame.h/1.4/Sat Jan 21 16:23:59 2006//
 /TextFrame.cpp/1.12/Sat Jan 21 16:23:58 2006//
 /TextFrame.h/1.6/Sat Jan 21 16:24:00 2006//
-/TransferView.cpp/1.62/Tue Jan 24 11:15:29 2006//
 /TransferView.h/1.25/Sat Jan 21 16:23:59 2006//
 /TreePropertySheet.cpp/1.11/Sat Jan 21 16:23:59 2006//
 /TreePropertySheet.h/1.9/Sat Jan 21 16:23:59 2006//
@@ -89,14 +83,20 @@
 /UploadPage.h/1.18/Sat Jan 21 16:24:00 2006//
 /UsersFrame.cpp/1.43/Sat Jan 21 16:24:00 2006//
 /UsersFrame.h/1.28/Sat Jan 21 16:23:59 2006//
-/WaitingUsersFrame.cpp/1.7/Sat Jan 21 16:24:00 2006/-kk/
 /WaitingUsersFrame.h/1.2/Sat Jan 21 16:23:59 2006/-kk/
-/WinUtil.cpp/1.95/Sat Jan 21 16:23:59 2006//
 /WinUtil.h/1.52/Tue Jan 24 11:15:30 2006//
 /WindowsPage.cpp/1.11/Sat Jan 21 16:24:00 2006//
 /WindowsPage.h/1.6/Sat Jan 21 16:24:00 2006//
 /stdafx.cpp/1.16/Sat Jan 21 16:24:00 2006//
-/stdafx.h/1.12/Sat Jan 21 16:23:59 2006//
 /HubFrame.cpp/1.129/Mon Jan 30 13:04:33 2006//
-/resource.h/1.102/Tue Jan 31 13:08:10 2006//
+/MainFrm.h/1.66/Tue Jan 31 18:52:42 2006//
+/DirectoryListingFrm.cpp/1.79/Mon Feb  6 03:53:06 2006//
+/GeneralPage.cpp/1.18/Mon Feb  6 03:53:06 2006//
+/MainFrm.cpp/1.110/Result of merge//
+/PrivateFrame.cpp/1.61/Mon Feb  6 03:53:07 2006//
+/TransferView.cpp/1.63/Mon Feb  6 03:53:07 2006//
+/WaitingUsersFrame.cpp/1.8/Mon Feb  6 03:53:07 2006/-kk/
+/WinUtil.cpp/1.96/Mon Feb  6 03:53:07 2006//
+/resource.h/1.103/Mon Feb  6 03:53:07 2006//
+/stdafx.h/1.12/Wed Feb  1 12:09:09 2006//
 D
