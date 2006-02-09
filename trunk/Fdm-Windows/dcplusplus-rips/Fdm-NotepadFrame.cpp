@@ -19,10 +19,10 @@
 #include "Fdm-stdafx.h"
 #include "../../client/DCPlusPlus.h"
 #include "../resource.h"
-
+#include "../../windows/resource.h"
 #include "Fdm-NotepadFrame.h"
-//#include "../../windows/WinUtil.h"
-#include "Fdm-WinUtil.h"
+#include "../../windows/WinUtil.h"
+//#include "Fdm-WinUtil.h"
 #include "../../client/File.h"
 
 LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)

@@ -2,17 +2,19 @@
 // Microsoft Visual C++ generated include file.
 // Used by j:\DC++Sources\Fdm\Fdm-Windows.rc
 //
-#define IDD_FDM_DIALOG                  103
-#define IDB_FDM_TOOLBAR                 104
-#define IDB_FDM_TOOLBAR20               105
-#define IDB_FDM_TOOLBAR20_HOT           106
-#define IDR_FDM_MAINFRAME               107
-#define IDR_FDM_FLAT_TAB                108
-#define IDC_FDM_CHEVRON                 121
-#define IDC_FDM_CLOSE_WINDOW            122
-#define IDC_FDM_SELECT_WINDOW           123
-#define IDR_FDM_NOTEPAD                 124
-#define IDC_FDM_SETTINGS_TEXT           1001
+#define ID_FDM_MAINFRAME                151
+#define IDD_FDM_DIALOG                  152
+#define IDB_FDM_TOOLBAR                 153
+#define IDB_FDM_TOOLBAR20               154
+#define IDB_FDM_TOOLBAR20_HOT           155
+#define IDR_FDM_MAINFRAME               156
+#define IDR_FDM_FLAT_TAB                157
+#define IDC_FDM_CHEVRON                 401
+#define IDC_FDM_CLOSE_WINDOW            402
+#define IDC_FDM_SELECT_WINDOW           403
+#define IDR_FDM_NOTEPAD                 404
+#define IDC_FDM_MAINFRAME               405
+#define IDC_FDM_SETTINGS_TEXT           4001
 #define ID_FDM_FILE_SETTINGS            32000
 #define ID_FDM_TEST_FRAME				32001
 
@@ -20,9 +22,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        120
+#define _APS_NEXT_RESOURCE_VALUE        400
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1002
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_CONTROL_VALUE         4000
+#define _APS_NEXT_SYMED_VALUE           150
 #endif
 #endif

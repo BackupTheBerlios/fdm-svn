@@ -23,16 +23,17 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "Fdm-FlatTabCtrl.h"
-
+#include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
+//#include "Fdm-FlatTabCtrl.h"
+#include "../windows/FlatTabCtrl.h"
+#include "../../windows/resource.h"
 #include "../../windows/WinUtil.h"
-#include "Fdm-WinUtil.h"
+//#include "Fdm-WinUtil.h"
 #include "../ColourUtil.h"
 
 #define FDM_NOTEPAD_MESSAGE_MAP 13
 
-class FdmNotepadFrame : public MDIFdmTabChildWindowImpl<FdmNotepadFrame>, public StaticFrame<FdmNotepadFrame, FdmResourceManager::FDM_NOTEPAD>
+class FdmNotepadFrame : public MDITabChildWindowImpl<FdmNotepadFrame>, public StaticFrame<FdmNotepadFrame, FdmResourceManager::FDM_NOTEPAD>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("FdmNotepadFrame"), IDR_FDM_NOTEPAD, 0, COLOR_3DFACE);
@@ -41,7 +42,7 @@ public:
 		ctrlClientContainer(_T("edit"), this, FDM_NOTEPAD_MESSAGE_MAP) { }
 	virtual ~FdmNotepadFrame() { }
 	
-	typedef MDIFdmTabChildWindowImpl<FdmNotepadFrame> baseClass;
+	typedef MDITabChildWindowImpl<FdmNotepadFrame> baseClass;
 	BEGIN_MSG_MAP(FdmNotepadFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
