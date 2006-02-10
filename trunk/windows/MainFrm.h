@@ -39,7 +39,7 @@
 #include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>, public CSplitterImpl<MainFrame, true>, 
+		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
 		private LogManagerListener
 {
@@ -78,13 +78,13 @@ public:
 		UIUpdateToolBar();
 		return FALSE;
 	}
-	//typedef CSplitterImpl<MainFrame, false> splitterBase;
+	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	//CSplitterImpl splitFdmMainFrame;
 	//CSplitterImpl splitTransferFrame;
 	//CSplitterImpl<MainFrame, true> splitFdmMainFrame;
 	//CSplitterImpl<MainFrame, false> splitterBase;
 	CHorSplitterWindow splitFdmMainFrame;
-	CHorSplitterWindow splitterBase;
+	//CHorSplitterWindow splitterBase;
 
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -151,7 +151,7 @@ public:
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
-//		CHAIN_MSG_MAP(splitterBase);
+		CHAIN_MSG_MAP(splitterBase);
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(MainFrame)

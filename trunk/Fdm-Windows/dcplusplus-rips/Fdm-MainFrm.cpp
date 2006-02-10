@@ -52,24 +52,24 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 //	ctrlFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 //	WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE);
 
-//	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 
-//	m_hMenu = WinUtil::mainMenu;
+	m_hMenu = WinUtil::mainMenu;
 	// attach menu
-//	m_CmdBar.AttachMenu(m_hMenu);
-//	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
-//	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
+	m_CmdBar.AttachMenu(m_hMenu);
+	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
+	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
 
 	// FIXME
 	// load command bar images
-//	fdmImages.CreateFromImage(IDB_FDM_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-//	m_CmdBar.m_hImageList = fdmImages;
+	fdmImages.CreateFromImage(IDB_FDM_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	m_CmdBar.m_hImageList = fdmImages;
 
-//	HWND hWndToolBar = createFdmToolbar();
+	HWND hWndToolBar = createFdmToolbar();
 	
-//	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-//	AddSimpleReBarBand(hWndCmdBar);
-//	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+	AddSimpleReBarBand(hWndCmdBar);
+	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
 //	ctrlFdmTab.Create(m_hWnd, rcDefault);
 	//FdmWinUtil::fdmTabCtrl = &ctrlFdmTab;

@@ -175,34 +175,20 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	WinUtil::mdiClient = m_hWndMDIClient;
 
-//	FdmMainFrame fdmMainFrame;
-//	fdmMainFrame.Create(m_hWnd);
-//	SetSplitterPanes(m_hWndMDIClient, fdmMainFrame.m_hWnd);
-//	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-//	FdmMainFrame::openWindow();
-
+	transferView.Create(m_hWnd);
+	
 	ctrlTab.Create(m_hWnd, rcDefault);
 	WinUtil::tabCtrl = &ctrlTab;
 
 	fdmMainFrame.Create(m_hWnd);
-//	splitFdmMainFrame.Create(m_hWnd);
-//	FdmMainFrame::openWindow();
+	splitFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	splitFdmMainFrame.SetSplitterPane(0, fdmMainFrame.m_hWnd);
+	splitFdmMainFrame.SetSinglePaneMode(SPLIT_PANE_TOP);
+	SetSplitterPanes(m_hWndMDIClient, fdmMainFrame.m_hWnd);
 
-	transferView.Create(m_hWnd);
-
-	splitterBase.SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
-	splitterBase.SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	splitterBase.m_nProportionalPos = 8000;
-
-	splitFdmMainFrame.SetSplitterPanes(m_hWndMDIClient, fdmMainFrame.m_hWnd);
-	splitFdmMainFrame.SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	splitFdmMainFrame.m_nProportionalPos = 4000;
-	
-	//SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
-	//SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	//m_nProportionalPos = 8000;
-	//FdmMainFrame::openWindow();
-	UISetCheck(ID_FDM_MAINFRAME, 1);
+	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	m_nProportionalPos = 8000;
 
 	UIAddToolBar(hWndToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
@@ -976,14 +962,13 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 		ctrlTab.MoveWindow(rc);
 	
 	CRect rc2 = rect;
+	rc2.top = 250;
 	rc2.bottom = rc.top;
-	splitterBase.SetSplitterRect(rc2);
+	SetSplitterRect(rc2);
 
 	CRect rc3 = rect;
-	rc3.top = 50;
-	rc3.left = 0;
-	rc3.right = rc.right;
-	rc3.bottom = 200;
+	rc3.top = 100;
+	rc3.bottom = rc2.top;
 	splitFdmMainFrame.SetSplitterRect(rc3);
 }
 
@@ -1075,16 +1060,16 @@ LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	BOOL bVisible = !transferView.IsWindowVisible();
-//	if(!bVisible) {	
-//		if(splitterBase.GetSinglePaneMode() == SPLIT_PANE_NONE)
-	//		splitterBase.SetSinglePaneMode(SPLIT_PANE_TOP);
-//	} else { 
-////		if(splitterBase.GetSinglePaneMode() != SPLIT_PANE_NONE)
-		//	splitterBase.SetSinglePaneMode(SPLIT_PANE_NONE);
-//	}
-//	UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
-//	UpdateLayout();
-//	SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
+	if(!bVisible) {	
+		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_TOP);
+	} else { 
+		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_NONE);
+	}
+	UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
+	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
 	return 0;
 }
 
