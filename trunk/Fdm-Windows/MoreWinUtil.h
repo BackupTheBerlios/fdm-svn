@@ -27,6 +27,12 @@ namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
+
+	// Calculate Size of dc++'s command and toolbar
+	int calculateMainFrameSize(CRect commandBarRect);
+
+	void setMainFrameToolBarSize(int aSize);
+	static int mainFrameToolBarSize;
 };
 
 #endif // !defined(MORE_WIN_UTIL_H)

@@ -171,6 +171,12 @@
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-stdinc.cpp">
 				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"

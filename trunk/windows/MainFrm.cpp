@@ -52,7 +52,7 @@
 #include "../client/version.h"
 
 #include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
-//#include "../Fdm-Windows/dcplusplus-rips/Fdm-WinUtil.h"
+#include "../Fdm-Windows/MoreWinUtil.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -175,10 +175,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	WinUtil::mdiClient = m_hWndMDIClient;
 
-	transferView.Create(m_hWnd);
-	
 	ctrlTab.Create(m_hWnd, rcDefault);
 	WinUtil::tabCtrl = &ctrlTab;
+
+	transferView.Create(m_hWnd);
 
 	fdmMainFrame.Create(m_hWnd);
 	splitFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
@@ -447,6 +447,10 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.SetButtonStructSize();
 	ctrlToolbar.AddButtons(numButtons, tb);
 	ctrlToolbar.AutoSize();
+
+	CRect toolBarRect;
+	ctrlToolbar.GetItemRect(0, toolBarRect);
+	MoreWinUtil::setMainFrameToolBarSize(toolBarRect.Height());
 
 	return ctrlToolbar.m_hWnd;
 }
@@ -961,13 +965,17 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
 	
+	CRect sr2;
+	m_CmdBar.GetClientRect(sr2);
+	int mainFrameTop = MoreWinUtil::calculateMainFrameSize(sr2);
+
 	CRect rc2 = rect;
-	rc2.top = 250;
+	rc2.top = mainFrameTop + mainFrameTop;
 	rc2.bottom = rc.top;
 	SetSplitterRect(rc2);
 
 	CRect rc3 = rect;
-	rc3.top = 100;
+	rc3.top = mainFrameTop;
 	rc3.bottom = rc2.top;
 	splitFdmMainFrame.SetSplitterRect(rc3);
 }

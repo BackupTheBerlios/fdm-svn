@@ -29,3 +29,12 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 			return true;
 	return false;
 }
+
+int MoreWinUtil::calculateMainFrameSize(CRect commandBarRect) {
+	int commandBarSize = commandBarRect.Height();
+	return 10 + commandBarSize + commandBarSize + mainFrameToolBarSize;
+}
+
+void MoreWinUtil::setMainFrameToolBarSize(int aSize) { 
+	MoreWinUtil::mainFrameToolBarSize = aSize; 
+}

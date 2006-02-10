@@ -54,9 +54,9 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 
-	m_hMenu = WinUtil::mainMenu;
+//	m_hMenu = WinUtil::mainMenu;
 	// attach menu
-	m_CmdBar.AttachMenu(m_hMenu);
+//	m_CmdBar.AttachMenu(m_hMenu);
 	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
 

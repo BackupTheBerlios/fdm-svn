@@ -16,15 +16,16 @@
 
 #define FDM_MAINFRAME_MESSAGE_MAP 25
 
-//class FdmMainFrame : public MDITabChildWindowImpl<FdmMainFrame>, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public CSplitterImpl<FdmMainFrame, false>
+//class FdmMainFrame : public MDITabChildWindowImpl<FdmMainFrame>, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>//, public CSplitterImpl<FdmMainFrame, false>
 //class FdmMainFrame : public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public CSplitterImpl<FdmMainFrame, false>
 //class FdmMainFrame : public FdmStaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 //class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public MDITabChildWindowImpl<FdmMainFrame>
+//class FdmMainFrame : /*public CWindowImpl<FdmMainFrame>,*/ public CFrameWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>
 {
 public:
-	DECLARE_WND_CLASS(_T("FdmMainFrame"));
-//	DECLARE_FRAME_WND_CLASS_EX(_T("FdmMainFrame"), IDR_FDM_MAINFRAME, 0, COLOR_3DFACE);
+//	DECLARE_WND_CLASS(_T("FdmMainFrame"));
+	DECLARE_FRAME_WND_CLASS_EX(_T("FdmMainFrame"), IDR_FDM_MAINFRAME, 0, COLOR_3DFACE);
 
 	FdmMainFrame();
 	virtual ~FdmMainFrame();
