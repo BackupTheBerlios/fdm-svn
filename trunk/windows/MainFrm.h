@@ -79,13 +79,6 @@ public:
 		return FALSE;
 	}
 	typedef CSplitterImpl<MainFrame, false> splitterBase;
-	//CSplitterImpl splitFdmMainFrame;
-	//CSplitterImpl splitTransferFrame;
-	//CSplitterImpl<MainFrame, true> splitFdmMainFrame;
-	//CSplitterImpl<MainFrame, false> splitterBase;
-	CHorSplitterWindow splitFdmMainFrame;
-	//CHorSplitterWindow splitterBase;
-
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
@@ -330,6 +323,7 @@ private:
 	
 	TransferView transferView;
 	FdmMainFrame fdmMainFrame;
+	CHorSplitterWindow splitFdmMainFrame;
 
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;

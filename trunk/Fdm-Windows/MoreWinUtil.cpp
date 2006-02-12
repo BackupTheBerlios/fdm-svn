@@ -30,9 +30,26 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	return false;
 }
 
-int MoreWinUtil::calculateMainFrameSize(CRect commandBarRect) {
+int MoreWinUtil::calculateMainFrameSize(CMDICommandBarCtrl& commandBar) {
+	CRect commandBarRect;
+	commandBar.GetClientRect(commandBarRect);
 	int commandBarSize = commandBarRect.Height();
 	return 10 + commandBarSize + commandBarSize + mainFrameToolBarSize;
+}
+
+int MoreWinUtil::calculateToolBarHeight(CToolBarCtrl& ctrlToolbar) {
+	CRect toolBarRect;
+	ctrlToolbar.GetItemRect(0, toolBarRect);
+	return toolBarRect.Height();
+}
+
+CRect MoreWinUtil::makeRectangle(int top, int bottom, int left, int right) {
+	CRect rectForFdmMainFrame;
+	rectForFdmMainFrame.top = top;
+	rectForFdmMainFrame.bottom = bottom;
+	rectForFdmMainFrame.left = left;
+	rectForFdmMainFrame.right = right;
+	return rectForFdmMainFrame;
 }
 
 void MoreWinUtil::setMainFrameToolBarSize(int aSize) { 

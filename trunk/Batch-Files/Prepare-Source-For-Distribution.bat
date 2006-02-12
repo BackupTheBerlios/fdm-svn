@@ -24,7 +24,7 @@ attrib +h /S *.ncb > nul
 attrib +h /S *.suo > nul
 attrib +h /S *.aps > nul
 attrib +h *.rar > nul
-rd /s /q Temp > nul
+rd /s /q Temp
 xcopy /q /y /s *.* Temp\ > nul
 
 ECHO ------------------------------------------------------------------------

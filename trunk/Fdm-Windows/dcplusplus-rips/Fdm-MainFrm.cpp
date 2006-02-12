@@ -21,7 +21,7 @@
 #include "../resource.h"
 #include "../../windows/resource.h"
 #include "Fdm-FlatTabCtrl.h"
-//#include "Fdm-WinUtil.h"
+#include "Fdm-WinUtil.h"
 
 #include "Fdm-MainFrm.h"
 #include "../Fdm-Dlg.h"
@@ -40,12 +40,12 @@ FdmMainFrame::~FdmMainFrame() {
 	fdmLargeImages.Destroy();
 	fdmLargeImagesHot.Destroy();
 
-	//FdmWinUtil::uninit();
+	FdmWinUtil::uninit();
 }
 
 LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-//	FdmWinUtil::init(m_hWnd);
+	FdmWinUtil::init(m_hWnd);
 
 	ctrlFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE, WS_EX_CLIENTEDGE);
 
@@ -54,13 +54,12 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 
-//	m_hMenu = WinUtil::mainMenu;
+//	m_hMenu = FdmWinUtil::fdmMainMenu;
 	// attach menu
 //	m_CmdBar.AttachMenu(m_hMenu);
 	m_CmdBar.m_arrCommand.Add(ID_FDM_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(ID_FDM_TEST_FRAME);
 
-	// FIXME
 	// load command bar images
 	fdmImages.CreateFromImage(IDB_FDM_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = fdmImages;
@@ -71,14 +70,17 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
-//	ctrlFdmTab.Create(m_hWnd, rcDefault);
-	//FdmWinUtil::fdmTabCtrl = &ctrlFdmTab;
+	//CreateMDIClient();
+	//m_CmdBar.SetMDIClient(m_hWndMDIClient);
+	//FdmWinUtil::fdmMdiClient = m_hWndMDIClient;
+
+	ctrlFdmTab.Create(m_hWnd, rcDefault);
+	FdmWinUtil::fdmTabCtrl = &ctrlFdmTab;
 
 //	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	//ctrlStatus.Attach(m_hWndStatusBar);
 //	statusContainer.SubclassWindow(ctrlStatus.m_hWnd);
-
-//	UpdateLayout();
+	UpdateLayout();
 
 	bHandled = FALSE;
 	return 1;
@@ -92,19 +94,15 @@ LRESULT FdmMainFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 void FdmMainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 {	
-/*	RECT rect;
+	RECT rect;
 	GetClientRect(&rect);
 
 	UpdateBarsPosition(rect, bResizeBars);
 
-	CRect rc = rect;
-	rc.top = rc.bottom - ctrlFdmTab.getFdmHeight();
-	if(ctrlFdmTab.IsWindow())
-		ctrlFdmTab.MoveWindow(rc);
-	
-	CRect rc2 = rect;
-	rc2.bottom = rc.top;
-	SetSplitterRect(rc2);*/
+	//CRect rc = rect;
+//	rc.top = rc.bottom - ctrlFdmTab.getFdmHeight();
+//	if(ctrlFdmTab.IsWindow())
+//		ctrlFdmTab.MoveWindow(rc);
 }
 
 LRESULT FdmMainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {

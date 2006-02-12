@@ -184,7 +184,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	splitFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	splitFdmMainFrame.SetSplitterPane(0, fdmMainFrame.m_hWnd);
 	splitFdmMainFrame.SetSinglePaneMode(SPLIT_PANE_TOP);
-	SetSplitterPanes(m_hWndMDIClient, fdmMainFrame.m_hWnd);
 
 	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -448,9 +447,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.AddButtons(numButtons, tb);
 	ctrlToolbar.AutoSize();
 
-	CRect toolBarRect;
-	ctrlToolbar.GetItemRect(0, toolBarRect);
-	MoreWinUtil::setMainFrameToolBarSize(toolBarRect.Height());
+	MoreWinUtil::setMainFrameToolBarSize(MoreWinUtil::calculateToolBarHeight(ctrlToolbar));
 
 	return ctrlToolbar.m_hWnd;
 }
@@ -965,19 +962,14 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
 	
-	CRect sr2;
-	m_CmdBar.GetClientRect(sr2);
-	int mainFrameTop = MoreWinUtil::calculateMainFrameSize(sr2);
+	int mainFrameTop = MoreWinUtil::calculateMainFrameSize(m_CmdBar);
 
 	CRect rc2 = rect;
 	rc2.top = mainFrameTop + mainFrameTop;
 	rc2.bottom = rc.top;
 	SetSplitterRect(rc2);
 
-	CRect rc3 = rect;
-	rc3.top = mainFrameTop;
-	rc3.bottom = rc2.top;
-	splitFdmMainFrame.SetSplitterRect(rc3);
+	splitFdmMainFrame.SetSplitterRect(MoreWinUtil::makeRectangle(mainFrameTop, rc2.top, rc2.left, rc2.right));
 }
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");

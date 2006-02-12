@@ -19,7 +19,7 @@ attrib +h Fdm-*.* > nul
 attrib +h Changelog-Fdm.txt > nul
 attrib +h License-Fdm.txt > nul
 attrib +h *.rar > nul
-rd /s /q Temp > nul
+rd /s /q Temp
 xcopy /q /y /s *.* Temp\ > nul
 
 ECHO ------------------------------------------------------------------------

@@ -518,7 +518,7 @@ private:
 			return;
 
 		FdmTabInfo::ListIter i, j;
-		//remove the tab we're fdmMoving
+		//remove the tab we're moving
 		for(j = fdmTabs.begin(); j != fdmTabs.end(); ++j){
 			if((*j) == fdmMoving){
 				fdmTabs.erase(j);

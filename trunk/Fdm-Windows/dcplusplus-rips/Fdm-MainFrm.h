@@ -7,7 +7,7 @@
 
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 
-#include "../../windows/FlatTabCtrl.h"
+//#include "../../windows/FlatTabCtrl.h"
 #include "Fdm-FlatTabCtrl.h"
 #include "../resource.h"
 #include "../../windows/resource.h"
@@ -20,8 +20,10 @@
 //class FdmMainFrame : public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public CSplitterImpl<FdmMainFrame, false>
 //class FdmMainFrame : public FdmStaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 //class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public MDITabChildWindowImpl<FdmMainFrame>
-//class FdmMainFrame : /*public CWindowImpl<FdmMainFrame>,*/ public CFrameWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
+//class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public CFrameWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>
+//class FdmMainFrame : public CWindowImpl<FdmMainFrame>
+
 {
 public:
 //	DECLARE_WND_CLASS(_T("FdmMainFrame"));
@@ -30,7 +32,6 @@ public:
 	FdmMainFrame();
 	virtual ~FdmMainFrame();
 
-//	typedef CSplitterImpl<FdmMainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(FdmMainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -38,7 +39,6 @@ public:
 		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, OnFdmFileSettings)
 		COMMAND_ID_HANDLER(ID_FDM_TEST_FRAME, OnFdmTestFrame)
 //		CHAIN_MDI_CHILD_COMMANDS()
-//		CHAIN_MSG_MAP(splitterBase);
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -52,7 +52,7 @@ public:
 private:
 	
 	bool dirty;
-	//FdmFlatTabCtrl ctrlFdmTab;
+	FdmFlatTabCtrl ctrlFdmTab;
 	CEdit ctrlFdmMainFrame;
 	CContainedWindow statusContainer;
 	CStatusBarCtrl ctrlStatus;
