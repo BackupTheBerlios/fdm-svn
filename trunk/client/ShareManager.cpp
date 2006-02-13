@@ -317,9 +317,13 @@ struct ShareLoader : public SimpleXMLReader::CallBack {
 				depth++;
 		} else if(cur != NULL && name == "File") {
 			const string& fname = getAttrib(attribs, "Name", 0);
-			int64_t size = Util::toInt64(getAttrib(attribs, "Size", 1));
+			const string& size = getAttrib(attribs, "Size", 1);
 			const string& root = getAttrib(attribs, "TTH", 2);
-			cur->files.insert(ShareManager::Directory::File(fname, size, cur, TTHValue(root)));
+			if(fname.empty() || size.empty() || (root.size() != 39)) {
+				dcdebug("Invalid file found: %s\n", fname.c_str());
+				return;
+			}
+			cur->files.insert(ShareManager::Directory::File(fname, Util::toInt64(size), cur, TTHValue(root)));
 		}
 	}
 	virtual void endTag(const string& name, const string&) {
@@ -757,7 +761,7 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File& file) {
 	}
 }
 
-void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */) throw(ShareException) {
+void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */) throw(ThreadException, ShareException) {
 	if(Thread::safeInc(refreshing) > 1) {
 		Thread::safeDec(refreshing);
 		LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
@@ -1325,20 +1329,20 @@ ShareManager::AdcSearch::AdcSearch(const StringList& params) : include(&includeX
 			hasRoot = true;
 			root = TTHValue(p.substr(2));
 			return;
-		} else if(toCode('+', '+') == cmd) {
+		} else if(toCode('A', 'N') == cmd) {
 			includeX.push_back(StringSearch(p.substr(2)));		
-		} else if(toCode('-', '-') == cmd) {
+		} else if(toCode('N', 'O') == cmd) {
 			exclude.push_back(StringSearch(p.substr(2)));
 		} else if(toCode('E', 'X') == cmd) {
 			ext.push_back(p.substr(2));
-		} else if(toCode('>', '=') == cmd) {
+		} else if(toCode('G', 'E') == cmd) {
 			gt = Util::toInt64(p.substr(2));
-		} else if(toCode('<', '=') == cmd) {
+		} else if(toCode('L', 'E') == cmd) {
 			lt = Util::toInt64(p.substr(2));
-		} else if(toCode('=', '=') == cmd) {
+		} else if(toCode('E', 'Q') == cmd) {
 			lt = gt = Util::toInt64(p.substr(2));
-		} else if(toCode('D', 'O') == cmd) {
-			isDirectory = (p[2] != '0');
+		} else if(toCode('T', 'Y') == cmd) {
+			isDirectory = (p[2] == '2');
 		}
 	}
 }
@@ -1513,5 +1517,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.141 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.143 2006/02/12 18:16:12 arnetheduck Exp $
  */

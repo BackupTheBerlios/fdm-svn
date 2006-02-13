@@ -3,8 +3,6 @@
 /ADLSProperties.h/1.4/Sat Jan 21 16:24:00 2006//
 /ADLSearchFrame.cpp/1.26/Sat Jan 21 16:23:59 2006//
 /ADLSearchFrame.h/1.12/Sat Jan 21 16:23:59 2006//
-/AboutDlg.h/1.56/Sat Jan 21 16:23:59 2006//
-/Advanced3Page.cpp/1.13/Sat Jan 21 16:24:00 2006//
 /Advanced3Page.h/1.4/Sat Jan 21 16:23:59 2006//
 /AdvancedPage.cpp/1.58/Sat Jan 21 16:24:00 2006//
 /AdvancedPage.h/1.15/Sat Jan 21 16:23:59 2006//
@@ -70,7 +68,6 @@
 /SystemFrame.h/1.4/Sat Jan 21 16:23:59 2006//
 /TextFrame.cpp/1.12/Sat Jan 21 16:23:58 2006//
 /TextFrame.h/1.6/Sat Jan 21 16:24:00 2006//
-/TransferView.h/1.25/Sat Jan 21 16:23:59 2006//
 /TreePropertySheet.cpp/1.11/Sat Jan 21 16:23:59 2006//
 /TreePropertySheet.h/1.9/Sat Jan 21 16:23:59 2006//
 /TypedListViewCtrl.h/1.18/Sat Jan 21 16:23:59 2006//
@@ -93,10 +90,13 @@
 /GeneralPage.cpp/1.18/Mon Feb  6 03:53:06 2006//
 /MainFrm.cpp/1.110/Result of merge//
 /PrivateFrame.cpp/1.61/Mon Feb  6 03:53:07 2006//
-/TransferView.cpp/1.63/Mon Feb  6 03:53:07 2006//
 /WaitingUsersFrame.cpp/1.8/Mon Feb  6 03:53:07 2006/-kk/
 /WinUtil.cpp/1.96/Mon Feb  6 03:53:07 2006//
-/resource.h/1.103/Mon Feb  6 03:53:07 2006//
 /stdafx.h/1.12/Wed Feb  1 12:09:09 2006//
-/WinUtil.h/1.52/Mon Feb  6 03:56:22 2006//
+/AboutDlg.h/1.57/Mon Feb 13 00:23:42 2006//
+/Advanced3Page.cpp/1.14/Mon Feb 13 00:23:43 2006//
+/TransferView.cpp/1.63/Sun Feb 12 18:35:46 2006//
+/TransferView.h/1.25/Sun Feb 12 18:35:44 2006//
+/WinUtil.h/1.53/Result of merge//
+/resource.h/1.104/Mon Feb 13 00:23:43 2006//
 D

@@ -3,8 +3,6 @@
 /ADLSProperties.h////*///
 /ADLSearchFrame.cpp////*///
 /ADLSearchFrame.h////*///
-/AboutDlg.h////*///
-/Advanced3Page.cpp////*///
 /Advanced3Page.h////*///
 /AdvancedPage.cpp////*///
 /AdvancedPage.h////*///
@@ -70,7 +68,6 @@
 /SystemFrame.h////*///
 /TextFrame.cpp////*///
 /TextFrame.h////*///
-/TransferView.h////*///
 /TreePropertySheet.cpp////*///
 /TreePropertySheet.h////*///
 /TypedListViewCtrl.h////*///
@@ -93,9 +90,12 @@
 /GeneralPage.cpp////*///
 /MainFrm.cpp////*///
 /PrivateFrame.cpp////*///
-/TransferView.cpp////*///
 /WaitingUsersFrame.cpp////*///
 /WinUtil.cpp////*///
-/resource.h////*///
 /stdafx.h////*///
+/AboutDlg.h////*///
+/Advanced3Page.cpp////*///
+/TransferView.cpp////*///
+/TransferView.h////*///
 /WinUtil.h////*///
+/resource.h////*///

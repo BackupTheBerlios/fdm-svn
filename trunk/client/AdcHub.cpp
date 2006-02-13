@@ -31,15 +31,18 @@
 #include "FavoriteManager.h"
 #include "SSLSocket.h"
 
-const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
-const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.9");
+const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
+const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
 const string AdcHub::ADCS_FEATURE("ADC0");
+const string AdcHub::TCP4_FEATURE("TCP4");
+const string AdcHub::UDP4_FEATURE("UDP4");
 
 AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), state(STATE_PROTOCOL), sid(0), reconnect(true) {
 	TimerManager::getInstance()->addListener(this);
 }
 
 AdcHub::~AdcHub() throw() {
+	TimerManager::getInstance()->removeListener(this);
 	clearUsers();
 }
 
@@ -57,7 +60,8 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 		u = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
 	}
 
-	ClientManager::getInstance()->putOnline(*u);
+	if(!aCID.isZero())
+		ClientManager::getInstance()->putOnline(*u);
 	return *u;
 }
 
@@ -72,7 +76,8 @@ void AdcHub::putUser(const u_int32_t aSID) {
 	SIDIter i = users.find(aSID);
 	if(i == users.end())
 		return;
-	ClientManager::getInstance()->putOffline(*i->second);
+	if(aSID != AdcCommand::HUB_SID)
+		ClientManager::getInstance()->putOffline(*i->second);
 	fire(ClientListener::UserRemoved(), this, *i->second);
 	delete i->second;
 	users.erase(i);
@@ -81,7 +86,8 @@ void AdcHub::putUser(const u_int32_t aSID) {
 void AdcHub::clearUsers() {
 	Lock l(cs);
 	for(SIDIter i = users.begin(); i != users.end(); ++i) {
-		ClientManager::getInstance()->putOffline(*i->second);
+		if(i->first != AdcCommand::HUB_SID)
+			ClientManager::getInstance()->putOffline(*i->second);
 		delete i->second;
 	}
 	users.clear();
@@ -97,6 +103,8 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	OnlineUser* u = 0;
 	if(c.getParam("ID", 0, cid))
 		u = &getUser(c.getFrom(), CID(cid));
+	else if(c.getFrom() == AdcCommand::HUB_SID)
+		u = &getUser(c.getFrom(), CID());
 	else
 		u = findUser(c.getFrom());
 
@@ -133,10 +141,26 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	if(state != STATE_PROTOCOL) /** @todo SUP changes */
 		return;
-	if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
+	if(find(c.getParameters().begin(), c.getParameters().end(), "ADBASE") == c.getParameters().end()
+		&& find(c.getParameters().begin(), c.getParameters().end(), "ADBAS0") == c.getParameters().end())
+	{
+		fire(ClientListener::StatusMessage(), this, "Failed to negotiate base protocol"); // @todo internationalize
 		disconnect(false);
 		return;
 	}
+}
+
+void AdcHub::handle(AdcCommand::SID, AdcCommand& c) throw() {
+	if(state != STATE_PROTOCOL) {
+		dcdebug("Invalid state for SID\n");
+		return;
+	}
+
+	if(c.getParameters().empty())
+		return;
+
+	sid = AdcCommand::toSID(c.getParam(0));
+
 	state = STATE_IDENTIFY;
 	info(true);
 }
@@ -252,19 +276,22 @@ void AdcHub::sendUDP(const AdcCommand& cmd) {
 		s.create(Socket::TYPE_UDP);
 
 		Lock l(cs);
-		string tmp = cmd.toString(sid);
-		for(SIDIter i = users.begin(); i != users.end(); ++i) {
-			OnlineUser* u = i->second;
-			if(u->getIdentity().isUdpActive()) {
-				try {
-					s.writeTo(u->getIdentity().getIp(), (short)Util::toInt(u->getIdentity().getUdpPort()), tmp);
-				} catch(const SocketException& e) {
-					dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
-				}
+		SIDMap::const_iterator i = users.find(cmd.getTo());
+		if(i == users.end()) {
+			dcdebug("AdcHub::sendUDP: invalid user\n");
+			return;
+		}
+		OnlineUser& u = *i->second;
+		string tmp = cmd.toString(u.getUser()->getCID());
+		if(u.getIdentity().isUdpActive()) {
+			try {
+				s.writeTo(u.getIdentity().getIp(), (short)Util::toInt(u.getIdentity().getUdpPort()), tmp);
+			} catch(const SocketException& e) {
+				dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
 			}
 		}
 	} catch(SocketException&) {
-		dcdebug("Can't create udp socket\n");
+		dcdebug("Can't create UDP socket\n");
 	}
 }
 
@@ -280,8 +307,14 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
-void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {	
-	fire(ClientListener::AdcSearch(), this, c);
+void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
+	SIDMap::const_iterator i = users.find(c.getFrom());
+	if(i == users.end()) {
+		dcdebug("Invalid user in AdcHub::onSCH\n");
+		return;
+	}
+
+	fire(ClientListener::AdcSearch(), this, c, i->second->getUser()->getCID());
 }
 
 void AdcHub::connect(const OnlineUser& user) {
@@ -334,13 +367,16 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 		c.addParam("TR", aString);
 	} else {
 		if(aSizeMode == SearchManager::SIZE_ATLEAST) {
-			c.addParam(">=", Util::toString(aSize));
+			c.addParam("GE", Util::toString(aSize));
 		} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
-			c.addParam("<=", Util::toString(aSize));
+			c.addParam("LE", Util::toString(aSize));
 		}
 		StringTokenizer<string> st(aString, ' ');
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			c.addParam("++", *i);
+			c.addParam("AN", *i);
+		}
+		if(aFileType == SearchManager::TYPE_DIRECTORY) {
+			c.addParam("TY", "2");
 		}
 	}
 
@@ -351,7 +387,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 		send(c);
 	} else {
 		c.setType(AdcCommand::TYPE_FEATURE);
-		c.setFeature("+TCP4");
+		c.setFeatures("+TCP4");
 		send(c);
 	}
 }
@@ -377,6 +413,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
 
+	reloadSettings();
+
 	AdcCommand c(AdcCommand::CMD_INF, AdcCommand::TYPE_BROADCAST);
 	string tmp;
 
@@ -398,6 +436,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 
 	updateCounts(false); \
 
+	ADDPARAM("ID", ClientManager::getInstance()->getMyCID().toBase32());
+	ADDPARAM("PD", ClientManager::getInstance()->getMyPID().toBase32());
 	ADDPARAM("NI", getMyIdentity().getNick());
 	ADDPARAM("DE", getMyIdentity().getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
@@ -409,11 +449,10 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
 
+	string su;
 	if(SSLSocketFactory::getInstance()->hasCerts()) {
-		ADDPARAM("SU", ADCS_FEATURE);
-	} else {
-		ADDPARAM("SU", Util::emptyString);
-	}
+		su += ADCS_FEATURE + ",";
+	} 
 	
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
@@ -422,10 +461,17 @@ void AdcHub::info(bool /*alwaysSend*/) {
 			ADDPARAM("I4", "0.0.0.0");
 		}
 		ADDPARAM("U4", Util::toString(SearchManager::getInstance()->getPort()));
+		su += TCP4_FEATURE + ",";
+		su += UDP4_FEATURE + ",";
 	} else {
 		ADDPARAM("I4", "");
 		ADDPARAM("U4", "");
 	}
+
+	if(!su.empty()) {
+		su.erase(su.size() - 1);
+	}
+	ADDPARAM("SU", su);
 
 #undef ADDPARAM
 
@@ -456,7 +502,7 @@ void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	lastInfoMap.clear();
 	reconnect = true;
-	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("+BAS0"));
+	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
 	
 	fire(ClientListener::Connected(), this);
 }
@@ -496,5 +542,5 @@ void AdcHub::send(const AdcCommand& cmd) {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.63 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.66 2006/02/12 18:16:12 arnetheduck Exp $
  */

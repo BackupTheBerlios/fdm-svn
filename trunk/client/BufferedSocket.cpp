@@ -35,10 +35,14 @@ BufferedSocket::BufferedSocket(char aSeparator) throw() :
 separator(aSeparator), mode(MODE_LINE), 
 dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false)
 {
+	sockets++;
 }
+
+size_t BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
+	sockets--;
 }
 
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
@@ -194,6 +198,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize =  sockSize * 16;		// Perhaps make this a setting?
+	dcdebug("threadSendFile buffer size: %lu\n", bufSize);
 	AutoArray<u_int8_t> buf(bufSize);
 
 	while(true) {
@@ -205,6 +210,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		}
 
 		size_t done = 0;
+		size_t doneRead = 0;
 		while(done < actual) {
 			if(disconnecting)
 				return;
@@ -218,8 +224,10 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 				if(written > 0) {
 					done += written;
 
-					fire(BufferedSocketListener::BytesSent(), bytesRead, written);
-					bytesRead = 0;		// Make sure we only report the bytes we actually read just once...
+					size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
+
+					fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
+					doneRead = doneReadNow;
 				}
 			}
 		}
@@ -359,5 +367,5 @@ void BufferedSocket::shutdown() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.98 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.100 2006/02/12 18:16:12 arnetheduck Exp $
  */

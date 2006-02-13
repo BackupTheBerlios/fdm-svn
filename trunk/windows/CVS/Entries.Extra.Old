@@ -84,7 +84,6 @@
 /UsersFrame.cpp////*///
 /UsersFrame.h////*///
 /WaitingUsersFrame.h////*///
-/WinUtil.h////*///
 /WindowsPage.cpp////*///
 /WindowsPage.h////*///
 /stdafx.cpp////*///
@@ -99,3 +98,4 @@
 /WinUtil.cpp////*///
 /resource.h////*///
 /stdafx.h////*///
+/WinUtil.h////*///

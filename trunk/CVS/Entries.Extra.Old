@@ -10,7 +10,6 @@ D/stlport///////
 D/wtl///////
 /COPYING.TXT////*///
 /Compile.txt///////
-/DCPlusPlus.nsi///////
 /Doxyfile////*///
 /Extensions.txt///////
 /LICENSE-GeoIP.txt///////
@@ -22,11 +21,13 @@ D/wtl///////
 /configure.ac///////
 /magnet.exe///////
 /makedefs.py///////
-/DCPlusPlus.vcproj///////
 /bzip2.vcproj///////
 /client.vcproj///////
 /zlib.vcproj///////
+/DCPlusPlus.nsi///////
 /DCPlusPlus.rc///////
+/DCPlusPlus.vcproj///////
 /Example.xml///////
 /changelog.txt///////
+/libunicows.lib////*///
 D/MakeDefs///////

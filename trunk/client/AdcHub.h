@@ -57,6 +57,7 @@ public:
 	void sendUDP(const AdcCommand& cmd);
 
 	void handle(AdcCommand::SUP, AdcCommand& c) throw();
+	void handle(AdcCommand::SID, AdcCommand& c) throw();
 	void handle(AdcCommand::MSG, AdcCommand& c) throw();
 	void handle(AdcCommand::INF, AdcCommand& c) throw();
 	void handle(AdcCommand::GPA, AdcCommand& c) throw();
@@ -66,7 +67,6 @@ public:
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
-
 	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
 
 	string getMySID() { return AdcCommand::fromSID(sid); }
@@ -102,6 +102,8 @@ private:
 	static const string CLIENT_PROTOCOL;
 	static const string SECURE_CLIENT_PROTOCOL;
 	static const string ADCS_FEATURE;
+	static const string TCP4_FEATURE;
+	static const string UDP4_FEATURE;
 	 
 	virtual string checkNick(const string& nick);
 	
@@ -122,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.38 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.40 2006/02/11 21:01:54 arnetheduck Exp $
  */
