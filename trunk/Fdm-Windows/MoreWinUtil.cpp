@@ -30,6 +30,13 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	return false;
 }
 
+void MoreWinUtil::createFdmMainFrameAndAttachToSplitter(FdmMainFrame& fdmMainFrame, CHorSplitterWindow& splitFdmMainFrame, HWND& m_hWnd, const _U_RECT& rcDefault) {
+	fdmMainFrame.Create(m_hWnd);
+	splitFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	splitFdmMainFrame.SetSplitterPane(0, fdmMainFrame.m_hWnd);
+	splitFdmMainFrame.SetSinglePaneMode(SPLIT_PANE_TOP);
+}
+
 int MoreWinUtil::calculateMainFrameSize(CMDICommandBarCtrl& commandBar) {
 	CRect commandBarRect;
 	commandBar.GetClientRect(commandBarRect);

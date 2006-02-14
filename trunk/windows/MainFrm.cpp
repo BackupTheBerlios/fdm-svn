@@ -51,8 +51,8 @@
 #include "../client/ShareManager.h"
 #include "../client/version.h"
 
-#include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
 #include "../Fdm-Windows/MoreWinUtil.h"
+using namespace MoreWinUtil;
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -180,10 +180,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	transferView.Create(m_hWnd);
 
-	fdmMainFrame.Create(m_hWnd);
-	splitFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	splitFdmMainFrame.SetSplitterPane(0, fdmMainFrame.m_hWnd);
-	splitFdmMainFrame.SetSinglePaneMode(SPLIT_PANE_TOP);
+	createFdmMainFrameAndAttachToSplitter(fdmMainFrame, splitFdmMainFrame, m_hWnd, rcDefault);
 
 	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -447,7 +444,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.AddButtons(numButtons, tb);
 	ctrlToolbar.AutoSize();
 
-	MoreWinUtil::setMainFrameToolBarSize(MoreWinUtil::calculateToolBarHeight(ctrlToolbar));
+	setMainFrameToolBarSize(calculateToolBarHeight(ctrlToolbar));
 
 	return ctrlToolbar.m_hWnd;
 }
@@ -962,7 +959,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
 	
-	int mainFrameTop = MoreWinUtil::calculateMainFrameSize(m_CmdBar);
+	int mainFrameTop = calculateMainFrameSize(m_CmdBar);
 
 	CRect rc2 = rect;
 	rc2.top = mainFrameTop + mainFrameTop;

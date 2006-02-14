@@ -23,11 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "dcplusplus-rips\Fdm-MainFrm.h"
+
 namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
 
+	void createFdmMainFrameAndAttachToSplitter(FdmMainFrame& fdmMainFrame, CHorSplitterWindow& splitFdmMainFrame, HWND& m_hWnd, const _U_RECT& rcDefault);
 	int calculateMainFrameSize(CMDICommandBarCtrl& commandBar);
 	int calculateToolBarHeight(CToolBarCtrl& ctrlToolbar);
 

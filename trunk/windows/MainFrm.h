@@ -306,6 +306,8 @@ public:
 	}
 
 private:
+	FdmMainFrame fdmMainFrame;
+	CHorSplitterWindow splitFdmMainFrame;
 
 	class DirectoryListInfo {
 	public:
@@ -322,8 +324,6 @@ private:
 	};
 	
 	TransferView transferView;
-	FdmMainFrame fdmMainFrame;
-	CHorSplitterWindow splitFdmMainFrame;
 
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
