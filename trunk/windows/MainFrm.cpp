@@ -969,7 +969,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	rc2.bottom = rc.top;
 	SetSplitterRect(rc2);
 
-	splitFdmMainFrame.SetSplitterRect(CRect(mainFrameTop, rc2.top, rc2.left, rc2.right));
+	splitFdmMainFrame.SetSplitterRect(CRect(rc2.left, mainFrameTop, rc2.right, rc2.top));
 }
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
