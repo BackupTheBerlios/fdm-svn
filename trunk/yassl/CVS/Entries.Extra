@@ -1,11 +1,11 @@
-D/certs///////
-D/include///////
-D/mySTL///////
-D/src///////
-D/taocrypt///////
 /.cvsignore////*///
 /.keep////*///
 /COPYING////*///
 /INSTALL////*///
 /README////*///
 /yassl.vcproj////*///
+D/certs///////
+D/include///////
+D/mySTL///////
+D/src///////
+D/taocrypt///////

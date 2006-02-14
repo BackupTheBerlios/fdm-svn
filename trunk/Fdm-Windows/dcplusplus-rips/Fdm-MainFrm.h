@@ -8,7 +8,6 @@
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 
 //#include "../../windows/FlatTabCtrl.h"
-#include "Fdm-FlatTabCtrl.h"
 #include "../resource.h"
 #include "../../windows/resource.h"
 
@@ -21,8 +20,8 @@
 //class FdmMainFrame : public FdmStaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 //class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public MDITabChildWindowImpl<FdmMainFrame>
 //class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public CFrameWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
-class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>
-//class FdmMainFrame : public CWindowImpl<FdmMainFrame>
+//class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>
+class FdmMainFrame : public CWindowImpl<FdmMainFrame>
 
 {
 public:
@@ -47,12 +46,11 @@ public:
 	LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void UpdateLayout(BOOL bResizeBars = TRUE);
+	void UpdateLayout();
 	CMDICommandBarCtrl m_CmdBar;
 private:
 	
 	bool dirty;
-	FdmFlatTabCtrl ctrlFdmTab;
 	CEdit ctrlFdmMainFrame;
 	CContainedWindow statusContainer;
 	CStatusBarCtrl ctrlStatus;

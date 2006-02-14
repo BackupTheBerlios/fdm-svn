@@ -22,7 +22,6 @@
 //#include "../../windows/resource.h"
 #include "Fdm-NotepadFrame.h"
 #include "../../windows/WinUtil.h"
-#include "Fdm-WinUtil.h"
 #include "../../client/File.h"
 
 LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -87,7 +86,7 @@ void FdmNotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	
 }
 
-LRESULT FdmNotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT FdmNotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 /*	HWND focus = GetFocus();
 	bHandled = false;
 	if(focus == ctrlPad.m_hWnd) {

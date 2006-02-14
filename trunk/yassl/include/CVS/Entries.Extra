@@ -1,4 +1,3 @@
-D/openssl///////
 /buffer.hpp////*///
 /cert_wrapper.hpp////*///
 /crypto_wrapper.hpp////*///
@@ -13,3 +12,4 @@ D/openssl///////
 /yassl_imp.hpp////*///
 /yassl_int.hpp////*///
 /yassl_types.hpp////*///
+D/openssl///////

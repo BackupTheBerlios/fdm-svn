@@ -25,6 +25,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/ResourceManager.h"
+#include "resource.h"
 
 #include "WinUtil.h"
 

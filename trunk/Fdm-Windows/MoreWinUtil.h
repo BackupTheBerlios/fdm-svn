@@ -30,7 +30,6 @@ namespace MoreWinUtil
 
 	int calculateMainFrameSize(CMDICommandBarCtrl& commandBar);
 	int calculateToolBarHeight(CToolBarCtrl& ctrlToolbar);
-	CRect makeRectangle(int top, int bottom, int left, int right);
 
 	void setMainFrameToolBarSize(int aSize);
 	static int mainFrameToolBarSize;

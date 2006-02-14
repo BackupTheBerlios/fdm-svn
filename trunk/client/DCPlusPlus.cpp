@@ -35,8 +35,6 @@
 #include "ADLSearch.h"
 #include "SSLSocket.h"
 
-#include "../Fdm-Client/Fdm.h"	// added for FDM mod
-
 #include "StringTokenizer.h"
 
 void startup(void (*f)(void*, const string&), void* p) {
@@ -48,8 +46,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
-
-	Fdm::newInstance();	// added for FDM mod
 
 	LogManager::newInstance();
 	TimerManager::newInstance();
@@ -97,8 +93,6 @@ void shutdown() {
 
 	SettingsManager::getInstance()->save();
 	
-	Fdm::deleteInstance();	// added for FDM mod
-
 	SSLSocketFactory::deleteInstance();
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();

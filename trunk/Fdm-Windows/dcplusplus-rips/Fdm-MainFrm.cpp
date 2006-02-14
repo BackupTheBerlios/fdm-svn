@@ -20,8 +20,6 @@
 #include "../../client/DCPlusPlus.h"
 #include "../resource.h"
 #include "../../windows/resource.h"
-#include "Fdm-FlatTabCtrl.h"
-#include "Fdm-WinUtil.h"
 
 #include "Fdm-MainFrm.h"
 #include "../Fdm-Dlg.h"
@@ -39,18 +37,11 @@ FdmMainFrame::~FdmMainFrame() {
 	fdmImages.Destroy();
 	fdmLargeImages.Destroy();
 	fdmLargeImagesHot.Destroy();
-
-	FdmWinUtil::uninit();
 }
 
 LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	FdmWinUtil::init(m_hWnd);
-
 	ctrlFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE, WS_EX_CLIENTEDGE);
-
-//	ctrlFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-//	WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE);
 
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 
@@ -66,16 +57,9 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	HWND hWndToolBar = createFdmToolbar();
 	
-	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-	AddSimpleReBarBand(hWndCmdBar);
-	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-
-	//CreateMDIClient();
-	//m_CmdBar.SetMDIClient(m_hWndMDIClient);
-	//FdmWinUtil::fdmMdiClient = m_hWndMDIClient;
-
-	ctrlFdmTab.Create(m_hWnd, rcDefault);
-	FdmWinUtil::fdmTabCtrl = &ctrlFdmTab;
+//	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+//	AddSimpleReBarBand(hWndCmdBar);
+//	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
 //	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	//ctrlStatus.Attach(m_hWndStatusBar);
@@ -92,17 +76,10 @@ LRESULT FdmMainFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 }
 
-void FdmMainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+void FdmMainFrame::UpdateLayout()
 {	
 	RECT rect;
 	GetClientRect(&rect);
-
-	UpdateBarsPosition(rect, bResizeBars);
-
-	//CRect rc = rect;
-//	rc.top = rc.bottom - ctrlFdmTab.getFdmHeight();
-//	if(ctrlFdmTab.IsWindow())
-//		ctrlFdmTab.MoveWindow(rc);
 }
 
 LRESULT FdmMainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {

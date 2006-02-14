@@ -1,6 +1,7 @@
 /DCPlusPlus.hhp////*///
 /Links.html////*///
 /adlsearch.html////*///
+/changelog.html////*///
 /chat_commands.html////*///
 /compile.cmd////*///
 /credits.html////*///
@@ -21,6 +22,7 @@
 /favorite_users.html////*///
 /fdl.html////*///
 /gen_changelog.py////*///
+/help.vcproj////*///
 /index.hhk////*///
 /index.html////*///
 /logo.jpg////*///
@@ -44,5 +46,3 @@
 /settings_windows.html////*///
 /template.html////*///
 /toc.hhc////*///
-/help.vcproj////*///
-/changelog.html////*///
