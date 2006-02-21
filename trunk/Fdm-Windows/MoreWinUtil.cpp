@@ -37,18 +37,19 @@ void MoreWinUtil::createFdmMainFrameAndAttachToSplitter(FdmMainFrame& fdmMainFra
 	splitFdmMainFrame.SetSinglePaneMode(SPLIT_PANE_TOP);
 }
 
-int MoreWinUtil::calculateMainFrameSize(CMDICommandBarCtrl& commandBar) {
-	CRect commandBarRect;
-	commandBar.GetClientRect(commandBarRect);
-	return 10 + commandBarRect.Height() + mainFrameToolBarSize;
-}
-
-int MoreWinUtil::calculateToolBarHeight(CToolBarCtrl& ctrlToolbar) {
+void MoreWinUtil::calculateAndSetToolBarHeight(CToolBarCtrl& ctrlToolbar) {
 	CRect toolBarRect;
 	ctrlToolbar.GetItemRect(0, toolBarRect);
-	return toolBarRect.Height();
+	mainFrameToolBarSize = toolBarRect.Height();
 }
 
-void MoreWinUtil::setMainFrameToolBarSize(int aSize) { 
-	MoreWinUtil::mainFrameToolBarSize = aSize; 
+void MoreWinUtil::sortMainFrameUpdateLayout(CHorSplitterWindow& splitFdmMainFrame, CMDICommandBarCtrl& commandBar, RECT& rect) {
+	// Calculate height needed to offset MainFrame top
+	CRect commandBarRect;
+	commandBar.GetClientRect(commandBarRect);
+	int mainFrameTop =  2 * (10 + commandBarRect.Height() + mainFrameToolBarSize);
+
+	// Set FdmMainFrame rectangle, and offset Mainframe's top
+	splitFdmMainFrame.SetSplitterRect(CRect(rect.left, rect.top, rect.right, mainFrameTop));
+	rect.top = mainFrameTop;
 }

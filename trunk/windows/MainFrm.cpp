@@ -444,7 +444,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.AddButtons(numButtons, tb);
 	ctrlToolbar.AutoSize();
 
-	setMainFrameToolBarSize(calculateToolBarHeight(ctrlToolbar));
+	calculateAndSetToolBarHeight(ctrlToolbar);
 
 	return ctrlToolbar.m_hWnd;
 }
@@ -959,14 +959,11 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
 	
-	int mainFrameTop = calculateMainFrameSize(m_CmdBar);
+	sortMainFrameUpdateLayout(splitFdmMainFrame, m_CmdBar, rect);
 
 	CRect rc2 = rect;
-	rc2.top = mainFrameTop + mainFrameTop;
 	rc2.bottom = rc.top;
 	SetSplitterRect(rc2);
-
-	splitFdmMainFrame.SetSplitterRect(CRect(rc2.left, mainFrameTop, rc2.right, rc2.top));
 }
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");

@@ -30,11 +30,11 @@ namespace MoreWinUtil
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
 
+	// Taking over MainFrame
 	void createFdmMainFrameAndAttachToSplitter(FdmMainFrame& fdmMainFrame, CHorSplitterWindow& splitFdmMainFrame, HWND& m_hWnd, const _U_RECT& rcDefault);
-	int calculateMainFrameSize(CMDICommandBarCtrl& commandBar);
-	int calculateToolBarHeight(CToolBarCtrl& ctrlToolbar);
+	void calculateAndSetToolBarHeight(CToolBarCtrl& ctrlToolbar);
+	void sortMainFrameUpdateLayout(CHorSplitterWindow& splitFdmMainFrame, CMDICommandBarCtrl& commandBar, RECT& rect);
 
-	void setMainFrameToolBarSize(int aSize);
 	static int mainFrameToolBarSize;
 };
 
