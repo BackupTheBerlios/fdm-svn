@@ -69,8 +69,7 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 	links.discuss = links.homepage + _T("forum/");
 	links.features = links.homepage + _T("bugs/");
 	links.bugs = links.homepage + _T("bugs/");
-
-};
+}
 
 MainFrame::~MainFrame() {
 	m_CmdBar.m_hImageList = NULL;
@@ -95,8 +94,6 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 		}
 	}
 
-	shutdown();
-	
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
@@ -1144,7 +1141,20 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed)
 	}
 }
 
+
+LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LogManager::getInstance()->removeListener(this);
+	QueueManager::getInstance()->removeListener(this);
+	TimerManager::getInstance()->removeListener(this);
+
+	if(trayIcon) {
+		updateTray(false);
+	}
+	bHandled = FALSE;
+	return 0;
+}
+
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.110 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.112 2006/02/19 16:19:06 arnetheduck Exp $
  */

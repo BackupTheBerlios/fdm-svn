@@ -533,7 +533,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	}
 
 	return 0;
-};
+}
 
 void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	RECT rect;
@@ -638,7 +638,6 @@ void HubFrame::clearUserList() {
 	ctrlUsers.DeleteAllItems();
 	userMap.clear();
 }
-
 
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
@@ -817,8 +816,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); 
 		}
 	}
-	return;
-};
+}
 
 void HubFrame::onTab() {
 	HWND focus = GetFocus();
@@ -1125,7 +1123,7 @@ void HubFrame::closeDisconnected() {
 			i->second->PostMessage(WM_CLOSE);
 		}
 	}
-};
+}
 
 void HubFrame::on(TimerManagerListener::Second, DWORD /*aTick*/) throw() {
 	updateStatusBar();
@@ -1218,5 +1216,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.129 2006/01/29 18:48:26 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.131 2006/02/19 23:51:31 arnetheduck Exp $
  */

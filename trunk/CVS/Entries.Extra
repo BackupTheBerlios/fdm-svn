@@ -1,7 +1,5 @@
 /COPYING.TXT////*///
 /Compile.txt///////
-/DCPlusPlus.nsi///////
-/DCPlusPlus.rc///////
 /DCPlusPlus.sln///////
 /DCPlusPlus.vcproj///////
 /Doxyfile////*///
@@ -13,7 +11,6 @@
 /acinclude.m4///////
 /bootstrap///////
 /bzip2.vcproj///////
-/changelog.txt///////
 /client.vcproj///////
 /configure.ac///////
 /libunicows.lib////*///
@@ -29,4 +26,7 @@ D/windows///////
 D/wtl///////
 D/yassl///////
 D/zlib///////
+/DCPlusPlus.nsi///////
+/DCPlusPlus.rc///////
 /Example.xml///////
+/changelog.txt///////

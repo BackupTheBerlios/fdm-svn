@@ -46,7 +46,7 @@ public:
 	}
 	
 protected:
-	PointerBase() throw() : ref(0) { };
+	PointerBase() throw() : ref(0) { }
 	
 	virtual ~PointerBase() throw() {
 		dcassert(!ref);
@@ -114,14 +114,14 @@ public:
 	
 	operator		  bool()  const   { return base != NULL; }
 	
-	bool operator==(T* rhs) const { return (T*)base == rhs; };
-	bool operator==(const Pointer& rhs) const { return base == rhs.base; };
-	bool operator!=(T* rhs) const { return (T*)base != rhs; };
-	bool operator!=(const Pointer& rhs) const { return base != rhs.base; };
-	bool operator<(T* rhs) const { return (T*)base < rhs; };
-	bool operator<(const Pointer& rhs) const { return base < rhs.base; };
-	bool operator>(T* rhs) const { return (T*)base > rhs; };
-	bool operator>(const Pointer& rhs) const { return base > rhs.base; };
+	bool operator==(T* rhs) const { return (T*)base == rhs; }
+	bool operator==(const Pointer& rhs) const { return base == rhs.base; }
+	bool operator!=(T* rhs) const { return (T*)base != rhs; }
+	bool operator!=(const Pointer& rhs) const { return base != rhs.base; }
+	bool operator<(T* rhs) const { return (T*)base < rhs; }
+	bool operator<(const Pointer& rhs) const { return base < rhs.base; }
+	bool operator>(T* rhs) const { return (T*)base > rhs; }
+	bool operator>(const Pointer& rhs) const { return base > rhs.base; }
 	
 
 	static void swap ( Pointer &lhs, Pointer &rhs ) {
@@ -159,12 +159,12 @@ bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; }
 
 struct DeleteFunction {
 	template<typename T>
-	void operator()(const T& p) const { delete p; };
+	void operator()(const T& p) const { delete p; }
 };
 
 #endif // !defined(POINTER_H)
 
 /**
  * @file
- * $Id: Pointer.h,v 1.20 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.22 2006/02/19 16:19:06 arnetheduck Exp $
  */

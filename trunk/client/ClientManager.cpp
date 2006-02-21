@@ -54,10 +54,11 @@ Client* ClientManager::getClient(const string& aHubURL) {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->disconnect(true);
+	aClient->shutdown();
+
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
-
+	
 	{
 		Lock l(cs);
 
@@ -113,6 +114,8 @@ StringList ClientManager::getNicks(const CID& cid) {
 		UserIter i = users.find(cid);
 		if(i != users.end())
 			lst.push_back(i->second->getFirstNick());
+		else
+			lst.push_back('{' + cid.toBase32() + '}');
 	}
 	return lst;
 }
@@ -156,19 +159,27 @@ string ClientManager::findHub(const string& ipPort) {
 	if(i == string::npos) {
 		ip = ipPort;
 	} else {
-		ip = ip.substr(0, i);
+		ip = ipPort.substr(0, i);
 		port = (short)Util::toInt(ipPort.substr(i+1));
 	}
 
+	string url;
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		Client* c = *i;
-		if(c->getPort() == port && c->getIp() == ip)
-			return c->getHubUrl();
+		if(c->getIp() == ip) {
+			// If exact match is found, return it
+			if(c->getPort() == port)
+				return c->getHubUrl();
+
+			// Port is not always correct, so use this as a best guess...
+			url = c->getHubUrl();
+		}
 	}
-	return Util::emptyString;
+	
+	return url;
 }
 
-User::Ptr ClientManager::getLegacyUser(const string& aNick) const throw() {
+User::Ptr ClientManager::findLegacyUser(const string& aNick) const throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 
@@ -558,5 +569,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.94 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.97 2006/02/19 23:51:31 arnetheduck Exp $
  */

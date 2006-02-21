@@ -44,8 +44,8 @@
 #include <limits>
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
-	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), refreshing(0)
+	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), refreshing(0), lFile(NULL), 
+	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -776,11 +776,15 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 		cached = loadCache();
 		initial = false;
 	}
-	start();
-	if(block && !cached) {
-		join();
-	} else {
-		setThreadPriority(Thread::LOW);
+	try {
+		start();
+		if(block && !cached) {
+			join();
+		} else {
+			setThreadPriority(Thread::LOW);
+		}		
+	} catch(const ThreadException& e) {
+		LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FAILED) + e.getError());
 	}
 }
 
@@ -1020,10 +1024,10 @@ MemoryInputStream* ShareManager::getTree(const string& aFile) {
 }
 
 static const string& escaper(const string& n, string& tmp) {
-	if(SimpleXML::needsEscape(n, false, false)) {
+	if(SimpleXML::needsEscape(n, true, false)) {
 		tmp.clear();
 		tmp.append(n);
-		return SimpleXML::escape(tmp, false, false);
+		return SimpleXML::escape(tmp, true, false);
 	}
 	return n;
 }
@@ -1517,5 +1521,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.143 2006/02/12 18:16:12 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.145 2006/02/19 16:19:06 arnetheduck Exp $
  */

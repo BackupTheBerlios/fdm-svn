@@ -62,7 +62,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #ifndef _DEBUG
 #if _MSC_VER == 1200
 	__pfnDliFailureHook = FailHook;
-#elif _MSC_VER == 1300 || _MSC_VER == 1310
+#elif _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 	__pfnDliFailureHook2 = FailHook;
 #else
 #error Unknown Compiler version
@@ -276,8 +276,11 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
 	
 	int nRet = theLoop.Run();
-	
+
 	_Module.RemoveMessageLoop();
+
+	shutdown();
+
 	return nRet;
 }
 
@@ -358,5 +361,5 @@ if (!MoreWinUtil::allowMoreInstances(_tcslen(lpstrCmdLine)))	// added for FDM mo
 
 /**
  * @file
- * $Id: main.cpp,v 1.40 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: main.cpp,v 1.42 2006/02/18 23:32:17 arnetheduck Exp $
  */

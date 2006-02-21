@@ -4,9 +4,9 @@ LIBDCPP_CURRENT=0
 LIBDCPP_REVISION=0
 LIBDCPP_AGE=0
 
-libdcppclient_la_LDFLAGS = -export-dynamic -version-info $(LIBDCPP_CURRENT):$(LIBDCPP_REVISION):$(LIBDCPP_AGE)
+libdcppclient_la_LDFLAGS = -no-undefined -export-dynamic -version-info $(LIBDCPP_CURRENT):$(LIBDCPP_REVISION):$(LIBDCPP_AGE)
 
-libdcppclient_la_CXXFLAGS = -Wall -pedantic -ansi -Wno-long-long -I$(top_srcdir)/yassl/include
+libdcppclient_la_CXXFLAGS = -Wall -Winvalid-pch -pedantic -ansi -Wno-long-long -I$(top_srcdir)/yassl/include
 
 libdcppclient_la_SOURCES= \
 AdcCommand.cpp \
@@ -122,8 +122,8 @@ ZUtils.h
 
 pch: stdinc.h.gch
 
-stdinc.h.gch: stdinc.h
-    $(CXX) $(venus_CXXFLAGS) $(CXXFLAGS) $?
+BUILT_SOURCES = stdinc.h.gch
 
-.PHONY: pch
-	
+stdinc.h.gch: stdinc.h
+	$(CXXCOMPILE) $?
+

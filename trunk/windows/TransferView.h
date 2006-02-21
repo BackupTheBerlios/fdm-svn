@@ -112,7 +112,7 @@ private:
 	/** Parameter map for user commands */
 	class ItemInfo;
 public:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
+	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
 private:
 	enum {
 		ADD_ITEM,
@@ -175,14 +175,23 @@ private:
 		}
 
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
-			if(a->status == b->status) {
-				if(a->download != b->download) {
+			if(BOOLSETTING(ALT_SORT_ORDER)) {
+				if(a->download == b->download) {
+					if(a->status != b->status) {
+						return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+					}
+				} else {
 					return a->download ? -1 : 1;
 				}
 			} else {
-				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+				if(a->status == b->status) {
+					if(a->download != b->download) {
+						return a->download ? -1 : 1;
+					}
+				} else {
+					return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+				}
 			}
-
 			switch(col) {
 				case COLUMN_STATUS: return 0;
 				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
@@ -274,5 +283,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.25 2006/01/15 18:40:43 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.27 2006/02/19 17:19:05 arnetheduck Exp $
  */
