@@ -52,7 +52,6 @@
 #include "../client/version.h"
 
 #include "../Fdm-Windows/MoreWinUtil.h"
-using namespace MoreWinUtil;
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -177,7 +176,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	transferView.Create(m_hWnd);
 
-	createFdmMainFrameAndAttachToSplitter(fdmMainFrame, splitFdmMainFrame, m_hWnd, rcDefault);
+	MoreWinUtil::createFdmMainFrameAndAttachToSplitter(fdmMainFrame, splitFdmMainFrame, m_hWnd, rcDefault);
 
 	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -441,7 +440,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.AddButtons(numButtons, tb);
 	ctrlToolbar.AutoSize();
 
-	calculateAndSetToolBarHeight(ctrlToolbar);
+	MoreWinUtil::calculateAndSetToolBarHeight(ctrlToolbar);
 
 	return ctrlToolbar.m_hWnd;
 }
@@ -956,7 +955,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
 	
-	sortMainFrameUpdateLayout(splitFdmMainFrame, m_CmdBar, rect);
+	MoreWinUtil::sortMainFrameUpdateLayout(splitFdmMainFrame, m_CmdBar, rect);
 
 	CRect rc2 = rect;
 	rc2.bottom = rc.top;

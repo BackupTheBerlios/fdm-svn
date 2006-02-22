@@ -40,6 +40,10 @@
 /resource.h////*///
 /stdafx.cpp////*///
 /stdafx.h////*///
+/FlatTabCtrl.h////*///
+/MainFrm.cpp////*///
+/MainFrm.h////*///
+/main.cpp////*///
 /ADLSProperties.h////*///
 /ADLSearchFrame.h////*///
 /AboutDlg.h////*///
@@ -61,7 +65,6 @@
 /FinishedFrame.h////*///
 /FinishedFrameBase.h////*///
 /FinishedULFrame.h////*///
-/FlatTabCtrl.h////*///
 /GeneralPage.h////*///
 /HashProgressDlg.h////*///
 /HubFrame.cpp////*///
@@ -69,8 +72,6 @@
 /LineDlg.h////*///
 /LogPage.h////*///
 /MagnetDlg.h////*///
-/MainFrm.cpp////*///
-/MainFrm.h////*///
 /NetworkPage.h////*///
 /NotepadFrame.h////*///
 /PrivateFrame.cpp////*///
@@ -98,4 +99,3 @@
 /WinUtil.cpp////*///
 /WinUtil.h////*///
 /WindowsPage.h////*///
-/main.cpp////*///
