@@ -21,7 +21,8 @@
 //class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public MDITabChildWindowImpl<FdmMainFrame>
 //class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public CFrameWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
 //class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>
-class FdmMainFrame : public CWindowImpl<FdmMainFrame>
+class ATL_NO_VTABLE FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame/*, CMDIWindow, CMDIChildWinTraits*/>
+//class FdmMainFrame : public CMDIWindow<FdmMainFrame>
 
 {
 public:
@@ -46,7 +47,7 @@ public:
 	LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void UpdateLayout();
+//	void UpdateLayout();
 	CMDICommandBarCtrl m_CmdBar;
 private:
 	

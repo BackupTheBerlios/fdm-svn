@@ -57,9 +57,9 @@ LRESULT FdmMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	HWND hWndToolBar = createFdmToolbar();
 	
-//	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-//	AddSimpleReBarBand(hWndCmdBar);
-//	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+	AddSimpleReBarBand(hWndCmdBar);
+	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
 //	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	//ctrlStatus.Attach(m_hWndStatusBar);
@@ -76,11 +76,11 @@ LRESULT FdmMainFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 }
 
-void FdmMainFrame::UpdateLayout()
-{	
-	RECT rect;
-	GetClientRect(&rect);
-}
+//void FdmMainFrame::UpdateLayout()
+//{	
+//	RECT rect;
+//	GetClientRect(&rect);
+//}
 
 LRESULT FdmMainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	LPNMTTDISPINFO pDispInfo = (LPNMTTDISPINFO)pnmh;
