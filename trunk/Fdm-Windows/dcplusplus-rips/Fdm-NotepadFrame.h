@@ -31,7 +31,7 @@
 
 #define FDM_NOTEPAD_MESSAGE_MAP 13
 
-class FdmNotepadFrame : public MDITabChildWindowImpl<FdmNotepadFrame>, public StaticFrame<FdmNotepadFrame, FdmResourceManager::FDM_NOTEPAD>
+class FdmNotepadFrame : public MDITabChildWindowImpl<FdmNotepadFrame>, public StaticFrame<FdmNotepadFrame, FdmResourceManager::FDM_NOTEPAD, true>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("FdmNotepadFrame"), IDR_FDM_NOTEPAD, 0, COLOR_3DFACE);

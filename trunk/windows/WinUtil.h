@@ -27,6 +27,7 @@
 #include "../client/SettingsManager.h"
 #include "../client/User.h"
 #include "../client/MerkleTree.h"
+#include "..\Fdm-Client\dcplusplus-rips\Fdm-ResourceManager.h"
 
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
@@ -131,7 +132,7 @@ public:
 class FlatTabCtrl;
 class UserCommand;
 
-template<class T, int title>
+template<class T, int title, bool ifFdm = false>
 class StaticFrame {
 public:
 	virtual ~StaticFrame() { frame = NULL; }
@@ -140,6 +141,9 @@ public:
 	static void openWindow() {
 		if(frame == NULL) {
 			frame = new T();
+			if (ifFdm)
+				frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, FDMCTSTRING_I(FdmResourceManager::FdmStrings(title)));
+			else
 			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
 		} else {
 			// match the behavior of MainFrame::onSelected()
@@ -157,8 +161,8 @@ public:
 	}
 };
 
-template<class T, int title>
-T* StaticFrame<T, title>::frame = NULL;
+template<class T, int title, bool ifFdm>
+T* StaticFrame<T, title, ifFdm>::frame = NULL;
 
 class WinUtil {
 public:

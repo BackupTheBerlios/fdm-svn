@@ -29,27 +29,3 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 			return true;
 	return false;
 }
-
-void MoreWinUtil::createFdmMainFrameAndAttachToSplitter(FdmMainFrame& fdmMainFrame, CHorSplitterWindow& splitFdmMainFrame, HWND& m_hWnd, const _U_RECT& rcDefault) {
-	fdmMainFrame.Create(m_hWnd);
-	splitFdmMainFrame.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	splitFdmMainFrame.SetSplitterPane(0, fdmMainFrame.m_hWnd);
-	splitFdmMainFrame.SetSinglePaneMode(SPLIT_PANE_TOP);
-}
-
-void MoreWinUtil::calculateAndSetToolBarHeight(CToolBarCtrl& ctrlToolbar) {
-	CRect toolBarRect;
-	ctrlToolbar.GetItemRect(0, toolBarRect);
-	mainFrameToolBarSize = toolBarRect.Height();
-}
-
-void MoreWinUtil::sortMainFrameUpdateLayout(CHorSplitterWindow& splitFdmMainFrame, CMDICommandBarCtrl& commandBar, RECT& rect) {
-	// Calculate height needed to offset MainFrame top
-	CRect commandBarRect;
-	commandBar.GetClientRect(commandBarRect);
-	int mainFrameTop =  2 * (10 + commandBarRect.Height() + mainFrameToolBarSize);
-
-	// Set FdmMainFrame rectangle, and offset Mainframe's top
-	splitFdmMainFrame.SetSplitterRect(CRect(rect.left, rect.top, rect.right, mainFrameTop));
-	rect.top = mainFrameTop;
-}

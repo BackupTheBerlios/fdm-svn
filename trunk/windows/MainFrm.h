@@ -36,12 +36,13 @@
 #include "TransferView.h"
 #include "UPnP.h"
 
-#include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
+#include "..\Fdm-Windows\MoreWinUtil.h"
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
 		private LogManagerListener
+		, public FdmMainFrameToolBar<MainFrame>
 {
 public:
 	MainFrame();
@@ -50,6 +51,9 @@ public:
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
 	CMDICommandBarCtrl m_CmdBar;
+
+	typedef FdmMainFrameToolBar<MainFrame> fdmMainFrameToolBarBase;
+	CImageList fdmLargeImages, fdmLargeImagesHot;
 
 	enum {
 		DOWNLOAD_LISTING,
@@ -145,6 +149,7 @@ public:
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
 		CHAIN_MSG_MAP(splitterBase);
+		CHAIN_COMMANDS(fdmMainFrameToolBarBase)
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(MainFrame)
@@ -287,9 +292,6 @@ public:
 	}
 
 private:
-	FdmMainFrame fdmMainFrame;
-	CHorSplitterWindow splitFdmMainFrame;
-
 	class DirectoryListInfo {
 	public:
 		DirectoryListInfo(const User::Ptr& aUser, const tstring& aFile, int64_t aSpeed) : user(aUser), file(aFile), speed(aSpeed) { }

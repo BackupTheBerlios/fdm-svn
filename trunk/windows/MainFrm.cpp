@@ -51,7 +51,7 @@
 #include "../client/ShareManager.h"
 #include "../client/version.h"
 
-#include "../Fdm-Windows/MoreWinUtil.h"
+#include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -76,6 +76,8 @@ MainFrame::~MainFrame() {
 	images.Destroy();
 	largeImages.Destroy();
 	largeImagesHot.Destroy();
+
+	FdmMainFrame::destroyFdmMainFrame(fdmLargeImages, fdmLargeImagesHot);
 
 	WinUtil::uninit();
 }
@@ -154,6 +156,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+
+	HWND hWndFdmToolBar = FdmMainFrame::createFdmToolbar(m_hWnd, fdmLargeImages, fdmLargeImagesHot);
+	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
+
 	CreateSimpleStatusBar();
 
 	ctrlStatus.Attach(m_hWndStatusBar);
@@ -175,8 +181,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::tabCtrl = &ctrlTab;
 
 	transferView.Create(m_hWnd);
-
-	MoreWinUtil::createFdmMainFrameAndAttachToSplitter(fdmMainFrame, splitFdmMainFrame, m_hWnd, rcDefault);
 
 	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -439,8 +443,6 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.SetButtonStructSize();
 	ctrlToolbar.AddButtons(numButtons, tb);
 	ctrlToolbar.AutoSize();
-
-	MoreWinUtil::calculateAndSetToolBarHeight(ctrlToolbar);
 
 	return ctrlToolbar.m_hWnd;
 }
@@ -711,6 +713,9 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 		}
+
+		if(stringId == -1) FdmMainFrame::fdmToolTips(idCtrl, pDispInfo, stringId);
+
 		if(stringId != -1) {
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);
 			pDispInfo->uFlags |= TTF_DI_SETITEM;
@@ -918,8 +923,6 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
 	
-	MoreWinUtil::sortMainFrameUpdateLayout(splitFdmMainFrame, m_CmdBar, rect);
-
 	CRect rc2 = rect;
 	rc2.bottom = rc.top;
 	SetSplitterRect(rc2);

@@ -25,17 +25,19 @@
 
 #include "dcplusplus-rips\Fdm-MainFrm.h"
 
+template<class T>
+class FdmMainFrameToolBar {
+public:
+	BEGIN_MSG_MAP(FdmMainFrameToolBar)
+		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, FdmMainFrame::OnFdmFileSettings)
+		COMMAND_ID_HANDLER(ID_FDM_TEST_FRAME, FdmMainFrame::OnFdmTestFrame)
+	END_MSG_MAP()
+};
+
 namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
-
-	// Taking over MainFrame
-	void createFdmMainFrameAndAttachToSplitter(FdmMainFrame& fdmMainFrame, CHorSplitterWindow& splitFdmMainFrame, HWND& m_hWnd, const _U_RECT& rcDefault);
-	void calculateAndSetToolBarHeight(CToolBarCtrl& ctrlToolbar);
-	void sortMainFrameUpdateLayout(CHorSplitterWindow& splitFdmMainFrame, CMDICommandBarCtrl& commandBar, RECT& rect);
-
-	static int mainFrameToolBarSize;
 };
 
 #endif // !defined(MORE_WIN_UTIL_H)

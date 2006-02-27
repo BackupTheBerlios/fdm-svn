@@ -6,58 +6,15 @@
 #endif // _MSC_VER > 1000
 
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-
-//#include "../../windows/FlatTabCtrl.h"
 #include "../resource.h"
-#include "../../windows/resource.h"
 
-#include "../ColourUtil.h"
-
-#define FDM_MAINFRAME_MESSAGE_MAP 25
-
-//class FdmMainFrame : public MDITabChildWindowImpl<FdmMainFrame>, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>//, public CSplitterImpl<FdmMainFrame, false>
-//class FdmMainFrame : public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public CSplitterImpl<FdmMainFrame, false>
-//class FdmMainFrame : public FdmStaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
-//class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>, public MDITabChildWindowImpl<FdmMainFrame>
-//class FdmMainFrame : public CWindowImpl<FdmMainFrame>//, public CFrameWindowImpl<FdmMainFrame>//, public StaticFrame<FdmMainFrame, FdmResourceManager::FDM_NOTEPAD>
-//class FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame>
-class ATL_NO_VTABLE FdmMainFrame : public CMDIFrameWindowImpl<FdmMainFrame/*, CMDIWindow, CMDIChildWinTraits*/>
-//class FdmMainFrame : public CMDIWindow<FdmMainFrame>
-
-{
-public:
-//	DECLARE_WND_CLASS(_T("FdmMainFrame"));
-	DECLARE_FRAME_WND_CLASS_EX(_T("FdmMainFrame"), IDR_FDM_MAINFRAME, 0, COLOR_3DFACE);
-
-	FdmMainFrame();
-	virtual ~FdmMainFrame();
-
-	BEGIN_MSG_MAP(FdmMainFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
-		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, OnFdmFileSettings)
-		COMMAND_ID_HANDLER(ID_FDM_TEST_FRAME, OnFdmTestFrame)
-//		CHAIN_MDI_CHILD_COMMANDS()
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
+namespace FdmMainFrame {
 	LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-//	void UpdateLayout();
-	CMDICommandBarCtrl m_CmdBar;
-private:
-	
-	bool dirty;
-	CEdit ctrlFdmMainFrame;
-	CContainedWindow statusContainer;
-	CStatusBarCtrl ctrlStatus;
-	CImageList fdmImages;
-	CImageList fdmLargeImages, fdmLargeImagesHot;
-	HWND createFdmToolbar();
+	void destroyFdmMainFrame(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
+	HWND createFdmToolbar(HWND& m_hWnd, CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
+	void fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stringId);
 };
 
 #endif // !defined(FDM_MAINFRAME_H)
