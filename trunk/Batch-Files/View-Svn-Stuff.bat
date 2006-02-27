@@ -1,4 +1,19 @@
 @ECHO OFF
+rem CONFIG START
+rem -------------------------------------------------------------------------------
+set RAR="%PROGRAMFILES%\winRar\rar.exe"
+
+set DCSVN="original-dcplusplus-svn-files.rar"
+set UNRARSVNFILES=x -r -idp -inul "..\%DCSVN%"
+
+rem CONFIG END
+rem -------------------------------------------------------------------------------
+
+IF NOT EXIST "%PROGRAMFILES%\WinRAR\Rar.exe" (
+	echo "Winrar could not be found."
+	pause
+	goto:eof
+)
 
 ECHO ------------------------------------------------------------------------
 ECHO Preparing . . .
@@ -19,16 +34,23 @@ attrib +h Fdm-*.* > nul
 attrib +h Changelog-Fdm.txt > nul
 attrib +h License-Fdm.txt > nul
 attrib +h *.rar > nul
-rd /s /q Temp
-xcopy /q /y /s *.* Temp\ > nul
+rd /s /q original-dcplusplus
 
 ECHO ------------------------------------------------------------------------
-ECHO Time To View.  Look In Temp Directory.
+ECHO Extracting DC++ Svn's Files
+%RAR% %UNRARSVNFILES%
+
+ECHO ------------------------------------------------------------------------
+ECHO Copying Files Over
+xcopy /q /y /e *.* original-dcplusplus\ > nul
+
+ECHO ------------------------------------------------------------------------
+ECHO Time To View.  Look In original-dcplusplus Directory.
 PAUSE
 
 ECHO ------------------------------------------------------------------------
 ECHO Cleaning Up . . .
-rd /s /q Temp > nul
+rd /s /q original-dcplusplus > nul
 attrib -h /S /D Batch-Files > nul
 attrib -h /S /D Fdm-Client > nul
 attrib -h /S /D Fdm-Windows > nul

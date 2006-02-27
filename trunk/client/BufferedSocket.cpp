@@ -33,7 +33,7 @@
 
 BufferedSocket::BufferedSocket(char aSeparator) throw() : 
 separator(aSeparator), mode(MODE_LINE), 
-dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false)
+dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false), filterIn(NULL)
 {
 	sockets++;
 }
@@ -42,7 +42,33 @@ size_t BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
+	if (filterIn) delete filterIn;
 	sockets--;
+}
+
+void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
+	if (mode == aMode) {
+		dcdebug ("WARNING: Re-entering mode %d\n", mode);
+		return;
+	}
+
+	if (mode == MODE_ZPIPE) {
+		// should not happen!
+		if (filterIn) {
+			delete filterIn;
+			filterIn = NULL;
+		}
+	}
+
+	mode = aMode;
+	switch (aMode) {
+		case MODE_LINE:
+			rollback = aRollback;
+			break;
+		case MODE_ZPIPE:
+			filterIn = new UnZFilter;
+			break;
+	}
 }
 
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
@@ -80,9 +106,9 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->create();
-	if(SETTING(SOCKET_IN_BUFFER) > 0)
+	if(SETTING(SOCKET_IN_BUFFER) >= 1024)
 		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	if(SETTING(SOCKET_OUT_BUFFER) > 0)
+	if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
 		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
 
@@ -139,54 +165,91 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		// This socket has been closed...
 		throw SocketException(STRING(CONNECTION_CLOSED));
 	}
-
-	int bufpos = 0;
+    size_t used;
+	string::size_type pos = 0;
+    // always uncompressed data
 	string l;
-	while(left > 0) {
-		if(mode == MODE_LINE) {
-			// Special to autodetect nmdc connections...
-			if(separator == 0) {
-				if(inbuf[0] == '$') {
-					separator = '|';
-				} else {
-					separator = '\n';
+	int bufpos = 0, total = left;
+
+	while (left > 0) {
+		switch (mode) {
+			case MODE_ZPIPE:
+				if (filterIn != NULL){
+				    const int BufSize = 1024;
+					// Special to autodetect nmdc connections...
+					string::size_type pos = 0;
+					AutoArray<u_int8_t> buffer (BufSize);
+					size_t in;
+					// decompress all input data and store in l.
+					while (left) {
+						in = BufSize;
+						used = left;
+						bool ret = (*filterIn) ((void *)(&inbuf[0] + total - left), used, &buffer[0], in);
+						left -= used;
+						l.append ((const char *)&buffer[0], in);
+						// if the stream ends before the data runs out, keep remainder of data in inbuf
+						if (!ret) {
+							bufpos = total-left;
+							setMode (MODE_LINE, rollback);
+							break;
+						}
+					}
+					// process all lines
+					while ((pos = l.find(separator)) != string::npos) {
+						fire(BufferedSocketListener::Line(), l.substr(0, pos));
+						l.erase (0, pos + 1 /* seperator char */);
+					}
+					// store remainder
+					line += l;
+
+					break;
 				}
-			}
-			string::size_type pos = 0;
-
-			l = string((char*)&inbuf[0] + bufpos, left);
-
-			if((pos = l.find(separator)) != string::npos) {
-				if(!line.empty()) {
-					fire(BufferedSocketListener::Line(), line + l.substr(0, pos));
-					line.clear();
-				} else {
+			case MODE_LINE:
+				// Special to autodetect nmdc connections...
+				if(separator == 0) {
+					if(inbuf[0] == '$') {
+						separator = '|';
+					} else {
+						separator = '\n';
+					}
+				}
+				l = line + string ((char*)&inbuf[bufpos], left);
+				while ((pos = l.find(separator)) != string::npos) {
 					fire(BufferedSocketListener::Line(), l.substr(0, pos));
+					l.erase (0, pos + 1 /* separator char */);
+					if (l.length() < (size_t)left) left = l.length();
+					if (mode != MODE_LINE) {
+						// we changed mode; remainder of l is invalid.
+						l.clear();
+						bufpos = total - left;
+						break;
+					}
 				}
-				left -= (pos + sizeof(separator));
-				bufpos += (pos + sizeof(separator));
-			} else {
-				line += l;
-				left = 0;
-			}
-		} else if(mode == MODE_DATA) {
-			if(dataBytes == -1) {
-				fire(BufferedSocketListener::Data(), &inbuf[bufpos], left);
-				bufpos += (left - rollback);
-				left = rollback;
-				rollback = 0;
-			} else {
-				int high = (int)min(dataBytes, (int64_t)left);
-				fire(BufferedSocketListener::Data(), &inbuf[bufpos], high);
-				bufpos += high;
-				left -= high;
+				if (pos == string::npos) 
+					left = 0;
+				line = l;
+				break;
+			case MODE_DATA:
+				while(left > 0) {
+					if(dataBytes == -1) {
+						fire(BufferedSocketListener::Data(), &inbuf[bufpos], left);
+						bufpos += (left - rollback);
+						left = rollback;
+						rollback = 0;
+					} else {
+						int high = (int)min(dataBytes, (int64_t)left);
+						fire(BufferedSocketListener::Data(), &inbuf[bufpos], high);
+						bufpos += high;
+						left -= high;
 
-				dataBytes -= high;
-				if(dataBytes == 0) {
-					mode = MODE_LINE;
-					fire(BufferedSocketListener::ModeChange());
+						dataBytes -= high;
+						if(dataBytes == 0) {
+							mode = MODE_LINE;
+							fire(BufferedSocketListener::ModeChange());
+						}
+					}
 				}
-			}
+				break;
 		}
 	}
 }
@@ -198,35 +261,72 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize = max(sockSize, (size_t)64*1024);
-	dcdebug("threadSendFile buffer size: %lu\n", bufSize);
-	AutoArray<u_int8_t> buf(bufSize);
+	
+	vector<u_int8_t> readBuf(bufSize);
+	vector<u_int8_t> writeBuf(bufSize);
 
+	size_t readPos = 0;
+
+	bool readDone = false;
+	dcdebug("Starting threadSend");
 	while(true) {
-		size_t bytesRead = bufSize;
-		size_t actual = file->read(&buf[0], bytesRead);
-		if(actual == 0) {
+		if(!readDone && readBuf.size() > readPos) {
+			// Fill read buffer
+			size_t bytesRead = readBuf.size() - readPos;
+			size_t actual = file->read(&readBuf[readPos], bytesRead);
+
+			if(bytesRead > 0) {
+				fire(BufferedSocketListener::BytesSent(), bytesRead, 0);
+			}
+
+			if(actual == 0) {
+				readDone = true;
+			} else {
+				readPos += actual;
+			}
+		}
+
+		if(readDone && readPos == 0) {
 			fire(BufferedSocketListener::TransmitDone());
 			return;
 		}
 
-		size_t done = 0;
-		size_t doneRead = 0;
-		while(done < actual) {
+		readBuf.swap(writeBuf);
+		readBuf.resize(bufSize);
+		writeBuf.resize(readPos);
+		readPos = 0;
+
+		size_t writePos = 0;
+
+		while(writePos < writeBuf.size()) {
 			if(disconnecting)
 				return;
-
-			int written = sock->write(buf + done, min(sockSize, actual - done));
+			size_t writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+			int written = sock->write(&writeBuf[writePos], writeSize);
 			if(written > 0) {
-				done += written;
+				writePos += written;
 
-				size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
-
-				fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
-				doneRead = doneReadNow;
+				fire(BufferedSocketListener::BytesSent(), 0, written);
 			} else if(written == -1) {
-				int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
-				if(w & Socket::WAIT_READ) {
-					threadRead();
+				if(readPos < readBuf.size()) {
+					// Read a little since we're blocking anyway...
+					size_t bytesRead = min(readBuf.size() - readPos, readBuf.size() / 2);
+					size_t actual = file->read(&readBuf[readPos], bytesRead);
+
+					if(bytesRead > 0) {
+						fire(BufferedSocketListener::BytesSent(), bytesRead, 0);
+					}
+
+					if(actual == 0) {
+						readDone = true;
+					} else {
+						readPos += actual;
+					}
+				} else {
+					int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
+					if(w & Socket::WAIT_READ) {
+						threadRead();
+					}
 				}
 			}
 		}
