@@ -175,6 +175,9 @@
 				RelativePath=".\opcodes.c">
 			</File>
 			<File
+				RelativePath=".\os.c">
+			</File>
+			<File
 				RelativePath=".\os_unix.c">
 			</File>
 			<File
@@ -200,6 +203,9 @@
 			</File>
 			<File
 				RelativePath=".\select.c">
+			</File>
+			<File
+				RelativePath=".\shell.c">
 			</File>
 			<File
 				RelativePath=".\table.c">
@@ -262,12 +268,6 @@
 			</File>
 			<File
 				RelativePath=".\os_common.h">
-			</File>
-			<File
-				RelativePath=".\os_unix.h">
-			</File>
-			<File
-				RelativePath=".\os_win.h">
 			</File>
 			<File
 				RelativePath=".\pager.h">
