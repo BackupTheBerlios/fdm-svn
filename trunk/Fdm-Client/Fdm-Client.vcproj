@@ -159,7 +159,8 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"
 						PrecompiledHeaderThrough=""
-						PrecompiledHeaderFile=""/>
+						PrecompiledHeaderFile=""
+						CallingConvention="0"/>
 				</FileConfiguration>
 			</File>
 			<File
