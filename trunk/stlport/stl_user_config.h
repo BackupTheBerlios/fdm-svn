@@ -62,7 +62,7 @@
  * Use this switch for embedded systems where no iostreams are available
  * at all. STLport own iostreams will also get disabled automatically then.
  */
-// # define _STLP_NO_IOSTREAMS 1
+# define _STLP_NO_IOSTREAMS 1
 
 /* 
  * Set _STLP_DEBUG to turn the "Debug Mode" on.
@@ -87,7 +87,7 @@
  *  on per-project basis.
  *
  */
-//#define _STLP_NO_CUSTOM_IO
+#define _STLP_NO_CUSTOM_IO
 
 
 /* 
@@ -160,7 +160,7 @@
  *  Define this macro to disable anachronistic constructs (like the ones used in HP STL and
  *  not included in final standard, etc. 
  */
-// define _STLP_NO_ANACHRONISMS 1
+#define _STLP_NO_ANACHRONISMS 1
 
 /*
  *  Define this macro to disable STLport extensions (for example, to make sure your code will 
@@ -180,7 +180,7 @@
 
 // boris : this setting is here as we cannot detect precense of new Platform SDK automatically 
 // If you are using new PSDK with VC++ 6.0 or lower, please define this to get correct prototypes for InterlockedXXX functions
-//# define _STLP_NEW_PLATFORM_SDK 1
+#define _STLP_NEW_PLATFORM_SDK 1
 
 /*
  * Use minimum set of default arguments on template classes that have more

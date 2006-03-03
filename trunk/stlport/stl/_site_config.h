@@ -79,7 +79,7 @@
  * In STLport iostreams mode, there is no need for this flag other than to facilitate
  * link with third-part libraries compiled with different standard library implementation.
  */
-// #  define _STLP_USE_OWN_NAMESPACE 1
+#  define _STLP_USE_OWN_NAMESPACE 1
 // #  define _STLP_NO_OWN_NAMESPACE  1
 
 
@@ -181,7 +181,7 @@
  * Second form is to disable old-style queries in any case.
  */
 // # define _STLP_USE_OLD_HP_ITERATOR_QUERIES
-// # define _STLP_NO_OLD_HP_ITERATOR_QUERIES
+# define _STLP_NO_OLD_HP_ITERATOR_QUERIES 1
 
 
 //==========================================================================
