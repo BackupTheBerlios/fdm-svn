@@ -24,7 +24,7 @@
 				Optimization="2"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="0"
-				FavorSizeOrSpeed="1"
+				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\pcre&quot;;&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"

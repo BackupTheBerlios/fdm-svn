@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by j:\DC++Sources\Fdm\Fdm-Windows.rc
+// Used by c:\fdm\client\fdm\Fdm-Windows.rc
 //
 #define ID_FDM_MAINFRAME                151
 #define IDD_FDM_DIALOG                  152
@@ -16,7 +16,8 @@
 #define IDC_FDM_MAINFRAME               405
 #define IDC_FDM_SETTINGS_TEXT           4001
 #define ID_FDM_FILE_SETTINGS            32000
-#define ID_FDM_TEST_FRAME				32001
+#define ID_FDM_NOTEPAD_FRAME            32001
+#define ID_FDM_FAVHUB_FRAME             32002
 
 // Next default values for new objects
 // 

@@ -139,27 +139,6 @@
 				RelativePath=".\Fdm-Windows\ColourUtil.cpp">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.cpp">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.cpp">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\Fdm-Windows\MoreWinUtil.cpp">
 			</File>
 		</Filter>
@@ -172,15 +151,6 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\Fdm-Dlg.h">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.h">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\MoreWinUtil.h">
@@ -204,6 +174,44 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-Res\fdm_toolbar20.bmp">
+			</File>
+		</Filter>
+		<Filter
+			Name="DC++ Rips - Source files"
+			Filter="">
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.cpp">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.cpp">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="DC++ Rips - Header files"
+			Filter="">
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.h">
 			</File>
 		</Filter>
 	</Files>

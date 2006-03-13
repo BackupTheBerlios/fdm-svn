@@ -37,7 +37,7 @@ HWND FdmMainFrame::createFdmToolbar(HWND& m_hWnd, CImageList& fdmLargeImages, CI
 	ctrlToolbar.SetImageList(fdmLargeImages);
 	ctrlToolbar.SetHotImageList(fdmLargeImagesHot);
 
-	const int numButtons = 3;
+	const int numButtons = 5;
 
 	TBBUTTON tb[numButtons];
 	memset(tb, 0, sizeof(tb));
@@ -48,12 +48,23 @@ HWND FdmMainFrame::createFdmToolbar(HWND& m_hWnd, CImageList& fdmLargeImages, CI
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
+
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FDM_TEST_FRAME;
+	tb[n].idCommand = ID_FDM_FAVHUB_FRAME;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+
+	n++;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = ID_FDM_NOTEPAD_FRAME;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
@@ -67,7 +78,7 @@ HWND FdmMainFrame::createFdmToolbar(HWND& m_hWnd, CImageList& fdmLargeImages, CI
 void FdmMainFrame::fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stringId) {
 	switch(idCtrl) {
 		case ID_FDM_FILE_SETTINGS: stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
-		case ID_FDM_TEST_FRAME: stringId = FdmResourceManager::MENU_TEST_FRAME; break;
+		case ID_FDM_NOTEPAD_FRAME: stringId = FdmResourceManager::MENU_NOTEPAD_FRAME; break;
 	}
 
 	if (stringId != -1) {
@@ -85,7 +96,13 @@ LRESULT FdmMainFrame::OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	return 0;
 }
 
-LRESULT FdmMainFrame::OnFdmTestFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT FdmMainFrame::OnFdmNotepadFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	FdmNotepadFrame::openWindow();
+	return 0;
+}
+
+LRESULT FdmMainFrame::OnFdmFavHubFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	FdmNotepadFrame::openWindow();
 	return 0;

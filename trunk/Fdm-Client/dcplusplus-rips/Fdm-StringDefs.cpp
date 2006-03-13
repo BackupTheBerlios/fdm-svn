@@ -8,8 +8,8 @@ string FdmResourceManager::fdmstrings[] = {
 "&View", 
 "&Window", 
 "FDM Notepad testframe", 
-"FDM Settings...", 
-"FDM Test frame...", 
+"FDM Settings", 
+"FDM Notepad", 
 };
 string FdmResourceManager::fdmnames[] = {
 "Close", 
@@ -19,5 +19,5 @@ string FdmResourceManager::fdmnames[] = {
 "FdmMenuWindow", 
 "FdmNotepad", 
 "MenuFdmSettings", 
-"MenuTestFrame", 
+"MenuNotepadFrame", 
 };

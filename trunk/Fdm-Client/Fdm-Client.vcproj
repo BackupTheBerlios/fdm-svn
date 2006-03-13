@@ -144,25 +144,31 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\other-projects\CppSQLite\CppSQLite3.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						PrecompiledHeaderThrough=""
-						PrecompiledHeaderFile=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						PrecompiledHeaderThrough=""
-						PrecompiledHeaderFile=""
-						CallingConvention="0"/>
-				</FileConfiguration>
+				RelativePath=".\Fdm-Util.cpp">
 			</File>
+			<File
+				RelativePath=".\Fdm.cpp">
+			</File>
+			<File
+				RelativePath=".\UserDatabase.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
+			<File
+				RelativePath=".\Fdm-Util.h">
+			</File>
+			<File
+				RelativePath=".\Fdm.h">
+			</File>
+			<File
+				RelativePath=".\UserDatabase.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="DC++ Rips - Source files"
+			Filter="">
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.cpp">
 			</File>
@@ -187,22 +193,10 @@
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp">
 			</File>
-			<File
-				RelativePath=".\Fdm-Util.cpp">
-			</File>
-			<File
-				RelativePath=".\Fdm.cpp">
-			</File>
-			<File
-				RelativePath=".\UserDatabase.cpp">
-			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="DC++ Rips - Header files"
 			Filter="">
-			<File
-				RelativePath="..\other-projects\CppSQLite\CppSQLite3.h">
-			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h">
 			</File>
@@ -234,16 +228,38 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Fdm-Util.h">
-			</File>
-			<File
 				RelativePath=".\dcplusplus-rips\Fdm-Version.h">
 			</File>
+		</Filter>
+		<Filter
+			Name="CPPSQLite Source"
+			Filter="">
 			<File
-				RelativePath=".\Fdm.h">
+				RelativePath="..\other-projects\CppSQLite\CppSQLite3.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						PrecompiledHeaderThrough=""
+						PrecompiledHeaderFile=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						PrecompiledHeaderThrough=""
+						PrecompiledHeaderFile=""
+						CallingConvention="0"/>
+				</FileConfiguration>
 			</File>
+		</Filter>
+		<Filter
+			Name="CPPSQLite Header"
+			Filter="">
 			<File
-				RelativePath=".\UserDatabase.h">
+				RelativePath="..\other-projects\CppSQLite\CppSQLite3.h">
 			</File>
 		</Filter>
 	</Files>

@@ -11,7 +11,7 @@ enum FdmStrings { // @DontAdd
 	FDM_MENU_VIEW, // "&View"
 	FDM_MENU_WINDOW, // "&Window"
 	FDM_NOTEPAD, // "FDM Notepad testframe"
-	MENU_FDM_SETTINGS, // "FDM Settings..."
-	MENU_TEST_FRAME, // "FDM Test frame..."
+	MENU_FDM_SETTINGS, // "FDM Settings"
+	MENU_NOTEPAD_FRAME, // "FDM Notepad"
 	LAST // @DontAdd
 };
