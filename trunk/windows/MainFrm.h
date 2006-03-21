@@ -292,6 +292,7 @@ public:
 	}
 
 private:
+
 	class DirectoryListInfo {
 	public:
 		DirectoryListInfo(const User::Ptr& aUser, const tstring& aFile, int64_t aSpeed) : user(aUser), file(aFile), speed(aSpeed) { }

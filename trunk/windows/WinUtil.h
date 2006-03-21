@@ -126,6 +126,7 @@ public:
 		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
 		menu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
 		menu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
+		menu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT_FAVUSER_HUB));
 	}
 };
 
@@ -338,6 +339,8 @@ public:
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
 	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
+	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }
+	static bool isCtrl() { return (GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
 	template<class T> static HWND hiddenCreateEx(T& p) throw() {
 		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
