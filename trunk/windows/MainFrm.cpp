@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,7 +107,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::init(m_hWnd);
 
-	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
+	//trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
+	// Use ASCII version as opencow doesn't support the wide one...
+	trayMessage = RegisterWindowMessageA("TaskbarCreated");
 
 	TimerManager::getInstance()->start();
 

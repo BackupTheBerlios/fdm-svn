@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ const string& QueueItem::getTempTarget() {
 				sm["targetdrive"] = target.substr(0, 3);
 			else
 				sm["targetdrive"] = Util::getConfigPath().substr(0, 3);
-			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
+			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm, true) + getTempName(getTargetFileName(), getTTH()));
 #else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
 #endif //_WIN32
@@ -399,7 +399,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 
 		if(BOOLSETTING(AUTO_SEARCH) && (aTick >= nextSearch) && (fileQueue.getSize() > 0)) {
 			// We keep 30 recent searches to avoid duplicate searches
-			while((recent.size() > fileQueue.getSize()) || (recent.size() > 30)) {
+			while((recent.size() >= fileQueue.getSize()) || (recent.size() > 30)) {
 				recent.erase(recent.begin());
 			}
 
@@ -1178,6 +1178,8 @@ void QueueManager::saveQueue() throw() {
 		ff.close();
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
+
+		ClientManager::getInstance()->save();
 
 		dirty = false;
 	} catch(const FileException&) {

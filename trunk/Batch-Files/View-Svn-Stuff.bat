@@ -42,7 +42,9 @@ ECHO Extracting DC++ Svn's Files
 
 ECHO ------------------------------------------------------------------------
 ECHO Copying Files Over
+attrib +h original-dcplusplus
 xcopy /q /y /e *.* original-dcplusplus\ > nul
+attrib -h original-dcplusplus
 
 ECHO ------------------------------------------------------------------------
 ECHO Time To View.  Look In original-dcplusplus Directory.

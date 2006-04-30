@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
+		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
@@ -65,7 +66,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
-		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
+		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, onFileReconnect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
@@ -98,6 +99,7 @@ public:
 	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const tstring& aLine);
@@ -129,11 +131,8 @@ public:
 		return 0;
 	}
 
-	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		client->disconnect(false);
-		clearUserList();
-		clearTaskList();
-		client->connect();
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+		updateStatusBar();
 		return 0;
 	}
 
@@ -150,7 +149,6 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-
 	enum Speakers { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
@@ -168,6 +166,7 @@ private:
 		COLUMN_TAG,
 		COLUMN_CONNECTION, 
 		COLUMN_EMAIL, 
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
@@ -254,6 +253,11 @@ private:
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 
+	typedef vector<Task*> TaskList;
+	typedef TaskList::iterator TaskIter;
+	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
+	typedef UserMap::iterator UserMapIter;
+
 	tstring redirect;
 	bool timeStamps;
 	bool showJoins;
@@ -273,18 +277,21 @@ private:
 		void operator()(UserInfo *ui) {
 			available += ui->getIdentity().getBytesShared();
 		}
+		void operator()(UserMap::const_reference ui) {
+			available += ui.second->getIdentity().getBytesShared();
+		}
 	};
 
 	size_t getUserCount() const {
 		size_t sel = ctrlUsers.GetSelectedCount();
-		return sel > 1 ? sel : client->getUserCount();
+		return sel > 1 ? sel : userMap.size();
 	}
 
 	int64_t getAvailable() {
 		if (ctrlUsers.GetSelectedCount() > 1) {
 			return ctrlUsers.forEachSelectedT(CountAvailable()).available;
 		} else
-			return ctrlUsers.forEachT(CountAvailable()).available;
+			return for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
 	}
 
 	const tstring& getNick(const User::Ptr& u);
@@ -310,11 +317,6 @@ private:
 
 	TStringMap tabParams;
 	bool tabMenuShown;
-
-	typedef vector<Task*> TaskList;
-	typedef TaskList::iterator TaskIter;
-	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
-	typedef UserMap::iterator UserMapIter;
 
 	UserMap userMap;
 	TaskList taskList;
