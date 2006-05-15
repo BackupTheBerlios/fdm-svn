@@ -23,9 +23,27 @@
 #include "../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
 #include "MoreWinUtil.h"
 
+// For IpMainChat
+#include "../Client/Text.h"
+
 bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	if(amountOfProcesses == 0)
 		if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
 			return true;
 	return false;
+}
+
+tstring MoreWinUtil::findNickInText(const tstring aLine) {
+	tstring::size_type i;
+	tstring::size_type j;
+
+	//Check For <Nick>
+	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) > i && j != string::npos))
+		return aLine.substr(i + 1, j - i - 1).c_str();
+	return NULL;
+}
+
+void MoreWinUtil::addIpToMainChat(tstring& aLine, string ip) {
+	if (ip != "")
+		aLine = (Text::toT("[ " + ip + " ] ") + aLine).c_str();
 }

@@ -45,8 +45,8 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+//		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+//		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(FDM_NOTEPAD_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
@@ -57,17 +57,17 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		HWND hWnd = (HWND)lParam;
-		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlPad.m_hWnd) {
-			::SetBkColor(hDC, ColourUtil::m_ChatTextGeneral.crBackColor);
-			::SetTextColor(hDC, ColourUtil::m_ChatTextGeneral.crTextColor);
-			return (LRESULT)ColourUtil::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	};
+//	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+//		HWND hWnd = (HWND)lParam;
+//		HDC hDC = (HDC)wParam;
+//		if(hWnd == ctrlPad.m_hWnd) {
+//			::SetBkColor(hDC, ColourUtil::m_ChatTextGeneral.crBackColor);
+//			::SetTextColor(hDC, ColourUtil::m_ChatTextGeneral.crTextColor);
+//			return (LRESULT)ColourUtil::bgBrush;
+//		}
+//		bHandled = FALSE;
+//		return FALSE;
+//	};
 	
 	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

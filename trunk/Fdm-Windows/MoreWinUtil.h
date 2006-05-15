@@ -39,6 +39,10 @@ namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
+
+	// Adding IP's to MainChat
+	tstring findNickInText(const tstring aLine);
+	void addIpToMainChat(tstring& aLine, string ip);
 };
 
 #endif // !defined(MORE_WIN_UTIL_H)
