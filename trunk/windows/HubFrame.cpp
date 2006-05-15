@@ -35,7 +35,7 @@
 #include "../client/ConnectionManager.h"
 #include "../client/SearchManager.h"
 
-#include "../Fdm-Windows/MoreWinUtil.h"
+#include "../Fdm-Client/Fdm-Util.h"
 
 HubFrame::FrameMap HubFrame::frames;
 
@@ -469,8 +469,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			clearUserList();
 			setTabColor(RED);
 		} else if(task->speaker == ADD_CHAT_LINE) {
-			UserInfo* ui = findUser(MoreWinUtil::findNickInText(static_cast<StringTask*>(task)->msg));
-			if (ui) MoreWinUtil::addIpToMainChat(static_cast<StringTask*>(task)->msg, ui->getIdentity().getIp());
+			UserInfo* ui = findUser(FdmUtil::findNickInTString(static_cast<StringTask*>(task)->msg));
+			if (ui) FdmUtil::addIpToMainChat(static_cast<StringTask*>(task)->msg, ui->getIdentity().getIp());
 			addLine(static_cast<StringTask*>(task)->msg);
 		} else if(task->speaker == ADD_STATUS_LINE) {
 			addClientLine(static_cast<StringTask*>(task)->msg);

@@ -25,7 +25,8 @@
 
 namespace FdmUtil
 {
-
+	tstring findNickInTString(const tstring aLine);
+	void addIpToMainChat(tstring& aLine, string ip);
 };
 
 #endif // !defined(FDM_UTIL_H)
