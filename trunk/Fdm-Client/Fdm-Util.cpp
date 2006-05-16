@@ -28,9 +28,9 @@ tstring FdmUtil::findNickInTString(const tstring aLine) {
 	tstring::size_type j;
 
 	//Check For <Nick>
-	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) > i && j != string::npos))
+	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) != string::npos && j > i))
 		return aLine.substr(i + 1, j - i - 1).c_str();
-	return NULL;
+	return Text::toT("").c_str();
 }
 
 void FdmUtil::addIpToMainChat(tstring& aLine, string ip) {
