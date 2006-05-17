@@ -709,20 +709,17 @@ void HubFrame::addLine(const tstring& aLine) {
 		client->getMyIdentity().getParams(params, "my", true);
 		LOG(LogManager::CHAT, params);
 	}
-	long amountOfCharsBeforeAddition = ctrlClient.GetTextLengthEx();
+	long amountOfCharsBeforeAddition = ctrlClient.GetTextLengthEx() + 1;
+	int currentLinePosition = ctrlClient.GetFirstVisibleLine();
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
 	} else {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
 	UserInfo* ui = findUser(FdmUtil::findNickInTString(aLine));
-	string sourceNick;
-	bool isOp = false;
-	if (ui) {
-		sourceNick = ui->getIdentity().getNick();
-		isOp = ui->getIdentity().isOp();
-	}
-	ColourUtil::colourRichEditCtrl(ctrlClient, amountOfCharsBeforeAddition, client->getMyNick(), sourceNick, isOp, aLine);
+	string sourceNick = (ui ? ui->getIdentity().getNick() : "");
+	bool isOp = (ui ? ui->getIdentity().isOp() : false);
+	ColourUtil::colourRichEditCtrl(ctrlClient, amountOfCharsBeforeAddition, client->getMyNick(), sourceNick, isOp, aLine, noscroll, currentLinePosition);
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}

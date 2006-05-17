@@ -24,7 +24,7 @@
 #include "../Windows/WinUtil.h"
 #include "../Client/Text.h"
 
-void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfCharsBeforeAddition, string myNick, string sourceNick, bool isOp, const tstring aLine) {
+void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfCharsBeforeAddition, string myNick, string sourceNick, bool isOp, const tstring aLine, BOOL noScroll, int currentLinePosition) {
 	long amountOfCharsAfterAddition = ctrlClient.GetTextLengthEx();
 	CHARFORMAT2 myBrush;
 	myBrush.dwMask = CFM_COLOR;
@@ -62,12 +62,23 @@ void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfChar
 			else
 				i++;
 		}
+		long j = i;
+		while (true) {
+			if (buf[j] == '>')
+				break;
+			else
+				j++;
+		}
 		delete buf;
 
-		ctrlClient.SetSel(amountOfCharsBeforeAddition + i, (amountOfCharsBeforeAddition + i + sourceNick.length() + 2));
+		ctrlClient.SetSel(amountOfCharsBeforeAddition + i, amountOfCharsBeforeAddition + j + 1);
 		myBrush.crTextColor = RGB(0,0,205);
 		ctrlClient.SetWordCharFormat(myBrush);
 	}
-
-	ctrlClient.SetSel(0,0);
+	if (noScroll) {
+		ctrlClient.SetSel(0, 0);
+		ctrlClient.LineScroll(currentLinePosition, 0);
+	} else {
+		ctrlClient.SetSel(amountOfCharsAfterAddition,amountOfCharsAfterAddition);
+	}
 }

@@ -25,7 +25,7 @@
 
 namespace ColourUtil
 {
-	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfCharsBeforeAddition, string myNick, string sourceNick, bool isOp, const tstring aLine);
+	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfCharsBeforeAddition, string myNick, string sourceNick, bool isOp, const tstring aLine, BOOL noScroll, int currentLinePosition);
 };
 
 #endif // !defined(COLOUR_UTIL_H)
