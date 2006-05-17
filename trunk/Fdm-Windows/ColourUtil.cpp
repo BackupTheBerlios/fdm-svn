@@ -55,13 +55,14 @@ void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfChar
 	if (isOp && (sourceNick != "" )) {
 		TCHAR *buf = new TCHAR[1 + amountOfCharsAfterAddition - amountOfCharsBeforeAddition];
 		ctrlClient.GetSelText(buf);
-		tstring::size_type i = 0;
+		long i = 0;
 		while (true) {
 			if (buf[i] == '<')
 				break;
 			else
 				i++;
 		}
+		delete buf;
 
 		ctrlClient.SetSel(amountOfCharsBeforeAddition + i, (amountOfCharsBeforeAddition + i + sourceNick.length() + 2));
 		myBrush.crTextColor = RGB(0,0,205);
