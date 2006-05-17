@@ -305,6 +305,7 @@ public:
 	static bool urlDcADCRegistered;
 	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
+	static int textUnderCursor(POINT p, CRichEditCtrl& ctrl, tstring& x);
 	static void openLink(const tstring& url);
 	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -325,6 +326,7 @@ public:
 	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
 	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
 	static void getContextMenuPos(CEdit& aEdit,			POINT& aPt);
+	static void getContextMenuPos(CRichEditCtrl& aEdit,	POINT& aPt);
 	
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 

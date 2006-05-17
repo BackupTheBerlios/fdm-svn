@@ -306,7 +306,7 @@ private:
 	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
-	CEdit ctrlClient;
+	CRichEditCtrl ctrlClient;
 	CEdit ctrlMessage;
 	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
 	CtrlUsers ctrlUsers;

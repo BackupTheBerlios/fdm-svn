@@ -36,6 +36,7 @@
 #include "../client/SearchManager.h"
 
 #include "../Fdm-Client/Fdm-Util.h"
+#include "../Fdm-Windows/ColourUtil.h"
 
 HubFrame::FrameMap HubFrame::frames;
 
@@ -52,7 +53,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 
-	ctrlClient.FmtLines(TRUE);
+	//ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(WinUtil::font);
 	clientContainer.SubclassWindow(ctrlClient.m_hWnd);
@@ -686,7 +687,7 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(ctrlClient.GetWindowTextLength() > 25000) {
 		// We want to limit the buffer to 25000 characters...after that, w95 becomes sad...
 		ctrlClient.SetRedraw(FALSE);
-		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
+		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)));
 		ctrlClient.ReplaceSel(_T(""));
 		ctrlClient.SetRedraw(TRUE);
 	}
@@ -708,11 +709,20 @@ void HubFrame::addLine(const tstring& aLine) {
 		client->getMyIdentity().getParams(params, "my", true);
 		LOG(LogManager::CHAT, params);
 	}
+	long amountOfCharsBeforeAddition = ctrlClient.GetTextLengthEx();
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
 	} else {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
+	UserInfo* ui = findUser(FdmUtil::findNickInTString(aLine));
+	string sourceNick;
+	bool isOp = false;
+	if (ui) {
+		sourceNick = ui->getIdentity().getNick();
+		isOp = ui->getIdentity().isOp();
+	}
+	ColourUtil::colourRichEditCtrl(ctrlClient, amountOfCharsBeforeAddition, client->getMyNick(), sourceNick, isOp, aLine);
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}

@@ -20,39 +20,53 @@
 #include "../client/DCPlusPlus.h"
 #include "resource.h"
 
-#include "../client/settingsmanager.h"
-
 #include "ColourUtil.h"
+#include "../Windows/WinUtil.h"
+#include "../Client/Text.h"
 
-HBRUSH ColourUtil::bgBrush = NULL;
-COLORREF ColourUtil::textColor = 0;
-COLORREF ColourUtil::bgColor = 0;
+void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfCharsBeforeAddition, string myNick, string sourceNick, bool isOp, const tstring aLine) {
+	long amountOfCharsAfterAddition = ctrlClient.GetTextLengthEx();
+	CHARFORMAT2 myBrush;
+	myBrush.dwMask = CFM_COLOR;
+	myBrush.dwEffects = 0;
 
-CHARFORMAT2 ColourUtil::m_ChatTextGeneral;
+	bool myNickSpoken = false;
+	tstring temp = Text::toLower(aLine);
+	tstring temp2 = Text::toT(Text::toLower(myNick)).c_str();
+	if (temp.find(temp2) != string::npos)
+		myNickSpoken = true;
 
-void ColourUtil::initColors() {
-	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
-	textColor = SETTING(TEXT_COLOR);
-	bgColor = SETTING(BACKGROUND_COLOR);
+	ctrlClient.SetSel(amountOfCharsBeforeAddition, amountOfCharsAfterAddition);
 
-	CHARFORMAT2 cf;
-	memset(&cf, 0, sizeof(CHARFORMAT2));
-	cf.cbSize = sizeof(cf);
-	cf.dwReserved = 0;
-	cf.dwMask = CFM_BACKCOLOR | CFM_COLOR | CFM_BOLD | CFM_ITALIC;
-	cf.dwEffects = 0;
-	cf.crBackColor = SETTING(BACKGROUND_COLOR);
-	cf.crTextColor = SETTING(TEXT_COLOR);
-	
-/*	m_ChatTextGeneral = cf;
-	m_ChatTextGeneral.crBackColor = SETTING(TEXT_GENERAL_BACK_COLOUR);
-	m_ChatTextGeneral.crTextColor = SETTING(TEXT_GENERAL_FORE_COLOUR);
-	if(SETTING(TEXT_GENERAL_BOLD))
-		m_ChatTextGeneral.dwEffects |= CFE_BOLD;
-	if(SETTING(TEXT_GENERAL_ITALIC))
-		m_ChatTextGeneral.dwEffects |= CFE_ITALIC;
-*/
-	m_ChatTextGeneral = cf;
-	m_ChatTextGeneral.crBackColor = 0;
-	m_ChatTextGeneral.crTextColor = 16777215;
+	// mynick spoke
+	if (myNick == sourceNick) {
+		myBrush.crTextColor = RGB(139,0,0);
+	} else {
+	// someone else spoken
+		if (myNickSpoken) {
+			// and said mynick
+			myBrush.crTextColor = RGB(0,100,0);
+		} else {
+			myBrush.crTextColor = WinUtil::textColor;
+		}
+	}
+	ctrlClient.SetWordCharFormat(myBrush);
+
+	if (isOp && (sourceNick != "" )) {
+		TCHAR *buf = new TCHAR[1 + amountOfCharsAfterAddition - amountOfCharsBeforeAddition];
+		ctrlClient.GetSelText(buf);
+		tstring::size_type i = 0;
+		while (true) {
+			if (buf[i] == '<')
+				break;
+			else
+				i++;
+		}
+
+		ctrlClient.SetSel(amountOfCharsBeforeAddition + i, (amountOfCharsBeforeAddition + i + sourceNick.length() + 2));
+		myBrush.crTextColor = RGB(0,0,205);
+		ctrlClient.SetWordCharFormat(myBrush);
+	}
+
+	ctrlClient.SetSel(0,0);
 }

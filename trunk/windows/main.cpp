@@ -347,8 +347,12 @@ if (!MoreWinUtil::allowMoreInstances(_tcslen(lpstrCmdLine)))	// added for FDM mo
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
+
+	HINSTANCE hInstRich = ::LoadLibrary(_T("RICHED20.DLL"));
 	
 	int nRet = Run(lpstrCmdLine, nCmdShow);
+
+	if(hInstRich) ::FreeLibrary(hInstRich);
 	
 	_Module.Term();
 	::CoUninitialize();

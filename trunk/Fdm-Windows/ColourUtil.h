@@ -23,16 +23,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class ColourUtil
+namespace ColourUtil
 {
-public:
-	static HBRUSH bgBrush;
-	static COLORREF textColor;
-	static COLORREF bgColor;
-
-	static CHARFORMAT2 m_ChatTextGeneral;
-
-	static void initColors();
+	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, long amountOfCharsBeforeAddition, string myNick, string sourceNick, bool isOp, const tstring aLine);
 };
 
 #endif // !defined(COLOUR_UTIL_H)

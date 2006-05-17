@@ -110,3 +110,11 @@ attrib -h Fdm-*.* > nul
 attrib -h Changelog-Fdm.txt > nul
 attrib -h License-Fdm.txt > nul
 attrib -h *.rar > nul
+
+IF EXIST "C:\Shared\Bot Share\fdm\original-dcplusplus-svn-files.rar" (
+	ECHO ------------------------------------------------------------------------
+	ECHO Copying DC++ SVN Directory Rar Files To Share
+	copy /Y original-dcplusplus-svn-files.rar C:\Shared\Bot Share\fdm\ > nul
+	pause
+	goto:eof
+)
