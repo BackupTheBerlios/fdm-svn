@@ -709,17 +709,19 @@ void HubFrame::addLine(const tstring& aLine) {
 		client->getMyIdentity().getParams(params, "my", true);
 		LOG(LogManager::CHAT, params);
 	}
-	long amountOfCharsBeforeAddition = ctrlClient.GetTextLengthEx() + 1;
-	int currentLinePosition = ctrlClient.GetFirstVisibleLine();
+
+	long originalNoOfChars = ctrlClient.GetTextLengthEx() + 1;
+	int currentLinePosition = (noscroll ? ctrlClient.GetFirstVisibleLine() : -1);
+
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
 	} else {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
+
 	UserInfo* ui = findUser(FdmUtil::findNickInTString(aLine));
-	string sourceNick = (ui ? ui->getIdentity().getNick() : "");
-	bool isOp = (ui ? ui->getIdentity().isOp() : false);
-	ColourUtil::colourRichEditCtrl(ctrlClient, amountOfCharsBeforeAddition, client->getMyNick(), sourceNick, isOp, aLine, noscroll, currentLinePosition);
+	ColourUtil::colourRichEditCtrl(ctrlClient, originalNoOfChars, client->getMyNick(), (ui ? ui->getIdentity().getNick() : ""), (ui ? ui->getIdentity().isOp() : false), ((Text::toLower(aLine).find(Text::toT(Text::toLower(client->getMyNick())).c_str()) != string::npos) ? true : false), currentLinePosition);
+
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}
