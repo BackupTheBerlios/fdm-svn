@@ -25,62 +25,72 @@
 #include "../Client/Text.h"
 
 void ColourUtil::colourText(CRichEditCtrl& ctrlClient, CHARFORMAT2 myBrush, COLORREF colour, long startPos, long endPos) {
-		myBrush.crTextColor = colour;
-		ctrlClient.SetSel(startPos, endPos);
-		ctrlClient.SetWordCharFormat(myBrush);
+	myBrush.crTextColor = colour;
+	ctrlClient.SetSel(startPos, endPos);
+	ctrlClient.SetWordCharFormat(myBrush);
 }
 
-void ColourUtil::findPositionsOfChars(CRichEditCtrl ctrlClient, long size, long& firstChar, long& secondChar) {
-		TCHAR *buf = new TCHAR[size];
-		ctrlClient.GetSelText(buf);
-		
-		while (true) {
-			if (buf[firstChar] == '<')
-				break;
-			else
-				firstChar++;
-		}
-		
-		// we can skip forward a bit for this one
-		secondChar = firstChar + 1;
+long ColourUtil::findPositionOfChar(CRichEditCtrl ctrlClient, long size, char theChar) {
+	long thePos = 0;
+	TCHAR *buf = new TCHAR[size];
+	ctrlClient.GetSelText(buf);
 
-		while (true) {
-			if (buf[secondChar] == '>')
-				break;
-			else
-				secondChar++;
-		}
+	while (true) {
+		if (buf[thePos] == theChar || thePos == size)
+			break;
+		else
+			thePos++;
+	}
 
-		delete buf;
+	delete buf;
+	return thePos;
 }
 
-void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long originalNoOfChars, string myNick, string sourceNick, bool isOp, bool myNickSpoken, int currentLinePosition) {
+void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long originalNoOfChars, int currentLinePosition, string myNick, string sourceNick, bool isOp, bool myNickSpoken, bool timeStamps) {
 	long newNoOfChars = ctrlClient.GetTextLengthEx();
 	CHARFORMAT2 myBrush;
 	myBrush.dwMask = CFM_COLOR;
 	myBrush.dwEffects = 0;
+	myBrush.crTextColor = WinUtil::textColor;
+
+	ctrlClient.SetSel(originalNoOfChars, newNoOfChars);
+	if (sourceNick != "") {
+		long firstChar = findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, '<');
+
+		if (isOp) {
+		// colour speakers nick, if op
+			long secondChar = findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, '>');
+			colourText(ctrlClient, myBrush, RGB(0,0,205), originalNoOfChars + firstChar, originalNoOfChars + secondChar + 1);
+			originalNoOfChars += secondChar + 1;
+		} else {
+		// different colour if not op
+			long secondChar = findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, '>');
+			colourText(ctrlClient, myBrush, RGB(139,0,0), originalNoOfChars + firstChar, originalNoOfChars + secondChar + 1);
+			originalNoOfChars += secondChar + 1;
+		}
+	} else if (timeStamps) {
+		// Offset text to colour
+		originalNoOfChars += findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, ']') + 1;
+	}
 
 	// mynick spoke
 	if (myNick == sourceNick)
-		colourText(ctrlClient, myBrush, RGB(139,0,0), originalNoOfChars, newNoOfChars);
+		colourText(ctrlClient, myBrush, RGB(255,0,0), originalNoOfChars, newNoOfChars);
 	else if (myNickSpoken)
 	// someone else spoken mynick
 		colourText(ctrlClient, myBrush, RGB(0,100,0), originalNoOfChars, newNoOfChars);
 	else
+	// normal text then
 		colourText(ctrlClient, myBrush, WinUtil::textColor, originalNoOfChars, newNoOfChars);
 
-	// colour speakers nick
-	if (isOp && (sourceNick != "" )) {
-		long firstChar = 0;
-		long secondChar = 0;
-		findPositionsOfChars(ctrlClient, 1 + newNoOfChars - originalNoOfChars, firstChar, secondChar);
-		colourText(ctrlClient, myBrush, RGB(0,0,205), originalNoOfChars + firstChar, originalNoOfChars + secondChar + 1);
-	}
+	// Check for clickable link
 
 	if (currentLinePosition != -1) {
 		ctrlClient.SetSel(0, 0);
+		colourText(ctrlClient, myBrush, WinUtil::textColor, 0, 0);
 		ctrlClient.LineScroll(currentLinePosition, 0);
 	} else {
 		ctrlClient.SetSel(newNoOfChars, newNoOfChars);
+		colourText(ctrlClient, myBrush, WinUtil::textColor, newNoOfChars, newNoOfChars);
 	}
 }

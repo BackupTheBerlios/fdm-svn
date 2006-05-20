@@ -26,8 +26,8 @@
 namespace ColourUtil
 {
 	void colourText(CRichEditCtrl& ctrlClient, CHARFORMAT2 myBrush, COLORREF colour, long startPos, long endPos);
-	void findPositionsOfChars(CRichEditCtrl ctrlClient, long size, long& firstChar, long& secondChar);
-	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, long originalNoOfChars, string myNick, string sourceNick, bool isOp, bool myNickSpoken, int currentLinePosition);
+	long findPositionOfChar(CRichEditCtrl ctrlClient, long size, char theChar);
+	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, long originalNoOfChars, int currentLinePosition, string myNick, string sourceNick, bool isOp, bool myNickSpoken, bool timeStamps);
 };
 
 #endif // !defined(COLOUR_UTIL_H)

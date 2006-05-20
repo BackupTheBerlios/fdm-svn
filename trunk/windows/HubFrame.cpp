@@ -720,7 +720,7 @@ void HubFrame::addLine(const tstring& aLine) {
 	}
 
 	UserInfo* ui = findUser(FdmUtil::findNickInTString(aLine));
-	ColourUtil::colourRichEditCtrl(ctrlClient, originalNoOfChars, client->getMyNick(), (ui ? ui->getIdentity().getNick() : ""), (ui ? ui->getIdentity().isOp() : false), ((Text::toLower(aLine).find(Text::toT(Text::toLower(client->getMyNick())).c_str()) != string::npos) ? true : false), currentLinePosition);
+	ColourUtil::colourRichEditCtrl(ctrlClient, originalNoOfChars, currentLinePosition, client->getMyNick(), (ui ? ui->getIdentity().getNick() : ""), (ui ? ui->getIdentity().isOp() : false), ((Text::toLower(aLine).find(Text::toT(Text::toLower(client->getMyNick())).c_str()) != string::npos) ? true : false), timeStamps);
 
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
