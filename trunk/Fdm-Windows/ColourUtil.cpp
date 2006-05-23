@@ -24,73 +24,74 @@
 #include "../Windows/WinUtil.h"
 #include "../Client/Text.h"
 
-void ColourUtil::colourText(CRichEditCtrl& ctrlClient, CHARFORMAT2 myBrush, COLORREF colour, long startPos, long endPos) {
+void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, string sourceNick, bool isOp) {
+	initilize(ctrlClient);
+
+	// Colour nick
+	if (sourceNick != "") {
+		long firstChar = newText.find('<', 0);
+		long secondChar = newText.find('>', 0);
+		colourText(ctrlClient, isOp ? RGB(0,0,205) : RGB(139,0,0), origNumChars + firstChar, origNumChars + secondChar + 1);
+		offSet = secondChar + 1;
+	} else if (timeStamps) {
+		offSet = newText.find(']', 0);
+	}
+
+	// See if text needs special colouring
+	if (myNick == sourceNick)
+		colourText(ctrlClient, RGB(255,0,0), origNumChars + offSet, newNumChars);
+	else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick))) != string::npos)
+		colourText(ctrlClient, RGB(0,100,0), origNumChars + offSet, newNumChars);
+
+	// Check for clickable link
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("http://"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("www."));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("ftp://"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("irc://"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("https://"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("mailto:"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("dchub://"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("adc://"));
+	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("magnet:?"));
+
+	// Reset Brush Colour
+	colourText(ctrlClient, WinUtil::textColor, newNumChars, newNumChars);
+
+	ctrlClient.SetRedraw(TRUE);
+	ctrlClient.Invalidate();
+	ctrlClient.UpdateWindow();
+}
+
+void ColourUtil::initilize(CRichEditCtrl& ctrlClient) {
+	newNumChars = ctrlClient.GetTextLengthEx();
+	newText.reserve(1 + newNumChars - origNumChars);
+
+	offSet = 0;
+
+	myBrush.dwMask = CFM_COLOR;
+	myBrush.dwEffects = 0;
+	myBrush.crTextColor = WinUtil::textColor;
+
+	ctrlClient.SetSel(origNumChars, newNumChars);
+	TCHAR *buf = new TCHAR[1 + newNumChars - origNumChars];
+	ctrlClient.GetSelText(buf);
+	newText = buf;
+	delete buf;
+}
+
+void ColourUtil::colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos) {
 	myBrush.crTextColor = colour;
 	ctrlClient.SetSel(startPos, endPos);
 	ctrlClient.SetWordCharFormat(myBrush);
 }
 
-long ColourUtil::findPositionOfChar(CRichEditCtrl ctrlClient, long size, char theChar) {
-	long thePos = 0;
-	TCHAR *buf = new TCHAR[size];
-	ctrlClient.GetSelText(buf);
-
-	while (true) {
-		if (buf[thePos] == theChar || thePos == size)
-			break;
-		else
-			thePos++;
-	}
-
-	delete buf;
-	return thePos;
-}
-
-void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, long originalNoOfChars, int currentLinePosition, string myNick, string sourceNick, bool isOp, bool myNickSpoken, bool timeStamps) {
-	long newNoOfChars = ctrlClient.GetTextLengthEx();
-	CHARFORMAT2 myBrush;
-	myBrush.dwMask = CFM_COLOR;
-	myBrush.dwEffects = 0;
-	myBrush.crTextColor = WinUtil::textColor;
-
-	ctrlClient.SetSel(originalNoOfChars, newNoOfChars);
-	if (sourceNick != "") {
-		long firstChar = findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, '<');
-
-		if (isOp) {
-		// colour speakers nick, if op
-			long secondChar = findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, '>');
-			colourText(ctrlClient, myBrush, RGB(0,0,205), originalNoOfChars + firstChar, originalNoOfChars + secondChar + 1);
-			originalNoOfChars += secondChar + 1;
-		} else {
-		// different colour if not op
-			long secondChar = findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, '>');
-			colourText(ctrlClient, myBrush, RGB(139,0,0), originalNoOfChars + firstChar, originalNoOfChars + secondChar + 1);
-			originalNoOfChars += secondChar + 1;
-		}
-	} else if (timeStamps) {
-		// Offset text to colour
-		originalNoOfChars += findPositionOfChar(ctrlClient, 1 + newNoOfChars - originalNoOfChars, ']') + 1;
-	}
-
-	// mynick spoke
-	if (myNick == sourceNick)
-		colourText(ctrlClient, myBrush, RGB(255,0,0), originalNoOfChars, newNoOfChars);
-	else if (myNickSpoken)
-	// someone else spoken mynick
-		colourText(ctrlClient, myBrush, RGB(0,100,0), originalNoOfChars, newNoOfChars);
-	else
-	// normal text then
-		colourText(ctrlClient, myBrush, WinUtil::textColor, originalNoOfChars, newNoOfChars);
-
-	// Check for clickable link
-
-	if (currentLinePosition != -1) {
-		ctrlClient.SetSel(0, 0);
-		colourText(ctrlClient, myBrush, WinUtil::textColor, 0, 0);
-		ctrlClient.LineScroll(currentLinePosition, 0);
-	} else {
-		ctrlClient.SetSel(newNoOfChars, newNoOfChars);
-		colourText(ctrlClient, myBrush, WinUtil::textColor, newNoOfChars, newNoOfChars);
+void ColourUtil::findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind) {
+	long startPos = offSet;
+	long finishPos = offSet;
+	while ((startPos = newText.find(textToFind, startPos)) != string::npos) {
+		finishPos = newText.find_first_of(_T(" <\t\r\n"), startPos);
+		finishPos = (finishPos != string::npos ? finishPos + origNumChars : newNumChars);
+		colourText(ctrlClient, colour, startPos + origNumChars, finishPos);
+		startPos++;
 	}
 }

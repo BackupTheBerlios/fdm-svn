@@ -470,7 +470,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			clearUserList();
 			setTabColor(RED);
 		} else if(task->speaker == ADD_CHAT_LINE) {
-			UserInfo* ui = findUser(FdmUtil::findNickInTString(static_cast<StringTask*>(task)->msg));
+			UserInfo* ui = findUser(Text::toT(FdmUtil::findNickInTString(static_cast<StringTask*>(task)->msg)));
 			if (ui) FdmUtil::addIpToMainChat(static_cast<StringTask*>(task)->msg, ui->getIdentity().getIp());
 			addLine(static_cast<StringTask*>(task)->msg);
 		} else if(task->speaker == ADD_STATUS_LINE) {
@@ -710,8 +710,7 @@ void HubFrame::addLine(const tstring& aLine) {
 		LOG(LogManager::CHAT, params);
 	}
 
-	long originalNoOfChars = ctrlClient.GetTextLengthEx() + 1;
-	int currentLinePosition = (noscroll ? ctrlClient.GetFirstVisibleLine() : -1);
+	ColourUtil aColourUtil = ColourUtil(ctrlClient.GetTextLengthEx() + 1, timeStamps);
 
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
@@ -719,8 +718,8 @@ void HubFrame::addLine(const tstring& aLine) {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
 
-	UserInfo* ui = findUser(FdmUtil::findNickInTString(aLine));
-	ColourUtil::colourRichEditCtrl(ctrlClient, originalNoOfChars, currentLinePosition, client->getMyNick(), (ui ? ui->getIdentity().getNick() : ""), (ui ? ui->getIdentity().isOp() : false), ((Text::toLower(aLine).find(Text::toT(Text::toLower(client->getMyNick())).c_str()) != string::npos) ? true : false), timeStamps);
+	UserInfo* ui = (findUser(Text::toT(FdmUtil::findNickInTString(aLine))));
+	aColourUtil.colourRichEditCtrl(ctrlClient, client->getMyNick(), FdmUtil::findNickInTString(aLine), (ui ? ui->getIdentity().isOp() : false));
 
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);

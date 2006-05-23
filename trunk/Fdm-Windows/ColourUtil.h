@@ -23,11 +23,25 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-namespace ColourUtil
+class ColourUtil
 {
-	void colourText(CRichEditCtrl& ctrlClient, CHARFORMAT2 myBrush, COLORREF colour, long startPos, long endPos);
-	long findPositionOfChar(CRichEditCtrl ctrlClient, long size, char theChar);
-	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, long originalNoOfChars, int currentLinePosition, string myNick, string sourceNick, bool isOp, bool myNickSpoken, bool timeStamps);
+public:
+	ColourUtil(long orig, bool timestamps) { origNumChars = orig; timeStamps = timestamps;	}
+	~ColourUtil() {	}
+
+	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, string sourceNick, bool isOp);
+
+private:
+	bool timeStamps;
+	CHARFORMAT2 myBrush;
+	long origNumChars;
+	long newNumChars;
+	long offSet;
+	tstring newText;
+
+	void initilize(CRichEditCtrl& ctrlClient);
+	void colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos);
+	void findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind);
 };
 
 #endif // !defined(COLOUR_UTIL_H)
