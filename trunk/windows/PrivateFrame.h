@@ -149,7 +149,7 @@ private:
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
-	CEdit ctrlClient;
+	CRichEditCtrl ctrlClient;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
 

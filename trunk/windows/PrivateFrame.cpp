@@ -33,6 +33,10 @@
 #include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 
+#include "../client/User.h"
+#include "../Fdm-Client/Fdm-Util.h"
+#include "../Fdm-Windows/ColourUtil.h"
+
 PrivateFrame::FrameMap PrivateFrame::frames;
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -43,7 +47,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 	
-	ctrlClient.FmtLines(TRUE);
+//	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(WinUtil::font);
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -243,7 +247,13 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	}
 	line += aLine;
 
+	ColourUtil aColourUtil = ColourUtil(ctrlClient.GetTextLengthEx() + 1, BOOLSETTING(TIME_STAMPS));
+	bool opStatus = false;
+
 	ctrlClient.AppendText(line.c_str());
+
+	try { opStatus = ClientManager::getInstance()->getIdentity(ClientManager::getInstance()->getUser(FdmUtil::findNickInTString(aLine), Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID())))).isOp();	} catch (...) { }
+	aColourUtil.colourRichEditCtrl(ctrlClient, ClientManager::getInstance()->getIdentity(ClientManager::getInstance()->getMe()).getNick(), FdmUtil::findNickInTString(aLine), opStatus);
 
 	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 
