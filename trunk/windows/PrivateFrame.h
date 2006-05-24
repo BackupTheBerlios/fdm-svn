@@ -161,6 +161,9 @@ private:
 
 	bool closed;
 
+	string hubUrl;
+	string myNick;
+
 	void updateTitle();
 	
 	// ClientManagerListener

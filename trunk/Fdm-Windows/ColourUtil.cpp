@@ -21,16 +21,23 @@
 #include "resource.h"
 
 #include "ColourUtil.h"
-#include "../Windows/WinUtil.h"
+#include "../Client/ClientManager.h"
 #include "../Client/Text.h"
 
-void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, string sourceNick, bool isOp) {
+#include "../Client/Client.h"
+#include "../Client/User.h"
+
+#include "../Windows/WinUtil.h"
+
+void SortChat::ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string hubUrl, string myNick) {
 	initilize(ctrlClient);
+	string sourceNick = findNickInTString(newText);
 
 	// Colour nick
 	if (sourceNick != "") {
+		bool isOp = ClientManager::getInstance()->isOp(ClientManager::getInstance()->getUser(sourceNick, hubUrl), hubUrl);
 		long firstChar = newText.find('<', 0);
-		long secondChar = newText.find('>', 0);
+        long secondChar = newText.find('>', 0);
 		colourText(ctrlClient, isOp ? RGB(0,0,205) : RGB(139,0,0), origNumChars + firstChar, origNumChars + secondChar + 1);
 		offSet = secondChar + 1;
 	} else if (timeStamps) {
@@ -62,7 +69,7 @@ void ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, st
 	ctrlClient.UpdateWindow();
 }
 
-void ColourUtil::initilize(CRichEditCtrl& ctrlClient) {
+void SortChat::ColourUtil::initilize(CRichEditCtrl& ctrlClient) {
 	newNumChars = ctrlClient.GetTextLengthEx();
 	newText.reserve(1 + newNumChars - origNumChars);
 
@@ -79,13 +86,13 @@ void ColourUtil::initilize(CRichEditCtrl& ctrlClient) {
 	delete buf;
 }
 
-void ColourUtil::colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos) {
+void SortChat::ColourUtil::colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos) {
 	myBrush.crTextColor = colour;
 	ctrlClient.SetSel(startPos, endPos);
 	ctrlClient.SetWordCharFormat(myBrush);
 }
 
-void ColourUtil::findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind) {
+void SortChat::ColourUtil::findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind) {
 	long startPos = offSet;
 	long finishPos = offSet;
 	while ((startPos = newText.find(textToFind, startPos)) != string::npos) {
@@ -94,4 +101,19 @@ void ColourUtil::findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, 
 		colourText(ctrlClient, colour, startPos + origNumChars, finishPos);
 		startPos++;
 	}
+}
+
+string SortChat::findNickInTString(const tstring aLine) {
+	tstring::size_type i;
+	tstring::size_type j;
+
+	//Check For <Nick>
+	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) != string::npos && j > i))
+		return Text::fromT(aLine.substr(i + 1, j - i - 1).c_str());
+	return "";
+}
+
+void SortChat::addIpToMainChat(tstring& aLine, string ip) {
+	if (ip != "")
+		aLine = (Text::toT("[ " + ip + " ] ") + aLine).c_str();
 }

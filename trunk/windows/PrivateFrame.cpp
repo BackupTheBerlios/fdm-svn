@@ -33,8 +33,6 @@
 #include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 
-#include "../client/User.h"
-#include "../Fdm-Client/Fdm-Util.h"
 #include "../Fdm-Windows/ColourUtil.h"
 
 PrivateFrame::FrameMap PrivateFrame::frames;
@@ -68,6 +66,9 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	created = true;
 
 	ClientManager::getInstance()->addListener(this);
+
+	hubUrl = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	myNick = ClientManager::getInstance()->getMyNick(hubUrl);
 
 	bHandled = FALSE;
 	return 1;
@@ -247,13 +248,11 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	}
 	line += aLine;
 
-	ColourUtil aColourUtil = ColourUtil(ctrlClient.GetTextLengthEx() + 1, BOOLSETTING(TIME_STAMPS));
-	bool opStatus = false;
+	SortChat::ColourUtil aColourUtil = SortChat::ColourUtil(ctrlClient.GetTextLengthEx() + 1, BOOLSETTING(TIME_STAMPS));
 
 	ctrlClient.AppendText(line.c_str());
 
-	try { opStatus = ClientManager::getInstance()->getIdentity(ClientManager::getInstance()->getUser(FdmUtil::findNickInTString(aLine), Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID())))).isOp();	} catch (...) { }
-	aColourUtil.colourRichEditCtrl(ctrlClient, ClientManager::getInstance()->getIdentity(ClientManager::getInstance()->getMe()).getNick(), FdmUtil::findNickInTString(aLine), opStatus);
+	aColourUtil.colourRichEditCtrl(ctrlClient, hubUrl, myNick);
 
 	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 

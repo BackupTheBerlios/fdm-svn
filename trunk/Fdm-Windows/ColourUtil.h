@@ -23,25 +23,31 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class ColourUtil
+namespace SortChat
 {
-public:
-	ColourUtil(long orig, bool timestamps) { origNumChars = orig; timeStamps = timestamps;	}
-	~ColourUtil() {	}
+	class ColourUtil
+	{
+	public:
+		ColourUtil(long orig, bool timestamps) { origNumChars = orig; timeStamps = timestamps;	}
+		~ColourUtil() {	}
 
-	void colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, string sourceNick, bool isOp);
+		void colourRichEditCtrl(CRichEditCtrl& ctrlClient, string hubUrl, string myNick = "");
 
-private:
-	bool timeStamps;
-	CHARFORMAT2 myBrush;
-	long origNumChars;
-	long newNumChars;
-	long offSet;
-	tstring newText;
+	private:
+		bool timeStamps;
+		CHARFORMAT2 myBrush;
+		long origNumChars;
+		long newNumChars;
+		long offSet;
+		tstring newText;
 
-	void initilize(CRichEditCtrl& ctrlClient);
-	void colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos);
-	void findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind);
+		void initilize(CRichEditCtrl& ctrlClient);
+		void colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos);
+		void findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind);
+	};
+
+	string findNickInTString(const tstring aLine);
+	void addIpToMainChat(tstring& aLine, string ip);
 };
 
 #endif // !defined(COLOUR_UTIL_H)
