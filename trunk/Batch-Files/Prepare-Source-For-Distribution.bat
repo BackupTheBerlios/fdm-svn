@@ -2,7 +2,7 @@
 rem CONFIG START
 rem -------------------------------------------------------------------------------
 set RAR="%PROGRAMFILES%\winRar\rar.exe"
-set RARSRC=a -r -eH -ep1 -idp -inul -m3 fdm-src.rar Temp\*.*
+set RARSRC=a -r -eH -ep1 -idp -inul -m3 fdm-src.rar ..\Temp\*.*
 rem CONFIG END
 rem -------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ attrib +h /S *.suo > nul
 attrib +h /S *.aps > nul
 attrib +h *.rar > nul
 rd /s /q Temp
-xcopy /q /y /s *.* Temp\ > nul
+xcopy /q /y /s *.* ..\Temp\ > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO packing source...
@@ -33,7 +33,7 @@ ECHO packing source...
 
 ECHO ------------------------------------------------------------------------
 ECHO cleaning up
-rd /s /q Temp > nul
+rd /s /q ..\Temp > nul
 attrib -h /S /D CVS > nul
 attrib -h /S /D vc7 > nul
 attrib -h /S /D app > nul

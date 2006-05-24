@@ -4,7 +4,7 @@ rem ----------------------------------------------------------------------------
 set RAR="%PROGRAMFILES%\winRar\rar.exe"
 
 set DCSVN="original-dcplusplus-svn-files.rar"
-set UNRARSVNFILES=x -r -idp -inul "..\%DCSVN%"
+set UNRARSVNFILES=x -r -idp -inul "..\%DCSVN%" "..\"
 
 rem CONFIG END
 rem -------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ attrib +h Fdm-*.* > nul
 attrib +h Changelog-Fdm.txt > nul
 attrib +h License-Fdm.txt > nul
 attrib +h *.rar > nul
-rd /s /q original-dcplusplus
+rd /s /q ..\original-dcplusplus > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO Extracting DC++ Svn's Files
@@ -42,17 +42,15 @@ ECHO Extracting DC++ Svn's Files
 
 ECHO ------------------------------------------------------------------------
 ECHO Copying Files Over
-attrib +h original-dcplusplus
-xcopy /q /y /e *.* original-dcplusplus\ > nul
-attrib -h original-dcplusplus
+xcopy /q /y /e *.* ..\original-dcplusplus > nul
 
 ECHO ------------------------------------------------------------------------
-ECHO Time To View.  Look In original-dcplusplus Directory.
+ECHO Time To View.  Look In ..\original-dcplusplus Directory.
 PAUSE
 
 ECHO ------------------------------------------------------------------------
 ECHO Cleaning Up . . .
-rd /s /q original-dcplusplus > nul
+rd /s /q ..\original-dcplusplus > nul
 attrib -h /S /D Batch-Files > nul
 attrib -h /S /D Fdm-Client > nul
 attrib -h /S /D Fdm-Windows > nul
