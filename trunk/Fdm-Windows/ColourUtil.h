@@ -31,7 +31,7 @@ namespace SortChat
 		ColourUtil(long orig, bool timestamps) { origNumChars = orig; timeStamps = timestamps;	}
 		~ColourUtil() {	}
 
-		void colourRichEditCtrl(CRichEditCtrl& ctrlClient, string hubUrl, string myNick = "");
+		void colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, bool isOp);
 
 	private:
 		bool timeStamps;
@@ -47,7 +47,7 @@ namespace SortChat
 	};
 
 	string findNickInTString(const tstring aLine);
-	void addIpToMainChat(tstring& aLine, string ip);
+	void addIpToChat(tstring& aLine, string ip);
 };
 
 #endif // !defined(COLOUR_UTIL_H)

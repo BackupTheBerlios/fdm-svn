@@ -244,6 +244,18 @@ bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	return false;
 }
 
+bool ClientManager::isOp(const string& aNick, const string& aHubUrl) {
+	Lock l(cs);
+	for(OnlineIter i = onlineUsers.begin(); i != onlineUsers.end(); ++i) {
+		if(i->second->getIdentity().getNick() == aNick) {
+			if(i->second->getClient().getHubUrl() == aHubUrl) {
+				return i->second->getIdentity().isOp();
+			}
+		}
+	}
+	return false;
+}
+
 string ClientManager::getMyNick(const string& aHubUrl) {
 	Lock l(cs);
 	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(getMe()->getCID());

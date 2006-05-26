@@ -252,7 +252,7 @@ void PrivateFrame::addLine(const tstring& aLine) {
 
 	ctrlClient.AppendText(line.c_str());
 
-	aColourUtil.colourRichEditCtrl(ctrlClient, hubUrl, myNick);
+	aColourUtil.colourRichEditCtrl(ctrlClient, myNick, ClientManager::getInstance()->isOp(SortChat::findNickInTString(line), hubUrl));
 
 	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 

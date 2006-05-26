@@ -21,23 +21,17 @@
 #include "resource.h"
 
 #include "ColourUtil.h"
-#include "../Client/ClientManager.h"
 #include "../Client/Text.h"
-
-#include "../Client/Client.h"
-#include "../Client/User.h"
-
 #include "../Windows/WinUtil.h"
 
-void SortChat::ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string hubUrl, string myNick) {
+void SortChat::ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, bool isOp) {
 	initilize(ctrlClient);
 	string sourceNick = findNickInTString(newText);
 
 	// Colour nick
 	if (sourceNick != "") {
-		bool isOp = ClientManager::getInstance()->isOp(ClientManager::getInstance()->getUser(sourceNick, hubUrl), hubUrl);
 		long firstChar = newText.find('<', 0);
-        long secondChar = newText.find('>', 0);
+        long secondChar = newText.find('>', firstChar);
 		colourText(ctrlClient, isOp ? RGB(0,0,205) : RGB(139,0,0), origNumChars + firstChar, origNumChars + secondChar + 1);
 		offSet = secondChar + 1;
 	} else if (timeStamps) {
@@ -47,7 +41,7 @@ void SortChat::ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string 
 	// See if text needs special colouring
 	if (myNick == sourceNick)
 		colourText(ctrlClient, RGB(255,0,0), origNumChars + offSet, newNumChars);
-	else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick))) != string::npos)
+	else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick)), offSet) != string::npos)
 		colourText(ctrlClient, RGB(0,100,0), origNumChars + offSet, newNumChars);
 
 	// Check for clickable link
@@ -113,7 +107,7 @@ string SortChat::findNickInTString(const tstring aLine) {
 	return "";
 }
 
-void SortChat::addIpToMainChat(tstring& aLine, string ip) {
+void SortChat::addIpToChat(tstring& aLine, string ip) {
 	if (ip != "")
 		aLine = (Text::toT("[ " + ip + " ] ") + aLine).c_str();
 }
