@@ -59,15 +59,15 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 { 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	
-	links.homepage = _T("http://dcplusplus.sourceforge.net/");
+	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
 	links.translations = _T("http://sourceforge.net/tracker/?atid=460289&group_id=40287");
-	links.faq = links.homepage + _T("faq/faq.php?list=all&prog=1&lang=en");
+	links.faq = links.homepage + _T("faq/");
 	links.help = links.homepage + _T("forum/");
 	links.discuss = links.homepage + _T("forum/");
-	links.features = links.homepage + _T("bugs/");
-	links.bugs = links.homepage + _T("bugs/");
+	links.features = links.homepage + _T("bugzilla/");
+	links.bugs = links.homepage + _T("bugzilla/");
 }
 
 MainFrame::~MainFrame() {
@@ -970,6 +970,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_SHOW, CTSTRING(MENU_SHOW));
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_QUIT, CTSTRING(MENU_EXIT));
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
+		mnuTrayMenu.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CTSTRING(MENU_SETTINGS));
 		GetCursorPos(&pt);
 		SetForegroundWindow(m_hWnd); 
 		mnuTrayMenu.TrackPopupMenu(TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON,pt.x,pt.y,m_hWnd);

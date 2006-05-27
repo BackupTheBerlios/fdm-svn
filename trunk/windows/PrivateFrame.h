@@ -152,6 +152,8 @@ private:
 	CRichEditCtrl ctrlClient;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
+	string hubUrl;
+	string myNick;
 
 	CMenu tabMenu;
 
@@ -161,8 +163,7 @@ private:
 
 	bool closed;
 
-	string hubUrl;
-	string myNick;
+	StringMap ucLineParams;
 
 	void updateTitle();
 	

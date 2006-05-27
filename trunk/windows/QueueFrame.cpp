@@ -1217,6 +1217,17 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bH
 	return 0;
 }
 
+void QueueFrame::onTab() {
+	if(showTree) {
+		HWND focus = ::GetFocus();
+		if(focus == ctrlDirs.m_hWnd) {
+			ctrlQueue.SetFocus();
+		} else if(focus == ctrlQueue.m_hWnd) {
+			ctrlDirs.SetFocus();
+		}
+	}
+}
+
 void QueueFrame::updateQueue() {
 	Lock l(cs);
 
@@ -1239,6 +1250,15 @@ void QueueFrame::updateQueue() {
 	ctrlQueue.SetRedraw(TRUE);
 	curDir = getSelectedDir();
 	updateStatus();
+}
+
+void QueueFrame::clearTree(HTREEITEM item) {
+	HTREEITEM next = ctrlDirs.GetChildItem(item);
+	while(next != NULL) {
+		clearTree(next);
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+	delete (tstring*)ctrlDirs.GetItemData(item);
 }
 
 // Put it here to avoid a copy for each recursion...
