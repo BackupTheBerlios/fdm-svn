@@ -20,8 +20,9 @@
 #include "../client/DCPlusPlus.h"
 #include "resource.h"
 
-#include "../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
 #include "MoreWinUtil.h"
+#include "../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
+#include "../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
 
 bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	if(amountOfProcesses == 0)
@@ -29,3 +30,15 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 			return true;
 	return false;
 }
+
+void MoreWinUtil::initilizeColours() {
+	StaticSettings::opSpoken		= FDMSETTING(OP_SPOKE_COLOUR);
+	StaticSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
+	StaticSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
+	StaticSettings::myNickSpoken	= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+}
+
+COLORREF StaticSettings::opSpoken		= 0;
+COLORREF StaticSettings::notOpSpoken	= 0;
+COLORREF StaticSettings::iSpoke			= 0;
+COLORREF StaticSettings::myNickSpoken	= 0;

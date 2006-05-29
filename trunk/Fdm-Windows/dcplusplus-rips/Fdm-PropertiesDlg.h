@@ -16,13 +16,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define FDMAPPNAME "FDM"
-#define FDMVERSIONSTRING "0.01"
-#define FDMVERSIONFLOAT 0.01
+#if !defined(FDM_PROPERTIES_DLG_H)
+#define FDM_PROPERTIES_DLG_H
 
-/* Update the .rc file as well... */
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
-/**
- * @file
- * $Id: version.h,v 1.84 2006/02/13 21:13:27 arnetheduck Exp $
- */
+#include "Fdm-PropPage.h"
+#include "../../windows/TreePropertySheet.h"
+
+class FdmPropertiesDlg : public TreePropertySheet
+{
+public:
+	enum { numPages = 1 };
+
+	BEGIN_MSG_MAP(PropertiesDlg)
+		COMMAND_ID_HANDLER(IDOK, onOK)
+		CHAIN_MSG_MAP(TreePropertySheet)
+	ALT_MSG_MAP(TreePropertySheet::TAB_MESSAGE_MAP)
+		MESSAGE_HANDLER(TCM_SETCURSEL, TreePropertySheet::onSetCurSel)
+	END_MSG_MAP()
+
+	FdmPropertiesDlg(HWND parent, FdmSettingsManager *s);
+	virtual ~FdmPropertiesDlg();
+
+	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+protected:
+	void write();
+
+	FdmPropPage *pages[numPages];
+};
+
+#endif // !defined(Fdm_PROPERTIES_DLG_H)

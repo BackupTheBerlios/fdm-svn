@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +23,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 #include "../windows/FlatTabCtrl.h"
-#include "../../windows/resource.h"
 #include "../../windows/WinUtil.h"
 
-#define FDM_NOTEPAD_MESSAGE_MAP 13
+#define FDM_NOTEPAD_MESSAGE_MAP 50
 
 class FdmNotepadFrame : public MDITabChildWindowImpl<FdmNotepadFrame>, public StaticFrame<FdmNotepadFrame, FdmResourceManager::FDM_NOTEPAD, true>
 {
@@ -44,6 +42,8 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(FDM_NOTEPAD_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
@@ -51,8 +51,21 @@ public:
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
+	
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlPad.m_hWnd) {
+			::SetBkColor(hDC, WinUtil::bgColor);
+			::SetTextColor(hDC, WinUtil::textColor);
+			return (LRESULT)WinUtil::bgBrush;
+		}
+		bHandled = FALSE;
+		return FALSE;
+	}
+	
 	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
@@ -60,14 +73,14 @@ public:
 	}
 	
 private:
+	
 	bool dirty;
 	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;
+
+	static string getFdmNotepadFile() {
+		return Util::getConfigPath() + "Fdm-Notepad.txt";
+	}
 };
 
 #endif // !defined(FDM_NOTEPAD_FRAME_H)
-
-/**
- * @file
- * $Id: NotepadFrame.h,v 1.15 2005/11/12 10:23:02 arnetheduck Exp $
- */

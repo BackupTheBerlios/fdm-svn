@@ -159,7 +159,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
-	HWND hWndFdmToolBar = FdmMainFrame::createFdmToolbar(m_hWnd, fdmLargeImages, fdmLargeImagesHot);
+	MoreWinUtil::initilizeColours();
+	HWND hWndFdmToolBar = FdmMainFrame::createFdmToolbar(fdmLargeImages, fdmLargeImagesHot);
 	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
 
 	CreateSimpleStatusBar();

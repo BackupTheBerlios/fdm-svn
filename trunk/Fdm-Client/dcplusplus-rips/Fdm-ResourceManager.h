@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,38 +31,40 @@ public:
 #include "Fdm-StringDefs.h"
 
 	void loadLanguage(const string& aFile);
-	const string& getFdmString(FdmStrings x) const { dcassert(x >= 0 && x < LAST); return fdmstrings[x]; };
-	const wstring& getFdmStringW(FdmStrings x) const { dcassert(x >= 0 && x < LAST); return fdmwstrings[x]; };
-
+	const string& getString(FdmStrings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; }
+	const wstring& getStringW(FdmStrings x) const { dcassert(x >= 0 && x < LAST); return wstrings[x]; }
+	bool isRTL() { return rtl; }
 private:
 	friend class Singleton<FdmResourceManager>;
 	
-	typedef HASH_MAP<string, FdmStrings> FdmNameMap;
-	typedef FdmNameMap::iterator FdmNameIter;
+	typedef HASH_MAP<string, FdmStrings> NameMap;
+	typedef NameMap::iterator NameIter;
 
-	FdmResourceManager() {
-		createFdmWide();
-	};
+	FdmResourceManager(): rtl(false) {
+		createWide();
+	}
 
-	virtual ~FdmResourceManager() { };
+	virtual ~FdmResourceManager() { }
 	
-	static string fdmstrings[LAST];
-	static wstring fdmwstrings[LAST];
-	static string fdmnames[LAST];
+	static string strings[LAST];
+	static wstring wstrings[LAST];
+	static string names[LAST];
 
-	void createFdmWide();
+	bool rtl;
+
+	void createWide();
 };
 
 
-#define FDMSTRING(x) FdmResourceManager::getInstance()->getFdmString(FdmResourceManager::x)
-#define FDMCSTRING(x) FdmResourceManager::getInstance()->getFdmString(FdmResourceManager::x).c_str()
-#define FDMWSTRING(x) FdmResourceManager::getInstance()->getFdmStringW(FdmResourceManager::x)
-#define FDMCWSTRING(x) FdmResourceManager::getInstance()->getFdmStringW(FdmResourceManager::x).c_str()
+#define FDMSTRING(x) FdmResourceManager::getInstance()->getString(FdmResourceManager::x)
+#define FDMCSTRING(x) FdmResourceManager::getInstance()->getString(FdmResourceManager::x).c_str()
+#define FDMWSTRING(x) FdmResourceManager::getInstance()->getStringW(FdmResourceManager::x)
+#define FDMCWSTRING(x) FdmResourceManager::getInstance()->getStringW(FdmResourceManager::x).c_str()
 
-#define FDMSTRING_I(x) FdmResourceManager::getInstance()->getFdmString(x)
-#define FDMCSTRING_I(x) FdmResourceManager::getInstance()->getFdmString(x).c_str()
-#define FDMWSTRING_I(x) FdmResourceManager::getInstance()->getFdmStringW(x)
-#define FDMCWSTRING_I(x) FdmResourceManager::getInstance()->getFdmStringW(x).c_str()
+#define FDMSTRING_I(x) FdmResourceManager::getInstance()->getString(x)
+#define FDMCSTRING_I(x) FdmResourceManager::getInstance()->getString(x).c_str()
+#define FDMWSTRING_I(x) FdmResourceManager::getInstance()->getStringW(x)
+#define FDMCWSTRING_I(x) FdmResourceManager::getInstance()->getStringW(x).c_str()
 
 #ifdef UNICODE
 #define FDMTSTRING FDMWSTRING
@@ -75,8 +77,3 @@ private:
 
 
 #endif // !defined(FDM_RESOURCE_MANAGER_H)
-
-/**
- * @file
- * $Id: ResourceManager.h,v 1.15 2005/04/24 08:13:11 arnetheduck Exp $
- */

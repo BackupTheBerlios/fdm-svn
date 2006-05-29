@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,13 @@
 #define _ATL_NO_COM
 #define _ATL_NO_HOSTING
 #define _ATL_NO_OLD_NAMES
+
+#if _MSC_VER == 1400
+//disable the deperecated warnings for the crt functions.
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _ATL_SECURE_NO_DEPRECATE 1
+#define _CRT_NON_CONFORMING_SWPRINTFS 1
+#endif
 
 #include <Winsock2.h>
 
@@ -126,8 +133,3 @@ using namespace stdext;
 #endif // __GLIBCPP__
 
 #endif // !defined(FDM_STDINC_H)
-
-/**
- * @file
- * $Id: stdinc.h,v 1.21 2006/01/15 18:40:37 arnetheduck Exp $
- */

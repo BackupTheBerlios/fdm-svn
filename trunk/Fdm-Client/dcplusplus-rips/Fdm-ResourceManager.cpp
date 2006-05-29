@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "../../client/File.h"
 #include "../../client/Text.h"
 
-wstring FdmResourceManager::fdmwstrings[FdmResourceManager::LAST];
+wstring FdmResourceManager::wstrings[FdmResourceManager::LAST];
 
 void FdmResourceManager::loadLanguage(const string& aFile) {
 	try {
@@ -36,22 +36,24 @@ void FdmResourceManager::loadLanguage(const string& aFile) {
 		HASH_MAP<string, int> h;
 		
 		for(int i = 0; i < LAST; ++i) {
-			h[fdmnames[i]] = i;
+			h[names[i]] = i;
 		}
 
 		if(xml.findChild("Language")) {
+			rtl = xml.getBoolChildAttrib("RightToLeft");
+
 			xml.stepIn();
-			if(xml.findChild("FdmStrings")) {
+			if(xml.findChild("Strings")) {
 				xml.stepIn();
 
-				while(xml.findChild("FdmString")) {
+				while(xml.findChild("String")) {
 					HASH_MAP<string, int>::iterator j = h.find(xml.getChildAttrib("Name"));
 
 					if(j != h.end()) {
-						fdmstrings[j->second] = xml.getChildData();
+						strings[j->second] = xml.getChildData();
 					}
 				}
-				createFdmWide();
+				createWide();
 			}
 		}
 	} catch(const Exception&) {
@@ -59,14 +61,9 @@ void FdmResourceManager::loadLanguage(const string& aFile) {
 	}
 }
 
-void FdmResourceManager::createFdmWide() {
+void FdmResourceManager::createWide() {
 	for(int i = 0; i < LAST; ++i) {
-		fdmwstrings[i].clear();
-		Text::utf8ToWide(fdmstrings[i], fdmwstrings[i]);
+		wstrings[i].clear();
+		Text::utf8ToWide(strings[i], wstrings[i]);
 	}
 }
-
-/**
- * @file
- * $Id: ResourceManager.cpp,v 1.14 2005/04/24 08:13:36 arnetheduck Exp $
- */

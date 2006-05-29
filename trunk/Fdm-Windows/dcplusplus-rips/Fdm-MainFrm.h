@@ -32,7 +32,7 @@ namespace FdmMainFrame {
 	LRESULT OnFdmFavHubFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void destroyFdmMainFrame(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
-	HWND createFdmToolbar(HWND& m_hWnd, CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
+	HWND createFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
 	void fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stringId);
 };
 

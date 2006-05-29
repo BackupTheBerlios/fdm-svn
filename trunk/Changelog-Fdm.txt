@@ -3,9 +3,11 @@ Pothead
 	Added PCRE 6.4
 	Added Sqlite 
 	Added CppSQLite3
-	Ripped a few DCplusplus files, so can have own Language and Settings files.
 	Added a sample database
-	Fixed tooltips
+	Added new toolbar
+	Added Coloured Text and IP's to Main Chat and PM's
+	Ripped a few DCplusplus files, so can have own Language and Settings files.
+	Ripped a few DCplusplus files, so can have own Settings and Notepad pages.
 
 Carraya
 	Added Fdm-Config file

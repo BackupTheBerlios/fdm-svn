@@ -1,23 +1,45 @@
 #include "Fdm-stdinc.h"
 #include "../../client/DCPlusPlus.h"
 #include "Fdm-ResourceManager.h"
-string FdmResourceManager::fdmstrings[] = {
+string FdmResourceManager::strings[] = {
 "Close", 
+"&Browse...", 
 "&File", 
 "&Help", 
 "&View", 
 "&Window", 
-"FDM Notepad testframe", 
-"FDM Settings", 
-"FDM Notepad", 
+"Fdm Notepad", 
+"Fdm Settings", 
+"Auto-away on minimize (and back on restore)", 
+"Fdm Settings", 
+"Fdm Notepad", 
+"Extra Appearance", 
+"Text you write", 
+"Your nick spoken", 
+"If speaker is not an op", 
+"If speaker is an op", 
+"Note; most of these options require that you restart DC++", 
+"Text colouring", 
+"Fdm Language file", 
 };
-string FdmResourceManager::fdmnames[] = {
+string FdmResourceManager::names[] = {
 "Close", 
+"FdmBrowseAccel", 
 "FdmMenuFile", 
 "FdmMenuHelp", 
 "FdmMenuView", 
 "FdmMenuWindow", 
 "FdmNotepad", 
+"FdmSettings", 
+"FdmSettingsAutoAway", 
 "MenuFdmSettings", 
 "MenuNotepadFrame", 
+"SettingsAppearancePage", 
+"SettingsAppearanceISpoke", 
+"SettingsAppearanceMyNickSpoken", 
+"SettingsAppearanceNotOpSpoke", 
+"SettingsAppearanceOpSpoke", 
+"SettingsAppearanceRequiresRestart", 
+"SettingsAppearanceTextColouring", 
+"SettingsFdmLanguageFile", 
 };

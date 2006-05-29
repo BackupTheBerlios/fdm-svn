@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ class SimpleXML;
 
 class FdmSettingsManagerListener {
 public:
+	virtual ~FdmSettingsManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Load;
@@ -44,89 +45,88 @@ class FdmSettingsManager : public Singleton<FdmSettingsManager>, public Speaker<
 {
 public:
 
-	enum StrFdmSetting { STR_FDM_FIRST,
-		FDM_LANGUAGE_FILE = STR_FDM_FIRST, 
-		ASTRING,
-		STR_FDM_LAST };
+	enum StrSetting { STR_FIRST,
+		FDM_LANGUAGE_FILE = STR_FIRST, 
+		FDM_NOTEPAD_TEXT,
+		STR_LAST };
 
-	enum IntFdmSetting { INT_FDM_FIRST = STR_FDM_LAST + 1,
-		AINT = INT_FDM_FIRST, 
-		INT_FDM_LAST };
+	enum IntSetting { INT_FIRST = STR_LAST + 1,
+		OP_SPOKE_COLOUR = INT_FIRST, NOT_OP_SPOKE_COLOUR, I_SPOKE_COLOUR, MY_NICK_SPOKEN_COLOUR,
+		INT_LAST };
 
-	enum Int64FdmSetting { INT64_FDM_FIRST = INT_FDM_LAST + 1,
-		AINT64 = INT64_FDM_FIRST, 
-		INT64_FDM_LAST, FDM_SETTINGS_LAST = INT64_FDM_LAST };
+	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
+		AINT64 = INT64_FIRST, INT64_LAST, SETTINGS_LAST = INT64_LAST };
 
-	const string& getFdm(StrFdmSetting key, bool useDefault = true) const {
-		return (isFdmSet[key] || !useDefault) ? strFdmSettings[key - STR_FDM_FIRST] : strFdmDefaults[key - STR_FDM_FIRST];
+	const string& get(StrSetting key, bool useDefault = true) const {
+		return (isSet[key] || !useDefault) ? strSettings[key - STR_FIRST] : strDefaults[key - STR_FIRST];
 	}
 
-	int getFdm(IntFdmSetting key, bool useDefault = true) const {
-		return (isFdmSet[key] || !useDefault) ? intFdmSettings[key - INT_FDM_FIRST] : intFdmDefaults[key - INT_FDM_FIRST];
+	int get(IntSetting key, bool useDefault = true) const {
+		return (isSet[key] || !useDefault) ? intSettings[key - INT_FIRST] : intDefaults[key - INT_FIRST];
 	}
-	int64_t getFdm(Int64FdmSetting key, bool useDefault = true) const {
-		return (isFdmSet[key] || !useDefault) ? int64FdmSettings[key - INT64_FDM_FIRST] : int64FdmDefaults[key - INT64_FDM_FIRST];
-	}
-
-	bool getFdmBool(IntFdmSetting key, bool useDefault = true) const {
-		return (getFdm(key, useDefault) != 0);
+	int64_t get(Int64Setting key, bool useDefault = true) const {
+		return (isSet[key] || !useDefault) ? int64Settings[key - INT64_FIRST] : int64Defaults[key - INT64_FIRST];
 	}
 
-	void setFdm(StrFdmSetting key, string const& value) {
-		strFdmSettings[key - STR_FDM_FIRST] = value;
-		isFdmSet[key] = !value.empty();
+	bool getBool(IntSetting key, bool useDefault = true) const {
+		return (get(key, useDefault) != 0);
 	}
 
-	void setFdm(IntFdmSetting key, int value) {
-		intFdmSettings[key - INT_FDM_FIRST] = value;
-		isFdmSet[key] = true;
+	void set(StrSetting key, string const& value) {
+		strSettings[key - STR_FIRST] = value;
+		isSet[key] = !value.empty();
 	}
 
-	void setFdm(IntFdmSetting key, const string& value) {
+	void set(IntSetting key, int value) {
+		intSettings[key - INT_FIRST] = value;
+		isSet[key] = true;
+	}
+
+	void set(IntSetting key, const string& value) {
 		if(value.empty()) {
-			intFdmSettings[key - INT_FDM_FIRST] = 0;
-			isFdmSet[key] = false;
+			intSettings[key - INT_FIRST] = 0;
+			isSet[key] = false;
 		} else {
-			intFdmSettings[key - INT_FDM_FIRST] = Util::toInt(value);
-			isFdmSet[key] = true;
+			intSettings[key - INT_FIRST] = Util::toInt(value);
+			isSet[key] = true;
 		}
 	}
 
-	void setFdm(Int64FdmSetting key, int64_t value) {
-		int64FdmSettings[key - INT64_FDM_FIRST] = value;
-		isFdmSet[key] = true;
+	void set(Int64Setting key, int64_t value) {
+		int64Settings[key - INT64_FIRST] = value;
+		isSet[key] = true;
 	}
 
-	void setFdm(Int64FdmSetting key, const string& value) {
+	void set(Int64Setting key, const string& value) {
 		if(value.empty()) {
-			int64FdmSettings[key - INT64_FDM_FIRST] = 0;
-			isFdmSet[key] = false;
+			int64Settings[key - INT64_FIRST] = 0;
+			isSet[key] = false;
 		} else {
-			int64FdmSettings[key - INT64_FDM_FIRST] = Util::toInt64(value);
-			isFdmSet[key] = true;
+			int64Settings[key - INT64_FIRST] = Util::toInt64(value);
+			isSet[key] = true;
 		}
 	}
 
-	void setFdm(IntFdmSetting key, bool value) { setFdm(key, (int)value); }
+	void set(IntSetting key, bool value) { set(key, (int)value); }
 
-	void setFdmDefault(StrFdmSetting key, string const& value) {
-		strFdmDefaults[key - STR_FDM_FIRST] = value;
+	void setDefault(StrSetting key, string const& value) {
+		strDefaults[key - STR_FIRST] = value;
 	}
 
-	void setFdmDefault(IntFdmSetting key, int value) {
-		intFdmDefaults[key - INT_FDM_FIRST] = value;
+	void setDefault(IntSetting key, int value) {
+		intDefaults[key - INT_FIRST] = value;
 	}
-	void setFdmDefault(Int64FdmSetting key, int64_t value) {
-		int64FdmDefaults[key - INT64_FDM_FIRST] = value;
+	void setDefault(Int64Setting key, int64_t value) {
+		int64Defaults[key - INT64_FIRST] = value;
 	}
 
-	bool isFdmDefault(int aSet) { return !isFdmSet[aSet]; };
+	bool isDefault(int aSet) { return !isSet[aSet]; }
 
 	void load() {
-		load(Util::getAppPath() + "Fdm.xml");
+		load(Util::getConfigPath() + "Fdm.xml");
 	}
 	void save() {
-		save(Util::getAppPath() + "Fdm.xml");
+		save(Util::getConfigPath() + "Fdm.xml");
 	}
 
 	void load(const string& aFileName);
@@ -137,24 +137,19 @@ private:
 	FdmSettingsManager();
 	virtual ~FdmSettingsManager() throw() { }
 
-	static const string settingFdmTags[FDM_SETTINGS_LAST+1];
+	static const string settingTags[SETTINGS_LAST+1];
 
-	string	strFdmSettings[STR_FDM_LAST - STR_FDM_FIRST];
-	int		intFdmSettings[INT_FDM_LAST - INT_FDM_FIRST];
-	int64_t int64FdmSettings[INT64_FDM_LAST - INT64_FDM_FIRST];
-	string	strFdmDefaults[STR_FDM_LAST - STR_FDM_FIRST];
-	int		intFdmDefaults[INT_FDM_LAST - INT_FDM_FIRST];
-	int64_t int64FdmDefaults[INT64_FDM_LAST - INT64_FDM_FIRST];
-	bool	isFdmSet[FDM_SETTINGS_LAST];
+	string strSettings[STR_LAST - STR_FIRST];
+	int    intSettings[INT_LAST - INT_FIRST];
+	int64_t int64Settings[INT64_LAST - INT64_FIRST];
+	string strDefaults[STR_LAST - STR_FIRST];
+	int    intDefaults[INT_LAST - INT_FIRST];
+	int64_t int64Defaults[INT64_LAST - INT64_FIRST];
+	bool isSet[SETTINGS_LAST];
 };
 
 // Shorthand accessor macros
-#define FDMSETTING(k) (FdmSettingsManager::getInstance()->getFdm(FdmSettingsManager::k, true))
-#define FDMBOOLSETTING(k) (FdmSettingsManager::getInstance()->getFdmBool(FdmSettingsManager::k, true))
+#define FDMSETTING(k) (FdmSettingsManager::getInstance()->get(FdmSettingsManager::k, true))
+#define FDMBOOLSETTING(k) (FdmSettingsManager::getInstance()->getBool(FdmSettingsManager::k, true))
 
 #endif // !defined(FDM_SETTINGS_MANAGER_H)
-
-/**
- * @file
- * $Id: SettingsManager.h,v 1.101 2005/08/07 13:05:44 arnetheduck Exp $
- */

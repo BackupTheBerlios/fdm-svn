@@ -18,22 +18,25 @@
 
 #include "Fdm-stdafx.h"
 #include "../../client/DCPlusPlus.h"
+#include "../../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
 
 #include "Fdm-MainFrm.h"
-#include "../Fdm-Dlg.h"
+#include "Fdm-PropertiesDlg.h"
 #include "Fdm-NotepadFrame.h"
+
+#include "../../windows/WinUtil.h"
 
 void FdmMainFrame::destroyFdmMainFrame(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot) {
 	fdmLargeImages.Destroy();
 	fdmLargeImagesHot.Destroy();
 }
 
-HWND FdmMainFrame::createFdmToolbar(HWND& m_hWnd, CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot) {
+HWND FdmMainFrame::createFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot) {
 	CToolBarCtrl ctrlToolbar;
 	fdmLargeImages.CreateFromImage(IDB_FDM_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	fdmLargeImagesHot.CreateFromImage(IDB_FDM_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
-	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
+	ctrlToolbar.Create(WinUtil::mainWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrlToolbar.SetImageList(fdmLargeImages);
 	ctrlToolbar.SetHotImageList(fdmLargeImagesHot);
 
@@ -91,8 +94,10 @@ void FdmMainFrame::fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stri
 
 LRESULT FdmMainFrame::OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	FdmDlg dlg;
-	dlg.DoModal();
+	FdmPropertiesDlg dlg(WinUtil::mainWnd, FdmSettingsManager::getInstance());
+
+	if(dlg.DoModal(WinUtil::mainWnd) == IDOK)
+		SettingsManager::getInstance()->save();
 	return 0;
 }
 

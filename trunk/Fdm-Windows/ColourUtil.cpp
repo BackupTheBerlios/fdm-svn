@@ -22,27 +22,35 @@
 
 #include "ColourUtil.h"
 #include "../Client/Text.h"
+#include "../Client/Util.h"
 #include "../Windows/WinUtil.h"
+#include "MoreWinUtil.h"
 
 void SortChat::ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, bool isOp) {
 	initilize(ctrlClient);
 	string sourceNick = findNickInTString(newText);
 
+	// Colour beginning text
+	if (sourceNick != "") {
+		offSet = newText.find('<', 0);
+		colourText(ctrlClient, WinUtil::textColor, origNumChars, origNumChars + offSet);
+	} else if (timeStamps) {
+		offSet = newText.find(']', 0) + 1;
+		colourText(ctrlClient, WinUtil::textColor, origNumChars, origNumChars + offSet);
+	}
+
 	// Colour nick
 	if (sourceNick != "") {
-		long firstChar = newText.find('<', 0);
-        long secondChar = newText.find('>', firstChar);
-		colourText(ctrlClient, isOp ? RGB(0,0,205) : RGB(139,0,0), origNumChars + firstChar, origNumChars + secondChar + 1);
-		offSet = secondChar + 1;
-	} else if (timeStamps) {
-		offSet = newText.find(']', 0);
+        long tempOffSet = newText.find('>', offSet) + 1;
+		colourText(ctrlClient, isOp ? StaticSettings::opSpoken : StaticSettings::notOpSpoken, origNumChars + offSet, origNumChars + tempOffSet);
+		offSet = tempOffSet;
 	}
 
 	// See if text needs special colouring
 	if (myNick == sourceNick)
-		colourText(ctrlClient, RGB(255,0,0), origNumChars + offSet, newNumChars);
+		colourText(ctrlClient, StaticSettings::iSpoke, origNumChars + offSet, newNumChars);
 	else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick)), offSet) != string::npos)
-		colourText(ctrlClient, RGB(0,100,0), origNumChars + offSet, newNumChars);
+		colourText(ctrlClient, StaticSettings::myNickSpoken, origNumChars + offSet, newNumChars);
 
 	// Check for clickable link
 	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("http://"));
@@ -101,10 +109,9 @@ string SortChat::findNickInTString(const tstring aLine) {
 	tstring::size_type i;
 	tstring::size_type j;
 
-	//Check For <Nick>
 	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) != string::npos && j > i))
 		return Text::fromT(aLine.substr(i + 1, j - i - 1).c_str());
-	return "";
+	return Util::emptyString;
 }
 
 void SortChat::addIpToChat(tstring& aLine, string ip) {

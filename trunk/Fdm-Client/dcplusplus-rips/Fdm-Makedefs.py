@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import re
 import codecs
-import xml.sax.saxutils
+from xml.sax.saxutils import quoteattr, escape
 
 def makename(oldname):
 	name = "";
@@ -29,21 +29,21 @@ names = "";
 prolog = "";
 
 example = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n';
-example += '<Language Name="Example Language" Author="Pothead" Version=' + version + ' Revision="1">\n'
-example += '\t<FdmStrings>\n';
+example += '<Language Name="Example Language" Author="Pothead" Version=' + version + ' Revision="1" RightToLeft="0">\n'
+example += '\t<Strings>\n';
 
 lre = re.compile('\s*(\w+),\s*//\s*\"(.+)\"\s*')
 
 decoder = codecs.getdecoder('cp1252')
 encoder = codecs.getencoder('utf8')
-recodeattr = lambda s: encoder(decoder(xml.sax.saxutils.quoteattr(s))[0])[0]
-recodeval = lambda s: encoder(decoder(xml.sax.saxutils.escape(s.replace("\\\\","\\").replace("\\t","\t")))[0])[0]
+recodeattr = lambda s: encoder(decoder(quoteattr(s))[0])[0]
+recodeval = lambda s: encoder(decoder(escape(s, {"\\\\":"\\","\\t":"\t"}))[0])[0]
 
 for x in file("dcplusplus-rips/Fdm-StringDefs.h", "r"):
-    if x.startswith("// @FdmStrings: "):
-        varstr = x[16:].strip();
-    elif x.startswith("// @FdmNames: "):
-        varname = x[14:].strip();
+    if x.startswith("// @Strings: "):
+        varstr = x[13:].strip();
+    elif x.startswith("// @Names: "):
+        varname = x[11:].strip();
     elif x.startswith("// @Prolog: "):
         prolog += x[12:];
     elif len(x) >= 5:
@@ -53,9 +53,9 @@ for x in file("dcplusplus-rips/Fdm-StringDefs.h", "r"):
             strings += '"' + value + '", \n'
             newname = makename(name)
             names += '"' + newname + '", \n'
-            example += '\t\t<FdmString Name=%s>%s</FdmString>\n' % (recodeattr(newname),  recodeval(value))
+            example += '\t\t<String Name=%s>%s</String>\n' % (recodeattr(newname),  recodeval(value))
 
-example += '\t</FdmStrings>\n';
+example += '\t</Strings>\n';
 example += '</Language>\n';
 
 file('dcplusplus-rips/Fdm-StringDefs.cpp', 'w').write(prolog + varstr + " = {\n" + strings + "};\n" + varname + " = {\n" + names + "};\n");

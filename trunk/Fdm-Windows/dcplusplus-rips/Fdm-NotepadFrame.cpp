@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,11 @@
 #include "Fdm-stdafx.h"
 #include "../../client/DCPlusPlus.h"
 #include "../resource.h"
+
 #include "Fdm-NotepadFrame.h"
 #include "../../windows/WinUtil.h"
 #include "../../client/File.h"
+#include "../../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
 
 LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -32,16 +34,16 @@ LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlPad.SetFont(WinUtil::font);
 	string tmp;
 	try {
-		tmp = File(Util::getNotepadFile(), File::READ, File::OPEN).read();
+		tmp = File(getFdmNotepadFile(), File::READ, File::OPEN).read();
 	} catch(const FileException&) {
 		// ...
 	}
 	
 	if(tmp.empty()) {
-		tmp = SETTING(NOTEPAD_TEXT);
+		tmp = FDMSETTING(FDM_NOTEPAD_TEXT);
 		if(!tmp.empty()) {
 			dirty = true;
-//			SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, Util::emptyString);
+			FdmSettingsManager::getInstance()->set(FdmSettingsManager::FDM_NOTEPAD_TEXT, Util::emptyString);
 		}
 	}
 
@@ -60,7 +62,7 @@ LRESULT FdmNotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
 			string tmp(Text::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
-			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
+			File(getFdmNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
 		} catch(const FileException&) {
 			// Oops...
 		}
@@ -101,8 +103,3 @@ LRESULT FdmNotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: NotepadFrame.cpp,v 1.23 2005/12/24 23:13:26 arnetheduck Exp $
- */

@@ -39,6 +39,16 @@ namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
+	void initilizeColours();
+};
+
+class StaticSettings 
+{
+public:
+	static COLORREF opSpoken;
+	static COLORREF notOpSpoken;
+	static COLORREF iSpoke;
+	static COLORREF myNickSpoken;
 };
 
 #endif // !defined(MORE_WIN_UTIL_H)
