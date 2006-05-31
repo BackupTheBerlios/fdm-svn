@@ -128,6 +128,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	TimerManager::getInstance()->addListener(this);
 
+	ctrlClient.setTimeStamps(BOOLSETTING(TIME_STAMPS));
+
 	return 1;
 }
 
@@ -465,7 +467,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 		} else if(task->speaker == CONNECTED) {
 			addClientLine(TSTRING(CONNECTED));
 			setTabColor(GREEN);
-			ctrlClient.extraInitilize(client->getMyNick(), timeStamps);
+			ctrlClient.setMyNick(client->getMyNick());
 		} else if(task->speaker == DISCONNECTED) {
 			clearUserList();
 			setTabColor(RED);
@@ -731,7 +733,6 @@ void HubFrame::addLine(const tstring& aLine) {
 	} else {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
-
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}

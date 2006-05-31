@@ -37,6 +37,9 @@ namespace SortChat
 		void prepareForAppend(string nickOfSpeaker, bool opStatusOfSpeaker, string ipOfSpeaker, BOOL noscroll);
 		void AppendText(LPCTSTR newText);
 
+		void setMyNick(string aMyNick) { myNick = aMyNick; }
+		void setTimeStamps(bool usingTimeStamps) { timeStamps = usingTimeStamps; }
+
 	private:
 		void colourAndAppend(LPCTSTR textToAdd);
 		void colourText(long startPos, long endPos);

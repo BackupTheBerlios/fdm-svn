@@ -50,18 +50,18 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	if (timeStamps) {
 		offSet = newText.find(']', 0) + 2;
 		colourAndAppend(newText.substr(0, offSet).c_str());
-	}
+	} else if (speakersNick != Util::emptyString) {
+		colourAndAppend(newText.substr(0, 1).c_str());
 
-	if (speakersIP != Util::emptyString)
-		colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str());
+		if (speakersIP != Util::emptyString)
+			colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str());
 
-	if (speakersNick != Util::emptyString) {
 		myBrush.crTextColor = speakersOpStatus ? StaticSettings::opSpoken : StaticSettings::notOpSpoken;
 		colourAndAppend((Text::toT("<" + speakersNick + ">")).c_str());
 		myBrush.crTextColor = WinUtil::textColor;
 		offSet = newText.find_first_of('>') + 1;
 	}
-	
+
 	if (myNick != Util::emptyString)
 		if (myNick == speakersNick)
 			myBrush.crTextColor = StaticSettings::iSpoke;
@@ -113,12 +113,6 @@ void SortChat::FdmCRichEditCtrl::findAndColourAllOf(tstring textToFind) {
 		startPos++;
 	}
 }
-
-void SortChat::FdmCRichEditCtrl::extraInitilize(string aMyNick, bool usingTimeStamps) {	
-	 myNick = aMyNick;
-	 timeStamps = usingTimeStamps;
-}
-
 
 void SortChat::FdmCRichEditCtrl::prepareForAppend(OnlineUser* ou) {
 	if (ou)
