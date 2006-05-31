@@ -244,16 +244,16 @@ bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	return false;
 }
 
-bool ClientManager::isOp(const string& aNick, const string& aHubUrl) {
+OnlineUser* ClientManager::getOnLineUser(const string& aNick, const string& aHubUrl) {
 	Lock l(cs);
 	for(OnlineIter i = onlineUsers.begin(); i != onlineUsers.end(); ++i) {
 		if(i->second->getIdentity().getNick() == aNick) {
 			if(i->second->getClient().getHubUrl() == aHubUrl) {
-				return i->second->getIdentity().isOp();
+				return i->second;
 			}
 		}
 	}
-	return false;
+	return NULL;
 }
 
 string ClientManager::getMyNick(const string& aHubUrl) {
@@ -264,7 +264,7 @@ string ClientManager::getMyNick(const string& aHubUrl) {
 			return i->second->getIdentity().getNick();
 		}
 	}
-	return "";
+	return Util::emptyString;
 }
 
 CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {

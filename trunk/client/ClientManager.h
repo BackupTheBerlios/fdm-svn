@@ -69,7 +69,7 @@ public:
 	}
 
 	bool isOp(const User::Ptr& aUser, const string& aHubUrl);
-	bool isOp(const string& aNick, const string& aHubUrl);
+	OnlineUser* getOnLineUser(const string& aNick, const string& aHubUrl);
 	string getMyNick(const string& aHubUrl);
 
 	/** Constructs a synthetic, hopefully unique CID */

@@ -31,6 +31,8 @@
 #include "WinUtil.h"
 #include "UCHandler.h"
 
+#include "../Fdm-Windows/ColourUtil.h"
+
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
 class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>, 
@@ -149,11 +151,10 @@ private:
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
-	CRichEditCtrl ctrlClient;
+	SortChat::FdmCRichEditCtrl ctrlClient;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
 	string hubUrl;
-	string myNick;
 
 	CMenu tabMenu;
 

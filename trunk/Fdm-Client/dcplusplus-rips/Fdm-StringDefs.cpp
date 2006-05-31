@@ -18,7 +18,7 @@ string FdmResourceManager::strings[] = {
 "Your nick spoken", 
 "If speaker is not an op", 
 "If speaker is an op", 
-"Note; most of these options require that you restart DC++", 
+"Note; most of these options require that you restart Fdm", 
 "Text colouring", 
 "Fdm Language file", 
 };

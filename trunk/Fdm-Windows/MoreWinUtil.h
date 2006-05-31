@@ -49,6 +49,7 @@ public:
 	static COLORREF notOpSpoken;
 	static COLORREF iSpoke;
 	static COLORREF myNickSpoken;
+	static COLORREF doubleClickableLink;
 };
 
 #endif // !defined(MORE_WIN_UTIL_H)

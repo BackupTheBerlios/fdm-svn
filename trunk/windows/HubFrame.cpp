@@ -465,12 +465,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 		} else if(task->speaker == CONNECTED) {
 			addClientLine(TSTRING(CONNECTED));
 			setTabColor(GREEN);
+			ctrlClient.extraInitilize(client->getMyNick(), timeStamps);
 		} else if(task->speaker == DISCONNECTED) {
 			clearUserList();
 			setTabColor(RED);
 		} else if(task->speaker == ADD_CHAT_LINE) {
-			UserInfo* ui = findUser(Text::toT(SortChat::findNickInTString(static_cast<StringTask*>(task)->msg)));
-			if (ui) SortChat::addIpToChat(static_cast<StringTask*>(task)->msg, ui->getIdentity().getIp());
 			addLine(static_cast<StringTask*>(task)->msg);
 		} else if(task->speaker == ADD_STATUS_LINE) {
 			addClientLine(static_cast<StringTask*>(task)->msg);
@@ -507,8 +506,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			}
 		} else if(task->speaker == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(task);
-			UserInfo* ui = findUser(Text::toT(SortChat::findNickInTString(pm.msg)));
-			if (ui) SortChat::addIpToChat(pm.msg, ui->getIdentity().getIp());
 			if(pm.replyTo->isOnline()) {
 				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, pm.msg);
@@ -725,16 +722,15 @@ void HubFrame::addLine(const tstring& aLine) {
 		LOG(LogManager::CHAT, params);
 	}
 
-	SortChat::ColourUtil aColourUtil = SortChat::ColourUtil(ctrlClient.GetTextLengthEx() + 1, timeStamps);
+	UserInfo* ui = findUser(Text::toT(SortChat::findNickInTString(aLine)));
+	if (ui)	ctrlClient.prepareForAppend(ui->getIdentity().getNick(), ui->getIdentity().isOp(), ui->getIdentity().getIp(), noscroll);
+	else ctrlClient.prepareForAppend(Util::emptyString, false, Util::emptyString, noscroll);
 
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
 	} else {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
-
-	UserInfo* ui = findUser(Text::toT(SortChat::findNickInTString(aLine)));
-	aColourUtil.colourRichEditCtrl(ctrlClient, client->getMyNick(), (ui ? ui->getIdentity().isOp() : false));
 
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);

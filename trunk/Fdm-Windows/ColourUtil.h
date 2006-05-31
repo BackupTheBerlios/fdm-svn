@@ -23,31 +23,39 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../client/User.h"
+
 namespace SortChat
 {
-	class ColourUtil
+	string findNickInTString(const tstring aLine);
+
+	class FdmCRichEditCtrl :  public CRichEditCtrl
 	{
 	public:
-		ColourUtil(long orig, bool timestamps) { origNumChars = orig; timeStamps = timestamps;	}
-		~ColourUtil() {	}
-
-		void colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, bool isOp);
+		void extraInitilize(string aMyNick, bool usingTimeStamps);
+		void prepareForAppend(OnlineUser* ui);
+		void prepareForAppend(string nickOfSpeaker, bool opStatusOfSpeaker, string ipOfSpeaker, BOOL noscroll);
+		void AppendText(LPCTSTR newText);
 
 	private:
-		bool timeStamps;
+		void colourAndAppend(LPCTSTR textToAdd);
+		void colourText(long startPos, long endPos);
+		void findAndColourAllOf(tstring textToFind);
+
 		CHARFORMAT2 myBrush;
-		long origNumChars;
-		long newNumChars;
-		long offSet;
+		bool prepared;
+
+		BOOL noScroll;
+		bool timeStamps;
+
+		string myNick;
+		string speakersNick;
+		string speakersIP;
+		bool speakersOpStatus;
+
+		long sizeForAppend;
 		tstring newText;
-
-		void initilize(CRichEditCtrl& ctrlClient);
-		void colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos);
-		void findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind);
 	};
-
-	string findNickInTString(const tstring aLine);
-	void addIpToChat(tstring& aLine, string ip);
 };
 
 #endif // !defined(COLOUR_UTIL_H)

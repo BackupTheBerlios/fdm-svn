@@ -26,85 +26,6 @@
 #include "../Windows/WinUtil.h"
 #include "MoreWinUtil.h"
 
-void SortChat::ColourUtil::colourRichEditCtrl(CRichEditCtrl& ctrlClient, string myNick, bool isOp) {
-	initilize(ctrlClient);
-	string sourceNick = findNickInTString(newText);
-
-	// Colour beginning text
-	if (sourceNick != "") {
-		offSet = newText.find('<', 0);
-		colourText(ctrlClient, WinUtil::textColor, origNumChars, origNumChars + offSet);
-	} else if (timeStamps) {
-		offSet = newText.find(']', 0) + 1;
-		colourText(ctrlClient, WinUtil::textColor, origNumChars, origNumChars + offSet);
-	}
-
-	// Colour nick
-	if (sourceNick != "") {
-        long tempOffSet = newText.find('>', offSet) + 1;
-		colourText(ctrlClient, isOp ? StaticSettings::opSpoken : StaticSettings::notOpSpoken, origNumChars + offSet, origNumChars + tempOffSet);
-		offSet = tempOffSet;
-	}
-
-	// See if text needs special colouring
-	if (myNick == sourceNick)
-		colourText(ctrlClient, StaticSettings::iSpoke, origNumChars + offSet, newNumChars);
-	else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick)), offSet) != string::npos)
-		colourText(ctrlClient, StaticSettings::myNickSpoken, origNumChars + offSet, newNumChars);
-
-	// Check for clickable link
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("http://"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("www."));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("ftp://"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("irc://"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("https://"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("mailto:"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("dchub://"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("adc://"));
-	findAndColourAllOf(ctrlClient, RGB(0,0,200), _T("magnet:?"));
-
-	// Reset Brush Colour
-	colourText(ctrlClient, WinUtil::textColor, newNumChars, newNumChars);
-
-	ctrlClient.SetRedraw(TRUE);
-	ctrlClient.Invalidate();
-	ctrlClient.UpdateWindow();
-}
-
-void SortChat::ColourUtil::initilize(CRichEditCtrl& ctrlClient) {
-	newNumChars = ctrlClient.GetTextLengthEx();
-	newText.reserve(1 + newNumChars - origNumChars);
-
-	offSet = 0;
-
-	myBrush.dwMask = CFM_COLOR;
-	myBrush.dwEffects = 0;
-	myBrush.crTextColor = WinUtil::textColor;
-
-	ctrlClient.SetSel(origNumChars, newNumChars);
-	TCHAR *buf = new TCHAR[1 + newNumChars - origNumChars];
-	ctrlClient.GetSelText(buf);
-	newText = buf;
-	delete buf;
-}
-
-void SortChat::ColourUtil::colourText(CRichEditCtrl& ctrlClient, COLORREF colour, long startPos, long endPos) {
-	myBrush.crTextColor = colour;
-	ctrlClient.SetSel(startPos, endPos);
-	ctrlClient.SetWordCharFormat(myBrush);
-}
-
-void SortChat::ColourUtil::findAndColourAllOf(CRichEditCtrl& ctrlClient, COLORREF colour, tstring textToFind) {
-	long startPos = offSet;
-	long finishPos = offSet;
-	while ((startPos = newText.find(textToFind, startPos)) != string::npos) {
-		finishPos = newText.find_first_of(_T(" <\t\r\n"), startPos);
-		finishPos = (finishPos != string::npos ? finishPos + origNumChars : newNumChars);
-		colourText(ctrlClient, colour, startPos + origNumChars, finishPos);
-		startPos++;
-	}
-}
-
 string SortChat::findNickInTString(const tstring aLine) {
 	tstring::size_type i;
 	tstring::size_type j;
@@ -114,7 +35,102 @@ string SortChat::findNickInTString(const tstring aLine) {
 	return Util::emptyString;
 }
 
-void SortChat::addIpToChat(tstring& aLine, string ip) {
-	if (ip != "")
-		aLine = (Text::toT("[ " + ip + " ] ") + aLine).c_str();
+void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
+	if (!prepared) {
+		CRichEditCtrl::AppendText(aLine);
+		return;
+	}
+
+	newText = aLine;
+	tstring::size_type offSet = 0;
+	myBrush.dwMask = CFM_COLOR;
+	myBrush.dwEffects = 0;
+	myBrush.crTextColor = WinUtil::textColor;
+
+	if (timeStamps) {
+		offSet = newText.find(']', 0) + 2;
+		colourAndAppend(newText.substr(0, offSet).c_str());
+	}
+
+	if (speakersIP != Util::emptyString)
+		colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str());
+
+	if (speakersNick != Util::emptyString) {
+		myBrush.crTextColor = speakersOpStatus ? StaticSettings::opSpoken : StaticSettings::notOpSpoken;
+		colourAndAppend((Text::toT("<" + speakersNick + ">")).c_str());
+		myBrush.crTextColor = WinUtil::textColor;
+		offSet = newText.find_first_of('>') + 1;
+	}
+	
+	if (myNick != Util::emptyString)
+		if (myNick == speakersNick)
+			myBrush.crTextColor = StaticSettings::iSpoke;
+		else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick)), offSet) != string::npos)
+			myBrush.crTextColor = StaticSettings::myNickSpoken;
+
+	colourAndAppend(newText.substr(offSet).c_str());
+
+	// Check rest of text for colourable links
+	SetSel(sizeForAppend, -1);
+	TCHAR *buf = new TCHAR[1 + GetTextLengthEx() - sizeForAppend];
+	GetSelText(buf);
+	newText = buf;
+	delete buf;
+
+	myBrush.crTextColor = StaticSettings::doubleClickableLink;
+	findAndColourAllOf(_T("http://"));
+	findAndColourAllOf(_T("www."));
+	findAndColourAllOf(_T("ftp://"));
+	findAndColourAllOf(_T("irc://"));
+	findAndColourAllOf(_T("https://"));
+	findAndColourAllOf(_T("mailto:"));
+	findAndColourAllOf(_T("dchub://"));
+	findAndColourAllOf(_T("adc://"));
+	findAndColourAllOf(_T("magnet:?"));
+
+	SetSel(-1, -1);
+
+	prepared = false;
+}
+
+void SortChat::FdmCRichEditCtrl::colourAndAppend(LPCTSTR textToAdd) {
+	sizeForAppend = GetTextLengthEx();
+    CRichEditCtrl::AppendText(textToAdd);
+	colourText(sizeForAppend, -1);
+}
+
+void SortChat::FdmCRichEditCtrl::colourText(long startPos, long endPos) {
+	SetSel(startPos, endPos);
+	SetWordCharFormat(myBrush);
+}
+
+void SortChat::FdmCRichEditCtrl::findAndColourAllOf(tstring textToFind) {
+	tstring::size_type startPos = 0;
+	tstring::size_type finishPos = 0;
+	while ((startPos = newText.find(textToFind, startPos)) != string::npos) {
+		finishPos = newText.find_first_of(_T(" <\t\r\n"), startPos);
+		colourText(startPos + sizeForAppend, (finishPos != string::npos ? finishPos + sizeForAppend : -1));
+		startPos++;
+	}
+}
+
+void SortChat::FdmCRichEditCtrl::extraInitilize(string aMyNick, bool usingTimeStamps) {	
+	 myNick = aMyNick;
+	 timeStamps = usingTimeStamps;
+}
+
+
+void SortChat::FdmCRichEditCtrl::prepareForAppend(OnlineUser* ou) {
+	if (ou)
+		prepareForAppend(ou->getIdentity().getNick(), ou->getIdentity().isOp(), ou->getIdentity().getIp(), false);
+	else
+		prepareForAppend(Util::emptyString, false, Util::emptyString, false);
+}
+
+void SortChat::FdmCRichEditCtrl::prepareForAppend(string nickOfSpeaker, bool opStatusOfSpeaker, string ipOfSpeaker, BOOL noscroll) {
+	speakersNick = nickOfSpeaker;
+	speakersOpStatus = opStatusOfSpeaker;
+	speakersIP = ipOfSpeaker;
+	noScroll = noscroll;
+	prepared = true;
 }

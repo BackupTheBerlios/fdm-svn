@@ -35,6 +35,8 @@
 #include "WinUtil.h"
 #include "UCHandler.h"
 
+#include "../Fdm-Windows/ColourUtil.h"
+
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 struct CompareItems;
 
@@ -306,7 +308,7 @@ private:
 	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
-	CRichEditCtrl ctrlClient;
+	SortChat::FdmCRichEditCtrl ctrlClient;
 	CEdit ctrlMessage;
 	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
 	CtrlUsers ctrlUsers;

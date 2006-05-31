@@ -69,7 +69,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ClientManager::getInstance()->addListener(this);
 
 	hubUrl = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-	myNick = ClientManager::getInstance()->getMyNick(hubUrl);
+	ctrlClient.extraInitilize(ClientManager::getInstance()->getMyNick(hubUrl), BOOLSETTING(TIME_STAMPS));
 
 	bHandled = FALSE;
 	return 1;
@@ -249,11 +249,9 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	}
 	line += aLine;
 
-	SortChat::ColourUtil aColourUtil = SortChat::ColourUtil(ctrlClient.GetTextLengthEx() + 1, BOOLSETTING(TIME_STAMPS));
+	ctrlClient.prepareForAppend(ClientManager::getInstance()->getOnLineUser(SortChat::findNickInTString(line), hubUrl));
 
 	ctrlClient.AppendText(line.c_str());
-
-	aColourUtil.colourRichEditCtrl(ctrlClient, myNick, ClientManager::getInstance()->isOp(SortChat::findNickInTString(line), hubUrl));
 
 	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 

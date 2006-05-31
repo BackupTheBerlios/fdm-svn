@@ -42,3 +42,4 @@ COLORREF StaticSettings::opSpoken		= 0;
 COLORREF StaticSettings::notOpSpoken	= 0;
 COLORREF StaticSettings::iSpoke			= 0;
 COLORREF StaticSettings::myNickSpoken	= 0;
+COLORREF StaticSettings::doubleClickableLink = RGB(0,0,200);
