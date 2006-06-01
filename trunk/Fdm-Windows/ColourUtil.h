@@ -35,7 +35,11 @@ namespace SortChat
 		void extraInitilize(string aMyNick, bool usingTimeStamps);
 		void prepareForAppend(OnlineUser* ui);
 		void prepareForAppend(string nickOfSpeaker, bool opStatusOfSpeaker, string ipOfSpeaker, BOOL noscroll);
+
+		// over ridden functions
 		void AppendText(LPCTSTR newText);
+		void SetSel(long nStartChar, long nEndChar, BOOL notScroll);
+		void ReplaceSel(LPCTSTR lpszNewText, BOOL bCanUndo = 0);
 
 		void setMyNick(string aMyNick) { myNick = aMyNick; }
 		void setTimeStamps(bool usingTimeStamps) { timeStamps = usingTimeStamps; }
@@ -45,9 +49,12 @@ namespace SortChat
 		void colourText(long startPos, long endPos);
 		void findAndColourAllOf(tstring textToFind);
 
+		// global vars
 		CHARFORMAT2 myBrush;
-		bool prepared;
+		long sizeForAppend;
+		tstring newText;
 
+		// settings
 		BOOL noScroll;
 		bool timeStamps;
 
@@ -56,8 +63,10 @@ namespace SortChat
 		string speakersIP;
 		bool speakersOpStatus;
 
-		long sizeForAppend;
-		tstring newText;
+		// kind of locky thingys
+		bool prepared;
+		bool ignoreNextAppend;
+
 	};
 };
 

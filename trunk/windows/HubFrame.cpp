@@ -701,7 +701,7 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(ctrlClient.GetWindowTextLength() > 25000) {
 		// We want to limit the buffer to 25000 characters...after that, w95 becomes sad...
 		ctrlClient.SetRedraw(FALSE);
-		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)));
+		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
 		ctrlClient.ReplaceSel(_T(""));
 		ctrlClient.SetRedraw(TRUE);
 	}

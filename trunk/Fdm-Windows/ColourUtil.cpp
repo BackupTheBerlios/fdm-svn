@@ -42,17 +42,20 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	}
 
 	newText = aLine;
-	tstring::size_type offSet = 0;
+	tstring::size_type offSet = 2;
 	myBrush.dwMask = CFM_COLOR;
 	myBrush.dwEffects = 0;
 	myBrush.crTextColor = WinUtil::textColor;
+	int originalLinePos = GetFirstVisibleLine();
 
 	if (timeStamps) {
-		offSet = newText.find(']', 0) + 2;
+		offSet += newText.find(']', 0);
 		colourAndAppend(newText.substr(0, offSet).c_str());
-	} else if (speakersNick != Util::emptyString) {
+	} else {
 		colourAndAppend(newText.substr(0, 1).c_str());
+	}
 
+	if (speakersNick != Util::emptyString) {
 		if (speakersIP != Util::emptyString)
 			colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str());
 
@@ -71,7 +74,7 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	colourAndAppend(newText.substr(offSet).c_str());
 
 	// Check rest of text for colourable links
-	SetSel(sizeForAppend, -1);
+	CRichEditCtrl::SetSel(sizeForAppend, -1);
 	TCHAR *buf = new TCHAR[1 + GetTextLengthEx() - sizeForAppend];
 	GetSelText(buf);
 	newText = buf;
@@ -88,9 +91,40 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	findAndColourAllOf(_T("adc://"));
 	findAndColourAllOf(_T("magnet:?"));
 
-	SetSel(-1, -1);
+	if (noScroll) {
+		// fixme
+		// scroll bar doesn't resize properly
+		CRichEditCtrl::SetSel(0, 0);
+		LineScroll(originalLinePos);
+	} else {
+		CRichEditCtrl::SetSel(-1, -1);
+	}
 
 	prepared = false;
+}
+
+void SortChat::FdmCRichEditCtrl::SetSel(long nStartChar, long nEndChar, BOOL notScroll) {
+	if (notScroll && nStartChar == 0 && nEndChar == LineIndex(LineFromChar(2000))) {
+		// okay dc++ is going to remove some text.
+		int currentLinePos = GetFirstVisibleLine();
+		int linesToBeRemoved = LineFromChar(2000);
+		CRichEditCtrl::SetSel(nStartChar, nEndChar);
+		CRichEditCtrl::ReplaceSel(_T(""));
+		if (currentLinePos - linesToBeRemoved >= 0) {
+			CRichEditCtrl::SetSel(0, 0);
+			LineScroll(currentLinePos - linesToBeRemoved);
+			ignoreNextAppend = true;
+		}
+	} else {
+		CRichEditCtrl::SetSel(nStartChar, nEndChar);
+	}
+}
+
+void SortChat::FdmCRichEditCtrl::ReplaceSel(LPCTSTR lpszNewText, BOOL bCanUndo) {
+	if (!ignoreNextAppend) {
+		CRichEditCtrl::ReplaceSel(lpszNewText, bCanUndo);
+		ignoreNextAppend = false;
+	}
 }
 
 void SortChat::FdmCRichEditCtrl::colourAndAppend(LPCTSTR textToAdd) {
@@ -100,7 +134,7 @@ void SortChat::FdmCRichEditCtrl::colourAndAppend(LPCTSTR textToAdd) {
 }
 
 void SortChat::FdmCRichEditCtrl::colourText(long startPos, long endPos) {
-	SetSel(startPos, endPos);
+	CRichEditCtrl::SetSel(startPos, endPos);
 	SetWordCharFormat(myBrush);
 }
 
@@ -127,4 +161,7 @@ void SortChat::FdmCRichEditCtrl::prepareForAppend(string nickOfSpeaker, bool opS
 	speakersIP = ipOfSpeaker;
 	noScroll = noscroll;
 	prepared = true;
+
+	// on the off chance this is set wrong
+	ignoreNextAppend = false;
 }
