@@ -70,7 +70,6 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	hubUrl = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	ctrlClient.setMyNick(ClientManager::getInstance()->getMyNick(hubUrl));
-	ctrlClient.setTimeStamps(BOOLSETTING(TIME_STAMPS));
 
 	bHandled = FALSE;
 	return 1;

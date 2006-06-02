@@ -128,8 +128,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	TimerManager::getInstance()->addListener(this);
 
-	ctrlClient.setTimeStamps(BOOLSETTING(TIME_STAMPS));
-
 	return 1;
 }
 

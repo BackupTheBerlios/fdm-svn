@@ -27,69 +27,77 @@
 #include "MoreWinUtil.h"
 
 string SortChat::findNickInTString(const tstring aLine) {
-	tstring::size_type i;
-	tstring::size_type j;
-
+	tstring::size_type i, j;
 	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) != string::npos && j > i))
 		return Text::fromT(aLine.substr(i + 1, j - i - 1).c_str());
 	return Util::emptyString;
 }
 
+SortChat::FdmCRichEditCtrl::FdmCRichEditCtrl() {
+	myBrush.dwMask = CFM_COLOR;
+	myBrush.dwEffects = 0;
+	myBrush.crTextColor = WinUtil::textColor;
+
+	timeStamps = BOOLSETTING(TIME_STAMPS);
+	prepared = false;
+	ignoreNextAppend = false;
+};
+
 void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
+	// Just incase AppendText starts being used elsewhere DC++ code
 	if (!prepared) {
 		CRichEditCtrl::AppendText(aLine);
 		return;
 	}
 
-	newText = aLine;
+	// LPCTSTR's . . . CString disabled . . . meh :P
+	tstring newText = aLine;
+	// Set this to 2, for the \r\n which is always added to the start
 	tstring::size_type offSet = 2;
-	myBrush.dwMask = CFM_COLOR;
-	myBrush.dwEffects = 0;
-	myBrush.crTextColor = WinUtil::textColor;
+
+	// Need to know this later
 	int originalLinePos = GetFirstVisibleLine();
 
-	if (timeStamps) {
+	if (timeStamps)
 		offSet += newText.find(']', 0);
-		colourAndAppend(newText.substr(0, offSet).c_str());
-	} else {
-		colourAndAppend(newText.substr(0, 1).c_str());
-	}
+
+	// Add begining text
+	colourAndAppend(newText.substr(0, offSet).c_str(), GetTextLengthEx());
 
 	if (speakersNick != Util::emptyString) {
+		// Add Ip if known
 		if (speakersIP != Util::emptyString)
-			colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str());
+			colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str(), GetTextLengthEx());
 
+		// Change Brush Colour and Append <Nick>
 		myBrush.crTextColor = speakersOpStatus ? StaticSettings::opSpoken : StaticSettings::notOpSpoken;
-		colourAndAppend((Text::toT("<" + speakersNick + ">")).c_str());
+		colourAndAppend((Text::toT("<" + speakersNick + ">")).c_str(), GetTextLengthEx());
+
+		// Change back to default brush colour, and offset to end of nick text
 		myBrush.crTextColor = WinUtil::textColor;
 		offSet = newText.find_first_of('>') + 1;
 	}
 
+	// Maybe colour rest of text differently
 	if (myNick != Util::emptyString)
 		if (myNick == speakersNick)
 			myBrush.crTextColor = StaticSettings::iSpoke;
 		else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick)), offSet) != string::npos)
 			myBrush.crTextColor = StaticSettings::myNickSpoken;
 
-	colourAndAppend(newText.substr(offSet).c_str());
+	// Add rest of text
+	long sizeBeforeAppend = GetTextLengthEx();
+	colourAndAppend(newText.substr(offSet).c_str(), sizeBeforeAppend);
 
 	// Check rest of text for colourable links
-	CRichEditCtrl::SetSel(sizeForAppend, -1);
-	TCHAR *buf = new TCHAR[1 + GetTextLengthEx() - sizeForAppend];
+	CRichEditCtrl::SetSel(sizeBeforeAppend, -1);
+	TCHAR *buf = new TCHAR[1 + GetTextLengthEx() - sizeBeforeAppend];
 	GetSelText(buf);
 	newText = buf;
 	delete buf;
 
 	myBrush.crTextColor = StaticSettings::doubleClickableLink;
-	findAndColourAllOf(_T("http://"));
-	findAndColourAllOf(_T("www."));
-	findAndColourAllOf(_T("ftp://"));
-	findAndColourAllOf(_T("irc://"));
-	findAndColourAllOf(_T("https://"));
-	findAndColourAllOf(_T("mailto:"));
-	findAndColourAllOf(_T("dchub://"));
-	findAndColourAllOf(_T("adc://"));
-	findAndColourAllOf(_T("magnet:?"));
+	findAndColourDoubleClickable(newText, sizeBeforeAppend);
 
 	if (noScroll) {
 		// fixme
@@ -106,16 +114,22 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 void SortChat::FdmCRichEditCtrl::SetSel(long nStartChar, long nEndChar, BOOL notScroll) {
 	if (notScroll && nStartChar == 0 && nEndChar == LineIndex(LineFromChar(2000))) {
 		// okay dc++ is going to remove some text.
+		// do it for it, and try and preserve scroll position
 		int currentLinePos = GetFirstVisibleLine();
 		int linesToBeRemoved = LineFromChar(2000);
 		CRichEditCtrl::SetSel(nStartChar, nEndChar);
 		CRichEditCtrl::ReplaceSel(_T(""));
+
+		// scroll if possible
 		if (currentLinePos - linesToBeRemoved >= 0) {
 			CRichEditCtrl::SetSel(0, 0);
 			LineScroll(currentLinePos - linesToBeRemoved);
-			ignoreNextAppend = true;
 		}
+
+		// since already been removed
+		ignoreNextAppend = true;
 	} else {
+		// normal selection
 		CRichEditCtrl::SetSel(nStartChar, nEndChar);
 	}
 }
@@ -127,24 +141,31 @@ void SortChat::FdmCRichEditCtrl::ReplaceSel(LPCTSTR lpszNewText, BOOL bCanUndo) 
 	}
 }
 
-void SortChat::FdmCRichEditCtrl::colourAndAppend(LPCTSTR textToAdd) {
-	sizeForAppend = GetTextLengthEx();
-    CRichEditCtrl::AppendText(textToAdd);
-	colourText(sizeForAppend, -1);
-}
-
 void SortChat::FdmCRichEditCtrl::colourText(long startPos, long endPos) {
 	CRichEditCtrl::SetSel(startPos, endPos);
 	SetWordCharFormat(myBrush);
 }
 
-void SortChat::FdmCRichEditCtrl::findAndColourAllOf(tstring textToFind) {
-	tstring::size_type startPos = 0;
-	tstring::size_type finishPos = 0;
-	while ((startPos = newText.find(textToFind, startPos)) != string::npos) {
-		finishPos = newText.find_first_of(_T(" <\t\r\n"), startPos);
-		colourText(startPos + sizeForAppend, (finishPos != string::npos ? finishPos + sizeForAppend : -1));
-		startPos++;
+void SortChat::FdmCRichEditCtrl::colourAndAppend(LPCTSTR textToAdd, long colourFrom) {
+    CRichEditCtrl::AppendText(textToAdd);
+	colourText(colourFrom, -1);
+}
+
+static const tstring doubleClickableLinks[] = {
+	_T("http://"), _T("https://"), _T("www."), _T("ftp://"), _T("mailto:"), 
+	_T("irc://"), _T("dchub://"), _T("adc://"), _T("magnet:?"), Util::emptyStringT
+};
+
+void SortChat::FdmCRichEditCtrl::findAndColourDoubleClickable(const tstring& lookIn, long sizeBeforeAppend) {
+	tstring::size_type startPos, finishPos;
+	for (int i = 0; doubleClickableLinks[i] != Util::emptyStringT; i++) {
+		startPos = 0;
+		finishPos = 0;
+		while ((startPos = lookIn.find(doubleClickableLinks[i], startPos)) != string::npos) {
+			finishPos = lookIn.find_first_of(_T(" <\t\r\n"), startPos);
+			colourText(startPos + sizeBeforeAppend, (finishPos != string::npos ? finishPos + sizeBeforeAppend : -1));
+			startPos++;
+		}
 	}
 }
 
@@ -159,9 +180,7 @@ void SortChat::FdmCRichEditCtrl::prepareForAppend(string nickOfSpeaker, bool opS
 	speakersNick = nickOfSpeaker;
 	speakersOpStatus = opStatusOfSpeaker;
 	speakersIP = ipOfSpeaker;
+	myBrush.crTextColor = WinUtil::textColor;
 	noScroll = noscroll;
 	prepared = true;
-
-	// on the off chance this is set wrong
-	ignoreNextAppend = false;
 }

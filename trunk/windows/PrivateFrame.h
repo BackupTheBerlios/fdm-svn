@@ -152,9 +152,9 @@ private:
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 	SortChat::FdmCRichEditCtrl ctrlClient;
+	string hubUrl;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
-	string hubUrl;
 
 	CMenu tabMenu;
 

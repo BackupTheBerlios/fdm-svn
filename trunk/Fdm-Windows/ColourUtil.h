@@ -32,8 +32,11 @@ namespace SortChat
 	class FdmCRichEditCtrl :  public CRichEditCtrl
 	{
 	public:
+		FdmCRichEditCtrl();
+		virtual ~FdmCRichEditCtrl() {};
+
 		void extraInitilize(string aMyNick, bool usingTimeStamps);
-		void prepareForAppend(OnlineUser* ui);
+		void prepareForAppend(OnlineUser* ou);
 		void prepareForAppend(string nickOfSpeaker, bool opStatusOfSpeaker, string ipOfSpeaker, BOOL noscroll);
 
 		// over ridden functions
@@ -42,17 +45,14 @@ namespace SortChat
 		void ReplaceSel(LPCTSTR lpszNewText, BOOL bCanUndo = 0);
 
 		void setMyNick(string aMyNick) { myNick = aMyNick; }
-		void setTimeStamps(bool usingTimeStamps) { timeStamps = usingTimeStamps; }
 
 	private:
-		void colourAndAppend(LPCTSTR textToAdd);
 		void colourText(long startPos, long endPos);
-		void findAndColourAllOf(tstring textToFind);
+		void colourAndAppend(LPCTSTR textToAdd, long colourFrom);
+		void findAndColourDoubleClickable(const tstring& lookIn, long sizeBeforeAppend);
 
 		// global vars
 		CHARFORMAT2 myBrush;
-		long sizeForAppend;
-		tstring newText;
 
 		// settings
 		BOOL noScroll;
@@ -66,7 +66,6 @@ namespace SortChat
 		// kind of locky thingys
 		bool prepared;
 		bool ignoreNextAppend;
-
 	};
 };
 
