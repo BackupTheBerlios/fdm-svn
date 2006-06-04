@@ -128,7 +128,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	for(int j=0; j<COLUMN_LAST; j++) {
 		ctrlFilterSel.AddString(CTSTRING_I(columnNames[j]));
 	}
-	ctrlFilterSel.SetCurSel(0);
+	ctrlFilterSel.AddString(CTSTRING(ANY));
+	ctrlFilterSel.SetCurSel(COLUMN_LAST);
 
 	bHandled = FALSE;
 	client->connect();
@@ -1314,31 +1315,31 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
-bool HubFrame::parseFilter(int& mode, int64_t& size) {
+bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 	tstring::size_type start = tstring::npos;
 	tstring::size_type end = tstring::npos;
 	int64_t multiplier = 1;
 	
 	if(filter.compare(0, 2, _T(">=")) == 0) {
-		mode = 1;
+		mode = FilterModes::GREATER_EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, _T("<=")) == 0) {
-		mode = 2;
+		mode = FilterModes::LESS_EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, _T("==")) == 0) {
-		mode = 0;
+		mode = FilterModes::EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, _T("!=")) == 0) {
-		mode = 5;
+		mode = FilterModes::NOT_EQUAL;
 		start = 2;
 	} else if(filter[0] == _T('<')) {
-		mode = 4;
+		mode = FilterModes::LESS;
 		start = 1;
 	} else if(filter[0] == _T('>')) {
-		mode = 3;
+		mode = FilterModes::GREATER;
 		start = 1;
 	} else if(filter[0] == _T('=')) {
-		mode = 1;
+		mode = FilterModes::EQUAL;
 		start = 1;
 	}
 
@@ -1380,7 +1381,7 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 
 void HubFrame::updateUserList(UserInfo* ui) {
 	int64_t size = -1;
-	int mode = -1;
+	FilterModes mode = FilterModes::NONE;
 
 	int sel = ctrlFilterSel.GetCurSel();
 
@@ -1457,14 +1458,7 @@ void HubFrame::handleTab(bool reverse) {
 	}
 }
 
-bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int mode, int64_t size) {
-	//mode
-	//0 - ==
-	//1 - >=
-	//2 - <=
-	//3 - >
-	//4 - <
-	//5 - !=
+bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, FilterModes mode, int64_t size) {
 
 	if(filter.empty())
 		return true;
@@ -1472,16 +1466,25 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int 
 	bool insert = false;
 	if(doSizeCompare) {
 		switch(mode) {
-			case 0: insert = (size == ui.getIdentity().getBytesShared()); break;
-			case 1: insert = (size <=  ui.getIdentity().getBytesShared()); break;
-			case 2: insert = (size >=  ui.getIdentity().getBytesShared()); break;
-			case 3: insert = (size < ui.getIdentity().getBytesShared()); break;
-			case 4: insert = (size > ui.getIdentity().getBytesShared()); break;
-			case 5: insert = (size != ui.getIdentity().getBytesShared()); break;
+			case FilterModes::EQUAL: insert = (size == ui.getIdentity().getBytesShared()); break;
+			case FilterModes::GREATER_EQUAL: insert = (size <=  ui.getIdentity().getBytesShared()); break;
+			case FilterModes::LESS_EQUAL: insert = (size >=  ui.getIdentity().getBytesShared()); break;
+			case FilterModes::GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
+			case FilterModes::LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
+			case FilterModes::NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
 		}
 	} else {
-		if(Util::findSubString(ui.getText(sel), filter) != string::npos)
-			insert = true;
+		if(sel >= COLUMN_LAST) {
+			for(int i = COLUMN_FIRST; i < COLUMN_LAST; ++i) {
+				if(Util::findSubString(ui.getText(i), filter) != string::npos) {
+					insert = true;
+					break;
+				}
+			}
+		} else {
+			if(Util::findSubString(ui.getText(sel), filter) != string::npos)
+				insert = true;
+		}
 	}
 
 	return insert;
