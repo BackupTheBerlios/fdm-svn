@@ -27,7 +27,7 @@
 
 namespace SortChat
 {
-	string findNickInTString(const tstring aLine);
+	tstring findNickInTString(const tstring aLine);
 
 	class FdmCRichEditCtrl :  public CRichEditCtrl
 	{
@@ -35,7 +35,6 @@ namespace SortChat
 		FdmCRichEditCtrl();
 		virtual ~FdmCRichEditCtrl() {};
 
-		void extraInitilize(string aMyNick, bool usingTimeStamps);
 		void prepareForAppend(OnlineUser* ou);
 		void prepareForAppend(string nickOfSpeaker, bool opStatusOfSpeaker, string ipOfSpeaker, BOOL noscroll);
 

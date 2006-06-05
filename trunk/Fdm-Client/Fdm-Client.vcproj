@@ -193,6 +193,9 @@
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp">
 			</File>
+			<File
+				RelativePath=".\dcplusplus-rips\For-ClientManager.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Header files"

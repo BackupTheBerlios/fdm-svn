@@ -26,11 +26,11 @@
 #include "../Windows/WinUtil.h"
 #include "MoreWinUtil.h"
 
-string SortChat::findNickInTString(const tstring aLine) {
+tstring SortChat::findNickInTString(const tstring aLine) {
 	tstring::size_type i, j;
 	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) != string::npos && j > i))
-		return Text::fromT(aLine.substr(i + 1, j - i - 1).c_str());
-	return Util::emptyString;
+		return aLine.substr(i + 1, j - i - 1).c_str();
+	return Util::emptyStringT;
 }
 
 SortChat::FdmCRichEditCtrl::FdmCRichEditCtrl() {

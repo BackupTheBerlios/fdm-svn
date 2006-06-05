@@ -206,6 +206,9 @@
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-WinUtil.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Header files"

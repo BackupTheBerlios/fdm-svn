@@ -244,29 +244,6 @@ bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	return false;
 }
 
-OnlineUser* ClientManager::getOnLineUser(const string& aNick, const string& aHubUrl) {
-	Lock l(cs);
-	for(OnlineIter i = onlineUsers.begin(); i != onlineUsers.end(); ++i) {
-		if(i->second->getIdentity().getNick() == aNick) {
-			if(i->second->getClient().getHubUrl() == aHubUrl) {
-				return i->second;
-			}
-		}
-	}
-	return NULL;
-}
-
-string ClientManager::getMyNick(const string& aHubUrl) {
-	Lock l(cs);
-	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(getMe()->getCID());
-	for(OnlineIter i = p.first; i != p.second; ++i) {
-		if(i->second->getClient().getHubUrl() == aHubUrl) {
-			return i->second->getIdentity().getNick();
-		}
-	}
-	return Util::emptyString;
-}
-
 CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
 	string n = Text::toLower(aNick);
 	TigerHash th;

@@ -760,7 +760,7 @@ void HubFrame::addLine(const tstring& aLine) {
 		LOG(LogManager::CHAT, params);
 	}
 
-	UserInfo* ui = findUser(Text::toT(SortChat::findNickInTString(aLine)));
+	UserInfo* ui = findUser(SortChat::findNickInTString(aLine));
 	if (ui)	ctrlClient.prepareForAppend(ui->getIdentity().getNick(), ui->getIdentity().isOp(), ui->getIdentity().getIp(), noscroll);
 	else ctrlClient.prepareForAppend(Util::emptyString, false, Util::emptyString, noscroll);
 

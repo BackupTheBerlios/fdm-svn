@@ -248,7 +248,7 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	}
 	line += aLine;
 
-	ctrlClient.prepareForAppend(ClientManager::getInstance()->getOnLineUser(SortChat::findNickInTString(line), hubUrl));
+	ctrlClient.prepareForAppend(ClientManager::getInstance()->getOnLineUser(Text::fromT(SortChat::findNickInTString(line)), hubUrl));
 
 	ctrlClient.AppendText(line.c_str());
 
