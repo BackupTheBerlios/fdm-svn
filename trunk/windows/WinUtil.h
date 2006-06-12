@@ -28,6 +28,7 @@
 #include "../client/User.h"
 #include "../client/MerkleTree.h"
 #include "..\Fdm-Client\dcplusplus-rips\Fdm-ResourceManager.h"
+#include "..\Fdm-Client\dcplusplus-rips\Fdm-SettingsManager.h"
 
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
@@ -340,6 +341,8 @@ public:
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
+	static void saveHeaderOrder(CListViewCtrl& ctrl, FdmSettingsManager::StrSetting order,
+		FdmSettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
 	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
 	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }

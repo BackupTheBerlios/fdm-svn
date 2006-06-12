@@ -46,7 +46,8 @@ class FdmSettingsManager : public Singleton<FdmSettingsManager>, public Speaker<
 public:
 
 	enum StrSetting { STR_FIRST,
-		FDM_LANGUAGE_FILE = STR_FIRST, 
+		FDM_LANGUAGE_FILE = STR_FIRST,
+		AUTO_SEARCH_FRAME_ORDER, AUTO_SEARCH_FRAME_WIDTHS,
 		FDM_NOTEPAD_TEXT,
 		STR_LAST };
 

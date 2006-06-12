@@ -161,6 +161,9 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
+				RelativePath=".\Fdm-Res\AutoSearch.ico">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows.rc">
 			</File>
 			<File
@@ -176,6 +179,12 @@
 		<Filter
 			Name="DC++ Rips - Source files"
 			Filter="">
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchFrame.cpp">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.cpp">
+			</File>
 			<File
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.cpp">
 			</File>
@@ -213,6 +222,12 @@
 		<Filter
 			Name="DC++ Rips - Header files"
 			Filter="">
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchFrame.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.h">
+			</File>
 			<File
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.h">
 			</File>

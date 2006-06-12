@@ -35,6 +35,8 @@
 #include "StringTokenizer.h"
 #include "DirectoryListing.h"
 
+#include "../Fdm-Client/Fdm-Util.h"
+
 #include <limits>
 
 #ifdef _WIN32
@@ -384,7 +386,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	string fn;
 	string searchString;
 	bool online = false;
-
+	if (!StaticClientSettings::getBlockAutoSearch())
 	{
 		Lock l(cs);
 		QueueItem::UserMap& um = userQueue.getRunning();

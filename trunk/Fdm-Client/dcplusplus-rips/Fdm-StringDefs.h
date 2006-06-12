@@ -5,7 +5,10 @@
 // @Names: string FdmResourceManager::names[]
 
 enum FdmStrings { // @DontAdd
+	ACTIVE_SEARCH_STRING, // "Active / Search String"	
+	AUTO_SEARCH_PROPERTIES, // "Autosearch Properties"
 	CLOSE, // "Close"
+	ENABLED, // "Enabled"
 	FDM_BROWSE_ACCEL, // "&Browse..."
 	FDM_MENU_FILE, // "&File"
 	FDM_MENU_HELP, // "&Help"
@@ -14,8 +17,11 @@ enum FdmStrings { // @DontAdd
 	FDM_NOTEPAD, // "Fdm Notepad"
 	FDM_SETTINGS, // "Fdm Settings"
 	FDM_SETTINGS_AUTO_AWAY, // "Auto-away on minimize (and back on restore)"
+	MENU_AUTO_SEARCH, // "Autosearch"
 	MENU_FDM_SETTINGS, // "Fdm Settings"
 	MENU_NOTEPAD_FRAME, // "Fdm Notepad"
+	ONLY_WHERE_OP, // "Only where op"
+	SEARCH_STRING, // "Search string"
 	SETTINGS_APPEARANCE_PAGE, // "Extra Appearance"
 	SETTINGS_APPEARANCE_I_SPOKE, // "Text you write"
 	SETTINGS_APPEARANCE_MY_NICK_SPOKEN, // "Your nick spoken"
@@ -24,5 +30,11 @@ enum FdmStrings { // @DontAdd
 	SETTINGS_APPEARANCE_REQUIRES_RESTART, // "Note; most of these options require that you restart Fdm"
 	SETTINGS_APPEARANCE_TEXT_COLOURING, // "Text colouring"
 	SETTINGS_FDM_LANGUAGE_FILE, // "Fdm Language file"
+	SIZE, // "Size"
+	SIZE_MODES, // "If size is"
+	SIZE_TYPE, // "Size is in"
+	SOURCE_TYPE, // "Type of search"
+	STRING_FALSE, // "False"
+	STRING_TRUE, // "True"
 	LAST // @DontAdd
 };

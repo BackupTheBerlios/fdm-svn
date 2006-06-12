@@ -23,6 +23,7 @@
 #include "Fdm-MainFrm.h"
 #include "Fdm-PropertiesDlg.h"
 #include "Fdm-NotepadFrame.h"
+#include "AutoSearchFrame.h"
 
 #include "../../windows/WinUtil.h"
 
@@ -57,7 +58,7 @@ HWND FdmMainFrame::createFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmL
 
 	n++;
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FDM_FAVHUB_FRAME;
+	tb[n].idCommand = ID_AUTO_SEARCH_FRAME;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
@@ -82,6 +83,7 @@ void FdmMainFrame::fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stri
 	switch(idCtrl) {
 		case ID_FDM_FILE_SETTINGS: stringId = FdmResourceManager::MENU_FDM_SETTINGS; break;
 		case ID_FDM_NOTEPAD_FRAME: stringId = FdmResourceManager::MENU_NOTEPAD_FRAME; break;
+		case ID_AUTO_SEARCH_FRAME: stringId = FdmResourceManager::MENU_AUTO_SEARCH; break;
 	}
 
 	if (stringId != -1) {
@@ -107,9 +109,9 @@ LRESULT FdmMainFrame::OnFdmNotepadFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	return 0;
 }
 
-LRESULT FdmMainFrame::OnFdmFavHubFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT FdmMainFrame::OnAutoSearchFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	FdmNotepadFrame::openWindow();
+	AutoSearchFrame::openWindow();
 	return 0;
 }
 /**

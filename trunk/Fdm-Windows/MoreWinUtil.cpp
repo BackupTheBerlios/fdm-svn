@@ -32,14 +32,14 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 }
 
 void MoreWinUtil::initilizeColours() {
-	StaticSettings::opSpoken		= FDMSETTING(OP_SPOKE_COLOUR);
-	StaticSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
-	StaticSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
-	StaticSettings::myNickSpoken	= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+	StaticWindowsSettings::opSpoken		= FDMSETTING(OP_SPOKE_COLOUR);
+	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
+	StaticWindowsSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
+	StaticWindowsSettings::myNickSpoken	= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
 }
 
-COLORREF StaticSettings::opSpoken		= 0;
-COLORREF StaticSettings::notOpSpoken	= 0;
-COLORREF StaticSettings::iSpoke			= 0;
-COLORREF StaticSettings::myNickSpoken	= 0;
-COLORREF StaticSettings::doubleClickableLink = RGB(0,0,200);
+COLORREF StaticWindowsSettings::opSpoken		= 0;
+COLORREF StaticWindowsSettings::notOpSpoken	= 0;
+COLORREF StaticWindowsSettings::iSpoke			= 0;
+COLORREF StaticWindowsSettings::myNickSpoken	= 0;
+COLORREF StaticWindowsSettings::doubleClickableLink = RGB(0,0,200);

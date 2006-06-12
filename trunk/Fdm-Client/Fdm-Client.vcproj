@@ -170,6 +170,9 @@
 			Name="DC++ Rips - Source files"
 			Filter="">
 			<File
+				RelativePath=".\dcplusplus-rips\AutoSearch.cpp">
+			</File>
+			<File
 				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.cpp">
 			</File>
 			<File
@@ -200,6 +203,9 @@
 		<Filter
 			Name="DC++ Rips - Header files"
 			Filter="">
+			<File
+				RelativePath=".\dcplusplus-rips\AutoSearch.h">
+			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h">
 			</File>

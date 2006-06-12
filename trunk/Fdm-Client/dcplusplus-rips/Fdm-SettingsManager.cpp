@@ -29,7 +29,8 @@
 const string FdmSettingsManager::settingTags[] =
 {
 	// Strings
-	"FdmLanguageFileLocation", 
+	"FdmLanguageFileLocation",
+	"AutoSearchFrameOrder", "AutoSearchFrameWidths",
 	"FdmNotepadText",
 	"SENTRY", 
 	// Ints

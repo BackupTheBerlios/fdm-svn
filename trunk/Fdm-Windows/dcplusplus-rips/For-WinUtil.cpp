@@ -51,3 +51,26 @@ void WinUtil::getContextMenuPos(CRichEditCtrl& aEdit, POINT& aPt) {
 	aPt.y = erc.Height() / 2;
 	aEdit.ClientToScreen(&aPt);
 }
+
+void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, FdmSettingsManager::StrSetting order, 
+							  FdmSettingsManager::StrSetting widths, int n, 
+							  int* indexes, int* sizes) throw() {
+	string tmp;
+
+	ctrl.GetColumnOrderArray(n, indexes);
+	int i;
+	for(i = 0; i < n; ++i) {
+		tmp += Util::toString(indexes[i]);
+		tmp += ',';
+	}
+	tmp.erase(tmp.size()-1, 1);
+	FdmSettingsManager::getInstance()->set(order, tmp);
+	tmp.clear();
+	for(i = 0; i < n; ++i) {
+		sizes[i] = ctrl.GetColumnWidth(i);
+		tmp += Util::toString(sizes[i]);
+		tmp += ',';
+	}
+	tmp.erase(tmp.size()-1, 1);
+	FdmSettingsManager::getInstance()->set(widths, tmp);
+}

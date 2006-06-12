@@ -29,7 +29,7 @@
 namespace FdmMainFrame {
 	LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFdmNotepadFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnFdmFavHubFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnAutoSearchFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void destroyFdmMainFrame(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
 	HWND createFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);

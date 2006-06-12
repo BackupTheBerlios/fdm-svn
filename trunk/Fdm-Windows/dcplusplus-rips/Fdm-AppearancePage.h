@@ -17,7 +17,7 @@
  */
 
 #if !defined(FDM_APPEARANCE_PAGE_H)
-#define FDM_APPEARANCE2_PAGE_H
+#define FDM_APPEARANCE_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -32,23 +32,27 @@ class FdmAppearancePage : public CPropertyPage<IDD_FDM_APPEARANCEPAGE>, public F
 public:
 	FdmAppearancePage(FdmSettingsManager *s) : FdmPropPage(s) {
 		SetTitle(FDMCTSTRING(SETTINGS_APPEARANCE_PAGE));
-		m_psp.dwFlags |= PSP_RTLREADING;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	}
 
 	virtual ~FdmAppearancePage() {};
 
 	BEGIN_MSG_MAP(FdmAppearancePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_FDM_SETTINGS_BROWSE, onBrowse)
 		COMMAND_ID_HANDLER(IDC_FDM_SETTINGS_OP_SPOKE, onPickColor)
 		COMMAND_ID_HANDLER(IDC_FDM_SETTINGS_NOT_OP_SPOKE, onPickColor)
 		COMMAND_ID_HANDLER(IDC_FDM_SETTINGS_I_SPOKE, onPickColor)
 		COMMAND_ID_HANDLER(IDC_FDM_SETTINGS_MY_NICK_SPOKEN, onPickColor)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onPickColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -61,4 +65,4 @@ protected:
 	COLORREF opSpoke, notOpSpoke, iSpoke, myNickSpoken;
 };
 
-#endif // !defined(FDM_APPEARANCE2_PAGE_H)
+#endif // !defined(FDM_APPEARANCE_PAGE_H)

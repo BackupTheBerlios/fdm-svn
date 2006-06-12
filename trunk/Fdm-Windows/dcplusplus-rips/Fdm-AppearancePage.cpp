@@ -110,3 +110,13 @@ LRESULT FdmAppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	}
 	return 0;
 }
+
+LRESULT FdmAppearancePage::onHelpInfo(LPNMHDR /*pnmh*/) {
+//	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FDMAPPEARANCEPAGEH);
+	return 0;
+}
+
+LRESULT FdmAppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+//	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FDMAPPEARANCEPAGEH);
+	return 0;
+}

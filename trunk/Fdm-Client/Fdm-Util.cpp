@@ -20,3 +20,17 @@
 #include "../client/DCPlusPlus.h"
 
 #include "Fdm-Util.h"
+#include "../client/Util.h"
+#include "dcplusplus-rips/Fdm-ResourceManager.h"
+
+bool FdmUtil::toBool(int aInt) {
+	if (aInt) return true;
+	return false;
+}
+
+string FdmUtil::toString(bool aBool) {
+	if (aBool) return FDMSTRING(STRING_TRUE);
+	return FDMSTRING(STRING_FALSE);
+}
+
+bool StaticClientSettings::blockAutoSearch = false;

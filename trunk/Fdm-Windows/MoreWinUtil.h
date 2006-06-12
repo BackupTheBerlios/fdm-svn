@@ -31,7 +31,7 @@ public:
 	BEGIN_MSG_MAP(FdmMainFrameToolBar)
 		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, FdmMainFrame::OnFdmFileSettings)
 		COMMAND_ID_HANDLER(ID_FDM_NOTEPAD_FRAME, FdmMainFrame::OnFdmNotepadFrame)
-		COMMAND_ID_HANDLER(ID_FDM_FAVHUB_FRAME, FdmMainFrame::OnFdmFavHubFrame)
+		COMMAND_ID_HANDLER(ID_AUTO_SEARCH_FRAME, FdmMainFrame::OnAutoSearchFrame)
 	END_MSG_MAP()
 };
 
@@ -42,7 +42,7 @@ namespace MoreWinUtil
 	void initilizeColours();
 };
 
-class StaticSettings 
+class StaticWindowsSettings 
 {
 public:
 	static COLORREF opSpoken;

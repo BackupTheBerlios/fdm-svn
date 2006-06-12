@@ -35,7 +35,7 @@
 #include "ADLSearch.h"
 #include "SSLSocket.h"
 
-#include "../Fdm-Client/Fdm.h"	// added for FDM mod
+#include "../Fdm-Client/Fdm.h"
 
 #include "StringTokenizer.h"
 
@@ -48,8 +48,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
-
-	Fdm::newInstance();	// added for FDM mod
 
 	LogManager::newInstance();
 	TimerManager::newInstance();
@@ -86,9 +84,12 @@ void startup(void (*f)(void*, const string&), void* p) {
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
+	Fdm::newInstance();
 }
 
 void shutdown() {
+	Fdm::deleteInstance();
+
 	TimerManager::getInstance()->shutdown();
 	HashManager::getInstance()->shutdown();
 	ConnectionManager::getInstance()->shutdown();
@@ -96,8 +97,6 @@ void shutdown() {
 	BufferedSocket::waitShutdown();
 
 	SettingsManager::getInstance()->save();
-	
-	Fdm::deleteInstance();	// added for FDM mod
 
 	SSLSocketFactory::deleteInstance();
 	ADLSearchManager::deleteInstance();

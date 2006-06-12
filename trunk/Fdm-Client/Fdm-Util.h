@@ -25,6 +25,20 @@
 
 namespace FdmUtil
 {
+	bool toBool(int aInt);
+	string toString(bool aBool);
 };
+
+
+class StaticClientSettings 
+{
+public:
+	static bool getBlockAutoSearch() { return blockAutoSearch; }
+	static void setBlockAutoSearch(bool aBool) { blockAutoSearch = aBool; }
+
+private:
+	static bool blockAutoSearch;
+};
+
 
 #endif // !defined(FDM_UTIL_H)

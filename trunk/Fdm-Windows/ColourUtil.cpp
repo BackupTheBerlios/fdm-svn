@@ -70,7 +70,7 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 			colourAndAppend((Text::toT("[ " + speakersIP + " ] ")).c_str(), GetTextLengthEx());
 
 		// Change Brush Colour and Append <Nick>
-		myBrush.crTextColor = speakersOpStatus ? StaticSettings::opSpoken : StaticSettings::notOpSpoken;
+		myBrush.crTextColor = speakersOpStatus ? StaticWindowsSettings::opSpoken : StaticWindowsSettings::notOpSpoken;
 		colourAndAppend((Text::toT("<" + speakersNick + ">")).c_str(), GetTextLengthEx());
 
 		// Change back to default brush colour, and offset to end of nick text
@@ -81,9 +81,9 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	// Maybe colour rest of text differently
 	if (myNick != Util::emptyString)
 		if (myNick == speakersNick)
-			myBrush.crTextColor = StaticSettings::iSpoke;
+			myBrush.crTextColor = StaticWindowsSettings::iSpoke;
 		else if (Text::toLower(newText).find(Text::toLower(Text::toT(myNick)), offSet) != string::npos)
-			myBrush.crTextColor = StaticSettings::myNickSpoken;
+			myBrush.crTextColor = StaticWindowsSettings::myNickSpoken;
 
 	// Add rest of text
 	long sizeBeforeAppend = GetTextLengthEx();
@@ -96,7 +96,7 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	newText = buf;
 	delete buf;
 
-	myBrush.crTextColor = StaticSettings::doubleClickableLink;
+	myBrush.crTextColor = StaticWindowsSettings::doubleClickableLink;
 	findAndColourDoubleClickable(newText, sizeBeforeAppend);
 
 	if (noScroll) {
