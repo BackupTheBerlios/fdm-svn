@@ -41,6 +41,7 @@
 #include "../../client/CriticalSection.h"
 #include "../../client/Singleton.h"
 #include "../../client/TimerManager.h"
+#include "../../client/SearchManagerListener.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -51,10 +52,11 @@ class AutoSearch
 {
 public:
 
-	// Constructor
 	AutoSearch() : searchString("<Enter string>"), sourceType(0), sizeMode(1), size(-1), 
-		typeFileSize(2), onlyIfOp(false), isActive(true) {}
-
+								typeFileSize(2), onlyIfOp(false), isActive(true) {}
+	virtual ~AutoSearch() {}
+		
+	// Search
 	string searchString;
 	int sourceType;
 	int sizeMode;
@@ -62,6 +64,14 @@ public:
 	int typeFileSize;
 	bool onlyIfOp;
 	bool isActive;
+	
+	// Search Results
+	string resultsMatchTheseExactPhrases;
+	string resultsExcludeTheseStrings;
+	string resultsOneOfTheseExtensions;
+	int64_t resultsMinSize;
+	int64_t resultsMaxSize;
+	int resultsTypeFileSize;
 
 	static tstring TypeModesToTString(int i) {
 		switch(i) {
@@ -113,7 +123,7 @@ public:
 //	Class that holds all active searches
 //
 ///////////////////////////////////////////////////////////////////////////////
-class AutoSearchManager : public Singleton<AutoSearchManager>, private TimerManagerListener
+class AutoSearchManager : public Singleton<AutoSearchManager>, private TimerManagerListener, private SearchManagerListener
 {
 public:
 	// Constructor/destructor
@@ -130,13 +140,38 @@ public:
 
 	string getConfigFile() { return Util::getConfigPath() + "AutoSearch.xml"; }
 
+	bool getBlockAutoSearch() { return blockAutoSearch; }
+
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 private:
 	CriticalSection cs;
 
-	long time;
 	AutoSearchCollection::iterator pos;
+
+	bool blockAutoSearch;
+	long time;
+	long timeToSearch;
+	StringList clientsWhereOp;
+
+	// Setup results on search, instead of every search result should save a few resources
+	void clearAndAddToStringList(StringList& aStringList, string aString);
+	bool anExactMatch(StringList& aStringList, string extension);
+
+	StringList resMatchTheseExactPhrases;
+	StringList resExcludeTheseStrings;
+	StringList resOneOfTheseExtensions;
+	int64_t resMinSize;
+	int64_t resMaxSize;
+
+	// Same goes for not having to construct and destruct certain objects
+	long waitTimeBeforeStartAutoSearch;
+	string extension;
+	string fullPathInLower;
+	string::size_type lastDot;
+	StringList::const_iterator iter;
+
 };
 
 #endif // !defined(AUTO_SEARCH_H)

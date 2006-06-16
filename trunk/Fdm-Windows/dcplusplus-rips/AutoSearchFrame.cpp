@@ -521,7 +521,7 @@ void AutoSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	tstring fs;
 	line.push_back(Text::toT(search.searchString));
 	line.push_back(AutoSearch::TypeModesToTString(search.sourceType));
-	line.push_back(AutoSearch::SizeModesToTString(search.sourceType));
+	line.push_back(AutoSearch::SizeModesToTString(search.sizeMode));
 	line.push_back(Text::toT(Util::toString(search.size)));
 	line.push_back(AutoSearch::SizeTypeToTString(search.typeFileSize));
 	line.push_back(Text::toT(FdmUtil::toString(FdmUtil::toBool(search.onlyIfOp))));

@@ -59,6 +59,14 @@ private:
 	// Current search
 	AutoSearch* search;
 
+	// Text boxes
+	CEdit ctrlSearch;
+	CEdit ctrlSize;
+
+	// Check boxes
+	CButton ctrlIsActive;
+	CButton ctrlOnlyIfOp;
+
 	// Combo boxes
 	CComboBox ctrlSourceType;
 	CComboBox ctrlSizeModes;

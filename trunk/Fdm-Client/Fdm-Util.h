@@ -32,12 +32,6 @@ namespace FdmUtil
 
 class StaticClientSettings 
 {
-public:
-	static bool getBlockAutoSearch() { return blockAutoSearch; }
-	static void setBlockAutoSearch(bool aBool) { blockAutoSearch = aBool; }
-
-private:
-	static bool blockAutoSearch;
 };
 
 

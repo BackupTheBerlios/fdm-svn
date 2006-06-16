@@ -32,5 +32,3 @@ string FdmUtil::toString(bool aBool) {
 	if (aBool) return FDMSTRING(STRING_TRUE);
 	return FDMSTRING(STRING_FALSE);
 }
-
-bool StaticClientSettings::blockAutoSearch = false;

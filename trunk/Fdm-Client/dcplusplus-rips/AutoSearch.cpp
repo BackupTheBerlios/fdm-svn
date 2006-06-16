@@ -30,17 +30,21 @@
 
 #include "../../client/File.h"
 #include "../../client/SimpleXML.h"
+#include "../../client/ClientManager.h"
 #include "../Fdm-Util.h"
 
 AutoSearchManager::AutoSearchManager() {
 	TimerManager::getInstance()->addListener(this);
+	SearchManager::getInstance()->addListener(this);
 	Load();
 
+	waitTimeBeforeStartAutoSearch = 7 * 60;
 	time = 0;
 	pos = collection.begin();
 }
 
 AutoSearchManager::~AutoSearchManager() {
+	SearchManager::getInstance()->removeListener(this);
 	TimerManager::getInstance()->removeListener(this);
 	Save();
 }
@@ -50,26 +54,98 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 	time++;
 
 	// Not ready to search
-	if (time < 5 * 60)
+	if (time < waitTimeBeforeStartAutoSearch)
 		return;
 	// Ready to search, block Autosearch for alternative sources
-	else if (time == 5 * 60)
-		StaticClientSettings::setBlockAutoSearch(true);
+	else if (time == waitTimeBeforeStartAutoSearch) {
+		blockAutoSearch = true;
+		timeToSearch = time;
+	}
 
 	// If not alright to search, retry in a minute
-	if (!SearchManager::getInstance()->okToSearch())
+	if (!SearchManager::getInstance()->okToSearch() || time < timeToSearch)
 		return;
 
 	// If have some searches
 	if (pos != collection.end()) {
-		SearchManager::getInstance()->search(pos->searchString, (int64_t)pos->size * AutoSearch::GetSize(pos->typeFileSize), (SearchManager::TypeModes)pos->sourceType, (SearchManager::SizeModes)pos->typeFileSize, "auto");
+		if (pos->onlyIfOp) {
+			clientsWhereOp.clear();
+
+			ClientManager* clientMgr = ClientManager::getInstance();
+			clientMgr->lock();
+
+			Client::List& clients = clientMgr->getClients();
+			for(Client::List::iterator it = clients.begin(); it != clients.end(); ++it) {
+				Client* client = *it;
+				if(!client->isConnected())
+					continue;
+				if(client->isOp())
+					clientsWhereOp.push_back(client->getHubUrl());
+			}
+			clientMgr->unlock();
+
+			if(!clientsWhereOp.size()) {
+				// Not Op anywhere, next search
+				pos++;
+				return;
+			}
+
+			// Woo, a non-tth auto search.  Eventually made Fdm detectable.  In ADC hubs only. lol
+			SearchManager::getInstance()->search(clientsWhereOp, pos->searchString, (int64_t)pos->size * AutoSearch::GetSize(pos->typeFileSize), (SearchManager::TypeModes)pos->sourceType, (SearchManager::SizeModes)pos->typeFileSize, "auto");
+		} else {
+			SearchManager::getInstance()->search(pos->searchString, (int64_t)pos->size * AutoSearch::GetSize(pos->typeFileSize), (SearchManager::TypeModes)pos->sourceType, (SearchManager::SizeModes)pos->typeFileSize, "auto");
+		}
 		pos++;
+		timeToSearch += 5;
+
+		// Setup wanted results for matching with search results
+		clearAndAddToStringList(resMatchTheseExactPhrases, pos->resultsMatchTheseExactPhrases);
+		clearAndAddToStringList(resExcludeTheseStrings, pos->resultsExcludeTheseStrings);
+		clearAndAddToStringList(resOneOfTheseExtensions, pos->resultsOneOfTheseExtensions);
+
+		resMinSize = (int64_t)pos->resultsMinSize * AutoSearch::GetSize(pos->resultsTypeFileSize);
+		resMaxSize = (int64_t)pos->resultsMaxSize * AutoSearch::GetSize(pos->resultsTypeFileSize);
 	} else {
 	// Finished autosearch
 		time = 0;
 		pos = collection.begin();
-		StaticClientSettings::setBlockAutoSearch(false);
+		blockAutoSearch = false;
 	}
+}
+
+void AutoSearchManager::clearAndAddToStringList(StringList& aStringList, string aString) {
+		aStringList.clear();
+		StringTokenizer<string> st(aString, '|');
+		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+			// is token preserved in this ?
+			aStringList.push_back(*i);
+		}
+}
+
+void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
+	if (sr->getType() == SearchResult::TYPE_FILE)
+		if (sr->getSize() < resMinSize || (resMaxSize > 0 && sr->getSize() > resMaxSize)) return;
+
+	fullPathInLower = Text::toLower(sr->getFile());
+
+	for(iter = resExcludeTheseStrings.begin(); iter != resExcludeTheseStrings.end(); ++iter)
+		if (fullPathInLower.find(*iter) != string::npos) return;
+
+	for(iter = resMatchTheseExactPhrases.begin(); iter != resMatchTheseExactPhrases.end(); ++iter)
+		if (fullPathInLower.find(*iter) == string::npos) return;
+
+	if (sr->getType() == SearchResult::TYPE_FILE) {
+		extension = Util::getFileExt(fullPathInLower);
+	
+		if (extension == Util::emptyString) return;
+
+		if (!resOneOfTheseExtensions.empty())
+			for(iter = resOneOfTheseExtensions.begin(); iter != resOneOfTheseExtensions.end(); ++iter)
+				if (extension == *iter) break;
+				else if (iter + 1 == resOneOfTheseExtensions.end()) return;
+	}
+
+	// Got a hit, Notify
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -32,8 +32,7 @@
 #include "../../Fdm-client/dcplusplus-rips/AutoSearch.h"
 
 // Initialize dialog
-LRESULT AutoSearchProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
-{
+LRESULT AutoSearchProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 	// Translate the texts
 	SetWindowText(FDMCTSTRING(AUTO_SEARCH_PROPERTIES));
 	SetDlgItemText(IDC_AS_SEARCH, FDMCTSTRING(SEARCH_STRING));
@@ -41,6 +40,14 @@ LRESULT AutoSearchProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	SetDlgItemText(IDC_AS_FILE_SIZE, FDMCTSTRING(SIZE));
 	SetDlgItemText(IDC_AS_IS_ACTIVE, FDMCTSTRING(ENABLED));
 	SetDlgItemText(IDC_AS_ONLY_IF_OP, FDMCTSTRING(ONLY_WHERE_OP));
+
+	// Initialize text boxes
+	ctrlSearch.Attach(GetDlgItem(IDC_AUTOS_SEARCH_STRING));
+	ctrlSize.Attach(GetDlgItem(IDC_AUTOS_FILE_SIZE));
+
+	// Initialize check boxes
+	ctrlIsActive.Attach(GetDlgItem(IDC_AS_IS_ACTIVE));
+	ctrlOnlyIfOp.Attach(GetDlgItem(IDC_AS_ONLY_IF_OP));
 
 	// Initialize combo boxes
 	ctrlSourceType.Attach(GetDlgItem(IDC_AUTOS_SOURCE_TYPE));
@@ -69,13 +76,15 @@ LRESULT AutoSearchProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	ctrlSizeType.SetCurSel(0);
 
 	// Load search data
-	SetDlgItemText(IDC_AUTOS_SEARCH_STRING, Text::toT(search->searchString).c_str());
-	SetDlgItemText(IDC_AUTOS_FILE_SIZE, Text::toT(search->size > 0 ? Util::toString(search->size) : "").c_str());
-	::SendMessage(GetDlgItem(IDC_AUTOS_SOURCE_TYPE), CB_SETCURSEL, search->sourceType, 0L);
-	::SendMessage(GetDlgItem(IDC_AUTOS_SIZE_MODES), CB_SETCURSEL, search->sizeMode, 0L);
-	::SendMessage(GetDlgItem(IDC_AUTOS_SIZE_TYPE), CB_SETCURSEL, search->typeFileSize, 0L);
-	::SendMessage(GetDlgItem(IDC_AS_IS_ACTIVE), BM_SETCHECK, search->isActive ? 1 : 0, 0L);
-	::SendMessage(GetDlgItem(IDC_AS_ONLY_IF_OP), BM_SETCHECK, search->onlyIfOp ? 1 : 0, 0L);
+	ctrlSearch.SetWindowText(Text::toT(search->searchString).c_str());
+	ctrlSize.SetWindowText(Text::toT(search->size > 0 ? Util::toString(search->size) : "").c_str());
+
+	ctrlIsActive.SetCheck(search->isActive ? 1 : 0);
+	ctrlOnlyIfOp.SetCheck(search->onlyIfOp ? 1 : 0);
+
+	ctrlSourceType.SetCurSel(search->sourceType);
+	ctrlSizeModes.SetCurSel(search->sizeMode);
+	ctrlSizeType.SetCurSel(search->typeFileSize);
 
 	// Center dialog
 	CenterWindow(GetParent());
@@ -84,24 +93,23 @@ LRESULT AutoSearchProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 }
 
 // Exit dialog
-LRESULT AutoSearchProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	if(wID == IDOK)
-	{
+LRESULT AutoSearchProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(wID == IDOK)	{
 		// Update search
 		TCHAR buf[256];
 
-		GetDlgItemText(IDC_AUTOS_SEARCH_STRING, buf, 256);
+		ctrlSearch.GetWindowText(buf, 256);
 		search->searchString = Text::fromT(buf);
 
-		GetDlgItemText(IDC_AUTOS_FILE_SIZE, buf, 256);
-		search->size = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
+		ctrlSize.GetWindowText(buf, 256);
+		search->size = Util::toInt64(Text::fromT(buf));
+
+		search->isActive = (ctrlIsActive.GetCheck() == 1);
+		search->onlyIfOp = (ctrlOnlyIfOp.GetCheck() == 1);
 
 		search->sourceType = ctrlSourceType.GetCurSel();
 		search->sizeMode = ctrlSizeModes.GetCurSel();
 		search->typeFileSize = ctrlSizeType.GetCurSel();
-		search->isActive = (::SendMessage(GetDlgItem(IDC_AS_IS_ACTIVE), BM_GETCHECK, 0, 0L) != 0);
-		search->onlyIfOp = (::SendMessage(GetDlgItem(IDC_AS_ONLY_IF_OP), BM_GETCHECK, 0, 0L) != 0);
 	}
 
 	EndDialog(wID);
