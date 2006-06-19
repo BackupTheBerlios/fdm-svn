@@ -43,17 +43,14 @@
 #include "../../client/TimerManager.h"
 #include "../../client/SearchManagerListener.h"
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//	Class that represent an ADL search
-//
-///////////////////////////////////////////////////////////////////////////////
 class AutoSearch
 {
 public:
 
 	AutoSearch() : searchString("<Enter string>"), sourceType(0), sizeMode(1), size(-1), 
-								typeFileSize(2), onlyIfOp(false), isActive(true) {}
+					typeFileSize(2), onlyIfOp(false), isActive(true),  
+					resultsMatch(Util::emptyString), resultsExclude(Util::emptyString), resultsExtensions(Util::emptyString),
+					resultsMinSize(0), resultsMaxSize(0), resultsTypeFileSize(2) {}
 	virtual ~AutoSearch() {}
 		
 	// Search
@@ -66,9 +63,9 @@ public:
 	bool isActive;
 	
 	// Search Results
-	string resultsMatchTheseExactPhrases;
-	string resultsExcludeTheseStrings;
-	string resultsOneOfTheseExtensions;
+	string resultsMatch;
+	string resultsExclude;
+	string resultsExtensions;
 	int64_t resultsMinSize;
 	int64_t resultsMaxSize;
 	int resultsTypeFileSize;
@@ -118,11 +115,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//	Class that holds all active searches
-//
-///////////////////////////////////////////////////////////////////////////////
 class AutoSearchManager : public Singleton<AutoSearchManager>, private TimerManagerListener, private SearchManagerListener
 {
 public:
@@ -142,31 +134,28 @@ public:
 
 	bool getBlockAutoSearch() { return blockAutoSearch; }
 
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 private:
 	CriticalSection cs;
 
-	AutoSearchCollection::iterator pos;
-
 	bool blockAutoSearch;
+	int curPos;
 	long time;
 	long timeToSearch;
 	StringList clientsWhereOp;
 
 	// Setup results on search, instead of every search result should save a few resources
 	void clearAndAddToStringList(StringList& aStringList, string aString);
-	bool anExactMatch(StringList& aStringList, string extension);
 
-	StringList resMatchTheseExactPhrases;
-	StringList resExcludeTheseStrings;
-	StringList resOneOfTheseExtensions;
+	StringList resMatch;
+	StringList resExclude;
+	StringList resExtensions;
 	int64_t resMinSize;
 	int64_t resMaxSize;
 
 	// Same goes for not having to construct and destruct certain objects
-	long waitTimeBeforeStartAutoSearch;
 	string extension;
 	string fullPathInLower;
 	string::size_type lastDot;

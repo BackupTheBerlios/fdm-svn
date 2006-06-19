@@ -38,9 +38,9 @@ AutoSearchManager::AutoSearchManager() {
 	SearchManager::getInstance()->addListener(this);
 	Load();
 
-	waitTimeBeforeStartAutoSearch = 7 * 60;
+	curPos = 0;
+	timeToSearch = 7 * 60;
 	time = 0;
-	pos = collection.begin();
 }
 
 AutoSearchManager::~AutoSearchManager() {
@@ -49,25 +49,21 @@ AutoSearchManager::~AutoSearchManager() {
 	Save();
 }
 
-void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) throw() {
+void AutoSearchManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) throw() {
 	Lock l(cs);
 	time++;
 
-	// Not ready to search
-	if (time < waitTimeBeforeStartAutoSearch)
-		return;
-	// Ready to search, block Autosearch for alternative sources
-	else if (time == waitTimeBeforeStartAutoSearch) {
-		blockAutoSearch = true;
-		timeToSearch = time;
-	}
-
 	// If not alright to search, retry in a minute
-	if (!SearchManager::getInstance()->okToSearch() || time < timeToSearch)
-		return;
+//	if (time < timeToSearch || !SearchManager::getInstance()->okToSearch())
+//		return;
+
+	if (time == timeToSearch)
+		blockAutoSearch = true;
+
+	AutoSearchCollection::iterator pos = collection.begin() + curPos;
 
 	// If have some searches
-	if (pos != collection.end()) {
+	if (pos < collection.end()) {
 		if (pos->onlyIfOp) {
 			clientsWhereOp.clear();
 
@@ -95,31 +91,32 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 		} else {
 			SearchManager::getInstance()->search(pos->searchString, (int64_t)pos->size * AutoSearch::GetSize(pos->typeFileSize), (SearchManager::TypeModes)pos->sourceType, (SearchManager::SizeModes)pos->typeFileSize, "auto");
 		}
-		pos++;
-		timeToSearch += 5;
 
 		// Setup wanted results for matching with search results
-		clearAndAddToStringList(resMatchTheseExactPhrases, pos->resultsMatchTheseExactPhrases);
-		clearAndAddToStringList(resExcludeTheseStrings, pos->resultsExcludeTheseStrings);
-		clearAndAddToStringList(resOneOfTheseExtensions, pos->resultsOneOfTheseExtensions);
-
+		clearAndAddToStringList(resMatch, pos->resultsMatch);
+		clearAndAddToStringList(resExclude, pos->resultsExclude);
+		clearAndAddToStringList(resExtensions, pos->resultsExtensions);
 		resMinSize = (int64_t)pos->resultsMinSize * AutoSearch::GetSize(pos->resultsTypeFileSize);
 		resMaxSize = (int64_t)pos->resultsMaxSize * AutoSearch::GetSize(pos->resultsTypeFileSize);
+
+		// Prepare for next search
+		curPos++;
+		timeToSearch += 5;
 	} else {
 	// Finished autosearch
 		time = 0;
-		pos = collection.begin();
+		timeToSearch = 7 * 60;
+		curPos = 0;
 		blockAutoSearch = false;
 	}
 }
 
 void AutoSearchManager::clearAndAddToStringList(StringList& aStringList, string aString) {
-		aStringList.clear();
-		StringTokenizer<string> st(aString, '|');
-		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			// is token preserved in this ?
-			aStringList.push_back(*i);
-		}
+	Lock l(cs);
+	aStringList.clear();
+	StringTokenizer<string> st(aString, '|');
+	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i)
+		aStringList.push_back(*i);
 }
 
 void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
@@ -128,21 +125,20 @@ void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() 
 
 	fullPathInLower = Text::toLower(sr->getFile());
 
-	for(iter = resExcludeTheseStrings.begin(); iter != resExcludeTheseStrings.end(); ++iter)
+	for(iter = resExclude.begin(); iter != resExclude.end(); ++iter)
 		if (fullPathInLower.find(*iter) != string::npos) return;
 
-	for(iter = resMatchTheseExactPhrases.begin(); iter != resMatchTheseExactPhrases.end(); ++iter)
+	for(iter = resMatch.begin(); iter != resMatch.end(); ++iter)
 		if (fullPathInLower.find(*iter) == string::npos) return;
 
 	if (sr->getType() == SearchResult::TYPE_FILE) {
 		extension = Util::getFileExt(fullPathInLower);
 	
-		if (extension == Util::emptyString) return;
+		if (extension == Util::emptyString || resExtensions.empty()) return;
 
-		if (!resOneOfTheseExtensions.empty())
-			for(iter = resOneOfTheseExtensions.begin(); iter != resOneOfTheseExtensions.end(); ++iter)
-				if (extension == *iter) break;
-				else if (iter + 1 == resOneOfTheseExtensions.end()) return;
+		for(iter = resExtensions.begin(); iter != resExtensions.end(); ++iter)
+			if (extension == *iter) break;
+			else if (iter + 1 == resExtensions.end()) return;
 	}
 
 	// Got a hit, Notify
@@ -178,32 +174,48 @@ void AutoSearchManager::Load()
 					// Found another search, load it
 					AutoSearch search;
 
-					if(xml.findChild("SearchString")) {
+					if(xml.findChild("SearchString"))
 						search.searchString = xml.getChildData();
-					}
-					if(xml.findChild("SourceType")) {
+
+					if(xml.findChild("SourceType"))
 						search.sourceType = Util::toInt(xml.getChildData());
-					}
-					if(xml.findChild("SizeMode")) {
+
+					if(xml.findChild("SizeMode"))
 						search.sizeMode = Util::toInt(xml.getChildData());
-					}
-					if(xml.findChild("Size")) {
+
+					if(xml.findChild("Size"))
 						search.size = Util::toInt64(xml.getChildData());
-					}
-					if(xml.findChild("SizeType")) {
+
+					if(xml.findChild("SizeType"))
 						search.typeFileSize =Util::toInt(xml.getChildData());
-					}
-					if(xml.findChild("OnlyIfOp")) {
+
+					if(xml.findChild("OnlyIfOp"))
 						search.onlyIfOp = (Util::toInt(xml.getChildData()) != 0);
-					}
-					if(xml.findChild("IsActive")) {
+
+					if(xml.findChild("IsActive"))
 						search.isActive = (Util::toInt(xml.getChildData()) != 0);
-					} 
+
+					if(xml.findChild("Matches"))
+						search.resultsMatch = xml.getChildData();
+
+					if(xml.findChild("Excludes"))
+						search.resultsExclude = xml.getChildData();
+
+					if(xml.findChild("Extensions"))
+						search.resultsExtensions = xml.getChildData();
+
+					if(xml.findChild("ResMinSize"))
+						search.resultsMinSize = Util::toInt64(xml.getChildData());
+
+					if(xml.findChild("ResMaxSize"))
+						search.resultsMaxSize = Util::toInt64(xml.getChildData());
+
+					if(xml.findChild("ResSizeType"))
+						search.resultsTypeFileSize = Util::toInt(xml.getChildData());
 
 					// Add search to collection
-					if(search.searchString.size() > 0) {
+					if(search.searchString.size() > 0)
 						collection.push_back(search);
-					}
 
 					// Go to next search
 					xml.stepOut();
@@ -266,6 +278,24 @@ void AutoSearchManager::Save()
 
 			xml.addTag("IsActive", search.isActive);
 			xml.addChildAttrib(type, string("bool"));
+
+			xml.addTag("Matches", search.resultsMatch);
+			xml.addChildAttrib(type, string("string"));
+
+			xml.addTag("Excludes", search.resultsExclude);
+			xml.addChildAttrib(type, string("string"));
+
+			xml.addTag("Extensions", search.resultsExtensions);
+			xml.addChildAttrib(type, string("string"));
+
+			xml.addTag("ResMinSize", search.resultsMinSize);
+			xml.addChildAttrib(type, string("int64"));
+
+			xml.addTag("ResMaxSize", search.resultsMaxSize);
+			xml.addChildAttrib(type, string("int64"));
+
+			xml.addTag("ResSizeType", search.resultsTypeFileSize);
+			xml.addChildAttrib(type, string("int"));
 
 			xml.stepOut();
 		}

@@ -245,11 +245,11 @@ LRESULT AutoSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	// Invoke edit dialog with fresh search
 	AutoSearch search;
 	AutoSearchProperties dlg(&search);
+
 	if(dlg.DoModal((HWND)*this) == IDOK)
 	{
 		// Add new search to the end or if selected, just before
 		AutoSearchManager::AutoSearchCollection& collection = AutoSearchManager::getInstance()->collection;
-		
 
 		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 		if(i < 0)

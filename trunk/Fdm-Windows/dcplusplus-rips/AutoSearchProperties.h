@@ -62,6 +62,11 @@ private:
 	// Text boxes
 	CEdit ctrlSearch;
 	CEdit ctrlSize;
+	CEdit ctrlMatch;
+	CEdit ctrlExclude;
+	CEdit ctrlExtension;
+	CEdit ctrlMinSize;
+	CEdit ctrlMaxSize;
 
 	// Check boxes
 	CButton ctrlIsActive;
@@ -71,6 +76,7 @@ private:
 	CComboBox ctrlSourceType;
 	CComboBox ctrlSizeModes;
 	CComboBox ctrlSizeType;
+	CComboBox ctrlResSizeType;
 };
 
 #endif // !defined(AUTO_SEARCH_PROPERTIES_H)
