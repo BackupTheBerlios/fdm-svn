@@ -50,13 +50,13 @@ AutoSearchManager::~AutoSearchManager() {
 	Save();
 }
 
-void AutoSearchManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) throw() {
+void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) throw() {
 	Lock l(cs);
 	time++;
 
 	// If not alright to search, retry in a minute
-//	if (time < timeToSearch || !SearchManager::getInstance()->okToSearch())
-//		return;
+	if (time < timeToSearch || !SearchManager::getInstance()->okToSearch())
+		return;
 
 	if (time == timeToSearch)
 		blockAutoSearch = true;

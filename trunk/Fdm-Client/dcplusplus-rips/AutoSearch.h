@@ -134,7 +134,7 @@ public:
 
 	bool getBlockAutoSearch() { return blockAutoSearch; }
 
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 private:
