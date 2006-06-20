@@ -31,6 +31,7 @@
 #include "../../client/File.h"
 #include "../../client/SimpleXML.h"
 #include "../../client/ClientManager.h"
+#include "../../client/LogManager.h"
 #include "../Fdm-Util.h"
 
 AutoSearchManager::AutoSearchManager() {
@@ -116,7 +117,7 @@ void AutoSearchManager::clearAndAddToStringList(StringList& aStringList, string 
 	aStringList.clear();
 	StringTokenizer<string> st(aString, '|');
 	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i)
-		aStringList.push_back(*i);
+		aStringList.push_back(Text::toLower(*i));
 }
 
 void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
@@ -142,15 +143,12 @@ void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() 
 	}
 
 	// Got a hit, Notify
+	// Fixme, some better way of notifying
+	LogManager::getInstance()->message("Autosearch Result. File " + sr->getFile() + " from " + sr->getUser()->getFirstNick() + " in " + sr->getHubName());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//	Load old searches from disk
-//
-///////////////////////////////////////////////////////////////////////////////
-void AutoSearchManager::Load()
-{
+void AutoSearchManager::Load() {
+	Lock l(cs);
 	// Clear current
 	collection.clear();
 
@@ -229,13 +227,8 @@ void AutoSearchManager::Load()
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//	Save current searches to disk
-//
-///////////////////////////////////////////////////////////////////////////////
-void AutoSearchManager::Save()
-{
+void AutoSearchManager::Save() {
+	Lock l(cs);
 	// Prepare xml string for saving
 	try {
 		SimpleXML xml;

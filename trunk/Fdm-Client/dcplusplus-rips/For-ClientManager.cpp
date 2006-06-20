@@ -21,7 +21,7 @@
 
 #include "../../client/ClientManager.h"
 
-OnlineUser* ClientManager::getOnLineUser(const string& aNick, const string& aHubUrl) {
+OnlineUser* ClientManager::getOnlineUser(const string& aNick, const string& aHubUrl) {
 	Lock l(cs);
 	for(OnlineIter i = onlineUsers.begin(); i != onlineUsers.end(); ++i) {
 		if(i->second->getIdentity().getNick() == aNick) {
