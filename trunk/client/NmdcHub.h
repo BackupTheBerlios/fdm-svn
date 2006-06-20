@@ -33,28 +33,30 @@
 
 class ClientManager;
 
-class NmdcHub : public Client, private TimerManagerListener, private Flags
+class NmdcHub : public Client, private Flags
 {
 public:
 	using Client::send;
 
 	virtual void connect();
 	virtual void connect(const OnlineUser& aUser);
-	virtual void disconnect(bool graceless) throw();
 
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage);
-	virtual void sendUserCmd(const string& aUserCmd) throw() { send(toNmdc(aUserCmd)); }
+	virtual void sendUserCmd(const string& aUserCmd) throw() { send(toAcp(aUserCmd)); }
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
-	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
+	virtual void password(const string& aPass) { send("$MyPass " + toAcp(aPass) + "|"); }
 	virtual void info(bool force) { myInfo(force); }
 	
 	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	virtual string escape(string const& str) const { return Util::validateMessage(str, false); }
+	virtual string escape(string const& str) const { return validateMessage(str, false); }
+	static string unescape(const string& str) { return validateMessage(str, true); }
 
 	virtual void send(const AdcCommand&) { dcassert(0); }
+
+	static string validateMessage(string tmp, bool reverse);
 
 	GETSET(int, supportFlags, SupportFlags);
 private:
@@ -79,7 +81,6 @@ private:
 
 	NickMap users;
 
-	bool reconnect;
 	u_int32_t lastUpdate;
 	string lastMyInfoA, lastMyInfoB;
 
@@ -102,10 +103,10 @@ private:
 	OnlineUser* findUser(const string& aNick);
 	void putUser(const string& aNick);
 
-	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
-	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
+	string fromAcp(const string& str) const { return Text::acpToUtf8(str); }
+	string toAcp(const string& str) const { return Text::utf8ToAcp(str); }
 
-	void validateNick(const string& aNick) { send("$ValidateNick " + toNmdc(aNick) + "|"); }
+	void validateNick(const string& aNick) { send("$ValidateNick " + toAcp(aNick) + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
 	void version() { send("$Version 1,0091|"); }
 	void getNickList() { send("$GetNickList|"); }
@@ -119,7 +120,7 @@ private:
 	virtual string checkNick(const string& aNick);
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(Second, u_int32_t aTick) throw();
 
 	virtual void on(Line, const string& l) throw() { onLine(l); }
 	virtual void on(Failed, const string&) throw();

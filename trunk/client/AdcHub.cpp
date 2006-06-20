@@ -29,7 +29,7 @@
 #include "Util.h"
 #include "UserCommand.h"
 #include "FavoriteManager.h"
-#include "SSLSocket.h"
+#include "CryptoManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
@@ -133,17 +133,18 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->setFlag(User::SSL);
 	}
 
-	if(u->getIdentity().isHub()) {
-		setHubIdentity(u->getIdentity());
-		fire(ClientListener::HubUpdated(), this);
-	}
-
-	if(u->getUser() == ClientManager::getInstance()->getMe()) {
+	if(u->getUser() == getMyIdentity().getUser()) {
 		state = STATE_NORMAL;
 		setMyIdentity(u->getIdentity());
 		updateCounts(false);
 	}
-	fire(ClientListener::UserUpdated(), this, *u);
+
+	if(u->getIdentity().isHub()) {
+		setHubIdentity(u->getIdentity());
+		fire(ClientListener::HubUpdated(), this);
+	} else {
+		fire(ClientListener::UserUpdated(), this, *u);
+	}
 }
 
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
@@ -353,12 +354,6 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	}
 }
 
-void AdcHub::disconnect(bool graceless) {
-	Client::disconnect(graceless);
-	state = STATE_PROTOCOL;
-	clearUsers();
-}
-
 void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
@@ -452,8 +447,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 
 	ADDPARAM("ID", ClientManager::getInstance()->getMyCID().toBase32());
 	ADDPARAM("PD", ClientManager::getInstance()->getMyPID().toBase32());
-	ADDPARAM("NI", getMyIdentity().getNick());
-	ADDPARAM("DE", getMyIdentity().getDescription());
+	ADDPARAM("NI", getCurrentNick());
+	ADDPARAM("DE", getCurrentDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
 	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
 	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
@@ -462,9 +457,22 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
+	ADDPARAM("US", Util::toString((long)(Util::toDouble(SETTING(UPLOAD_SPEED))*1024*1024)));
+
+	if(SETTING(MAX_DOWNLOAD_SPEED) > 0) {
+		ADDPARAM("DS", Util::toString((SETTING(MAX_DOWNLOAD_SPEED)*1024*8)));
+	} else {
+		ADDPARAM("DS", Util::emptyString);
+	}
+
+	if(Util::getAway()){
+		ADDPARAM("AW", '1');
+	} else {
+		ADDPARAM("AW", Util::emptyString);
+	}
 
 	string su;
-	if(SSLSocketFactory::getInstance()->hasCerts()) {
+	if(CryptoManager::getInstance()->hasCerts()) {
 		su += ADCS_FEATURE + ",";
 	} 
 	
@@ -505,9 +513,10 @@ int64_t AdcHub::getAvailable() const {
 
 string AdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
-	string::size_type i = 0;
-	while( (i = tmp.find_first_of(" ", i)) != string::npos) {
-		tmp[i++]='_';
+	for(size_t i = 0; i < aNick.size(); ++i) {
+		if(tmp[i] <= 32) {
+			tmp[i] = '_';
+		}
 	}
 	return tmp;
 }
@@ -530,19 +539,10 @@ void AdcHub::on(Line, const string& aLine) throw() {
 
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	clearUsers();
+	socket->removeListener(this);
+
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
-}
-
-void AdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(socket && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
-		if(!isConnected()) {
-			// Try to reconnect...
-			if(reconnect && !getAddress().empty())
-				Client::connect();
-		}
-	}
 }
 
 void AdcHub::send(const AdcCommand& cmd) {
@@ -552,4 +552,11 @@ void AdcHub::send(const AdcCommand& cmd) {
 	if(cmd.getType() == AdcCommand::TYPE_UDP)
 		sendUDP(cmd);
 	send(cmd.toString(sid));
+}
+
+void AdcHub::on(Second, u_int32_t aTick) throw() {
+	if(getAutoReconnect() && state == STATE_PROTOCOL && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+		// Try to reconnect...
+		connect();
+	}
 }

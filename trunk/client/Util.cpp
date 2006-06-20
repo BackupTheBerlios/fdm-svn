@@ -173,67 +173,6 @@ string Util::getDataPath() {
 #endif // _WIN32
 }
 
-string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
-	string::size_type i = 0;
-
-	if(reverse) {
-		while( (i = tmp.find("&#36;", i)) != string::npos) {
-			tmp.replace(i, 5, "$");
-			i++;
-		}
-		i = 0;
-		while( (i = tmp.find("&#124;", i)) != string::npos) {
-			tmp.replace(i, 6, "|");
-			i++;
-		}
-		i = 0;
-		while( (i = tmp.find("&amp;", i)) != string::npos) {
-			tmp.replace(i, 5, "&");
-			i++;
-		}
-		if(checkNewLines) {
-			// Check all '<' and '[' after newlines...
-			i = 0;
-			while( (i = tmp.find('\n', i)) != string::npos) {
-				if(i + 1 < tmp.length()) {
-					if(tmp[i+1] == '[' || tmp[i+1] == '<') {
-						tmp.insert(i+1, "- ");
-						i += 2;
-					}
-				}
-				i++;
-			}
-		}
-	} else {
-		i = 0;
-		while( (i = tmp.find("&amp;", i)) != string::npos) {
-			tmp.replace(i, 1, "&amp;");
-			i += 4;
-		}
-		i = 0;
-		while( (i = tmp.find("&#36;", i)) != string::npos) {
-			tmp.replace(i, 1, "&amp;");
-			i += 4;
-		}
-		i = 0;
-		while( (i = tmp.find("&#124;", i)) != string::npos) {
-			tmp.replace(i, 1, "&amp;");
-			i += 4;
-		}
-		i = 0;
-		while( (i = tmp.find('$', i)) != string::npos) {
-			tmp.replace(i, 1, "&#36;");
-			i += 4;
-		}
-		i = 0;
-		while( (i = tmp.find('|', i)) != string::npos) {
-			tmp.replace(i, 1, "&#124;");
-			i += 5;
-		}
-	}
-	return tmp;
-}
-
 #ifdef _WIN32
 static const char badChars[] = { 
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
@@ -400,24 +339,6 @@ string Util::formatBytes(int64_t aBytes) {
 	}
 
 	return buf;
-}
-
-double Util::toBytes(TCHAR* aSize) {
-	double bytes = _tstof(aSize);
-
-	if (_tcsstr(aSize, CTSTRING(PIB))) {
-		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(TiB))) {
-		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(GiB))) {
-		return bytes * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(MiB))) {
-		return bytes * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(KiB))) {
-		return bytes * 1024.0;
-	} else {
-		return bytes;
-	}
 }
 
 string Util::formatExactSize(int64_t aBytes) {
@@ -915,7 +836,7 @@ string Util::getOsVersion() {
 	return os;
 
 #else // _WIN32
-	utsname n;
+	struct utsname n;
 
 	if(uname(&n) != 0) {
 		return "unix (unknown version)";
@@ -976,4 +897,20 @@ string Util::toDOS(const string& tmp) {
 		}
 	}
 	return tmp2;
+}
+
+string Util::formatMessage(const string& nick, const string& message) {
+	string tmp = '<' + nick + "> " + message;
+	// Check all '<' and '[' after newlines as they're probably pasts...
+	size_t i = 0;
+	while( (i = tmp.find('\n', i)) != string::npos) {
+		if(i + 1 < tmp.length()) {
+			if(tmp[i+1] == '[' || tmp[i+1] == '<') {
+				tmp.insert(i+1, "- ");
+				i += 2;
+			}
+		}
+		i++;
+	}
+	return toDOS(tmp);
 }
