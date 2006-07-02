@@ -31,15 +31,29 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	return false;
 }
 
-void MoreWinUtil::initilizeColours() {
-	StaticWindowsSettings::opSpoken		= FDMSETTING(OP_SPOKE_COLOUR);
+void MoreWinUtil::initilize() {
+	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
 	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
 	StaticWindowsSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
-	StaticWindowsSettings::myNickSpoken	= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+	StaticWindowsSettings::myNickSpoken		= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
 }
 
-COLORREF StaticWindowsSettings::opSpoken		= 0;
-COLORREF StaticWindowsSettings::notOpSpoken	= 0;
-COLORREF StaticWindowsSettings::iSpoke			= 0;
-COLORREF StaticWindowsSettings::myNickSpoken	= 0;
+bool MoreWinUtil::possibleCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
+	if(Util::stricmp(cmd.c_str(), _T("fdm")) == 0 || Util::stricmp(cmd.c_str(), _T("fdm++")) == 0) {
+		string tmp = "\r\nSmile and be happy. :)\r\nhttp://fdm.berlios.de/ <";
+		tmp += FDMAPPNAME;
+		tmp += " ";
+		tmp += FDMVERSIONSTRING;
+		tmp += ">";
+		message = Text::toT(tmp);
+	} else {
+		return false;
+	}
+	return true;
+}
+
+COLORREF StaticWindowsSettings::opSpoken			= 0;
+COLORREF StaticWindowsSettings::notOpSpoken			= 0;
+COLORREF StaticWindowsSettings::iSpoke				= 0;
+COLORREF StaticWindowsSettings::myNickSpoken		= 0;
 COLORREF StaticWindowsSettings::doubleClickableLink = RGB(0,0,200);

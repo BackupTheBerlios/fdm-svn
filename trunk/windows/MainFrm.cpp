@@ -52,7 +52,7 @@
 #include "../client/ShareManager.h"
 #include "../client/version.h"
 
-#include "../Fdm-Windows/dcplusplus-rips/Fdm-MainFrm.h"
+#include "../Fdm-Windows/MoreWinUtil.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -78,7 +78,7 @@ MainFrame::~MainFrame() {
 	largeImages.Destroy();
 	largeImagesHot.Destroy();
 
-	FdmMainFrame::destroyFdmMainFrame(fdmLargeImages, fdmLargeImagesHot);
+	FdmMainFrame::destroyFdmToolbar(fdmLargeImages, fdmLargeImagesHot);
 
 	WinUtil::uninit();
 }
@@ -160,9 +160,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 
-	MoreWinUtil::initilizeColours();
-	HWND hWndFdmToolBar = FdmMainFrame::createFdmToolbar(fdmLargeImages, fdmLargeImagesHot);
-	AddSimpleReBarBand(hWndFdmToolBar, NULL, TRUE);
+	MoreWinUtil::initilize();
+	AddSimpleReBarBand(FdmMainFrame::createFdmToolbar(fdmLargeImages, fdmLargeImagesHot), NULL, TRUE);
 
 	CreateSimpleStatusBar();
 
@@ -717,7 +716,6 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 		}
-
 		if(stringId == -1) FdmMainFrame::fdmToolTips(idCtrl, pDispInfo, stringId);
 
 		if(stringId != -1) {

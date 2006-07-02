@@ -35,8 +35,6 @@
 #include "../client/ConnectionManager.h"
 #include "../client/SearchManager.h"
 
-#include "../Fdm-Windows/ColourUtil.h"
-
 HubFrame::FrameMap HubFrame::frames;
 
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 125 };

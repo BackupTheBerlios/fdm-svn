@@ -27,7 +27,7 @@
 
 #include "../../windows/WinUtil.h"
 
-void FdmMainFrame::destroyFdmMainFrame(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot) {
+void FdmMainFrame::destroyFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot) {
 	fdmLargeImages.Destroy();
 	fdmLargeImagesHot.Destroy();
 }

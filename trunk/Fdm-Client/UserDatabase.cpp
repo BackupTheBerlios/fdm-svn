@@ -32,7 +32,7 @@ const string userDataFile = Util::getAppPath() + "user.db";
 const char* userDatabase = userDataFile.c_str();  
 
 void UserDatabase::createUserDB() {
-	//try {
+	try {
 		CppSQLite3DB db;
 		removeUserDB();
 		db.open(userDatabase);
@@ -47,8 +47,8 @@ void UserDatabase::createUserDB() {
 		}
 		db.execDML("commit transaction;");
 		db.close();
-	//} catch(...) {
-	//}
+	} catch(...) {
+	}
 }
 
 void UserDatabase::removeUserDB() {

@@ -36,13 +36,13 @@
 #include "TransferView.h"
 #include "UPnP.h"
 
-#include "..\Fdm-Windows\MoreWinUtil.h"
+#include "..\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h"
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
 		private LogManagerListener
-		, public FdmMainFrameToolBar<MainFrame>
+		, public FdmMainFrame
 {
 public:
 	MainFrame();
@@ -52,7 +52,6 @@ public:
 
 	CMDICommandBarCtrl m_CmdBar;
 
-	typedef FdmMainFrameToolBar<MainFrame> fdmMainFrameToolBarBase;
 	CImageList fdmLargeImages, fdmLargeImagesHot;
 
 	enum {
@@ -153,7 +152,7 @@ public:
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
 		CHAIN_MSG_MAP(splitterBase);
-		CHAIN_COMMANDS(fdmMainFrameToolBarBase)
+		CHAIN_COMMANDS(FdmMainFrame)
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(MainFrame)

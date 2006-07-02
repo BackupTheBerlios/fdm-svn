@@ -23,23 +23,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "dcplusplus-rips\Fdm-MainFrm.h"
-
-template<class T>
-class FdmMainFrameToolBar {
-public:
-	BEGIN_MSG_MAP(FdmMainFrameToolBar)
-		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, FdmMainFrame::OnFdmFileSettings)
-		COMMAND_ID_HANDLER(ID_FDM_NOTEPAD_FRAME, FdmMainFrame::OnFdmNotepadFrame)
-		COMMAND_ID_HANDLER(ID_AUTO_SEARCH_FRAME, FdmMainFrame::OnAutoSearchFrame)
-	END_MSG_MAP()
-};
-
 namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
-	void initilizeColours();
+	void initilize();
+
+	bool possibleCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
 };
 
 class StaticWindowsSettings 

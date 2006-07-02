@@ -17,8 +17,8 @@
  */
 
 #define FDMAPPNAME "FDM"
-#define FDMVERSIONSTRING "0.01"
-#define FDMVERSIONFLOAT 0.01
+#define FDMVERSIONSTRING "0.00"
+#define FDMVERSIONFLOAT 0.00
 
 /* Update the .rc file as well... */
 

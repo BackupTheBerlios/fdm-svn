@@ -26,14 +26,21 @@
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 #include "../resource.h"
 
-namespace FdmMainFrame {
+class FdmMainFrame {
+public:
+	BEGIN_MSG_MAP(FdmMainFrame)
+		COMMAND_ID_HANDLER(ID_FDM_FILE_SETTINGS, FdmMainFrame::OnFdmFileSettings)
+		COMMAND_ID_HANDLER(ID_FDM_NOTEPAD_FRAME, FdmMainFrame::OnFdmNotepadFrame)
+		COMMAND_ID_HANDLER(ID_AUTO_SEARCH_FRAME, FdmMainFrame::OnAutoSearchFrame)
+	END_MSG_MAP()
+
 	LRESULT OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFdmNotepadFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAutoSearchFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void destroyFdmMainFrame(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
-	HWND createFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
-	void fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stringId);
+	static void destroyFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
+	static HWND createFdmToolbar(CImageList& fdmLargeImages, CImageList& fdmLargeImagesHot);
+	static void fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stringId);
 };
 
 #endif // !defined(FDM_MAINFRAME_H)

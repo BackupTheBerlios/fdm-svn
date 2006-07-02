@@ -44,6 +44,8 @@
 #include "HubFrame.h"
 #include "MagnetDlg.h"
 
+#include "../Fdm-Windows/MoreWinUtil.h"
+
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
 HBRUSH WinUtil::bgBrush = NULL;
@@ -661,6 +663,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
+	} else if(MoreWinUtil::possibleCommand(cmd, param, message, status)) {
+		return true;
 	} else {
 		return false;
 	}
