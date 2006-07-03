@@ -23,6 +23,8 @@ enum FdmStrings { // @DontAdd
 	MAX_SIZE, // "Max size"
 	MIN_SIZE, // "Min size"
 	MENU_AUTO_SEARCH, // "Autosearch"
+	MENU_FDM, // "&Fdm"
+	MENU_FDM_ABOUT, // "About Fdm"
 	MENU_FDM_SETTINGS, // "Fdm Settings"
 	MENU_NOTEPAD_FRAME, // "Fdm Notepad"
 	ONLY_WHERE_OP, // "Only where op"

@@ -296,6 +296,8 @@ void WinUtil::init(HWND hWnd) {
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)help, CTSTRING(MENU_HELP));
 
+	MoreWinUtil::additionMenuStuff(mainMenu);
+
 /** @todo fix this so that the system icon is used for dirs as well (we need
 			  to mask it so that incomplete folders appear correct */
 #if 0	

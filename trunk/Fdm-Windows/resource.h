@@ -9,6 +9,7 @@
 #define IDR_FDM_NOTEPAD                 401
 #define IDD_AUTO_SEARCH_PROPERTIES      401
 #define IDR_AUTOSEARCH                  402
+#define IDD_FDM_ABOUT                   403
 #define IDC_AUTOS_SOURCE_TYPE           500
 #define IDC_AUTOS_SIZE_TYPE             501
 #define IDC_AUTOS_RES_SIZE_TYPE         502
@@ -41,6 +42,10 @@
 #define IDC_FDM_SETTINGS_NOT_OP_SPOKE   529
 #define IDC_FDM_SETTINGS_I_SPOKE        530
 #define IDC_FDM_SETTINGS_MY_NICK_SPOKEN 531
+#define IDC_FDM_ABOUT_VERSION           532
+#define IDC_FDM_ABOUT_THANKS            533
+#define IDC_FDM_ABOUT_LATEST            534
+#define IDC_FDM_ABOUT_TTH               535
 #define ID_FDM_FILE_SETTINGS            32000
 #define ID_FDM_NOTEPAD_FRAME            32001
 #define ID_AUTO_SEARCH_FRAME            32002
@@ -49,7 +54,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        403
+#define _APS_NEXT_RESOURCE_VALUE        404
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         4000
 #define _APS_NEXT_SYMED_VALUE           150

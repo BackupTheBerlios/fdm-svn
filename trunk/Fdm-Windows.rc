@@ -131,6 +131,27 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
 END
 
+IDD_FDM_ABOUT DIALOGEX 0, 0, 258, 252
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "About Fdm"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,98,231,50,14
+    ICON            "IDR_MAINFRAME",IDC_STATIC,112,17,20,20
+    GROUPBOX        "",IDC_STATIC,9,9,229,75
+    GROUPBOX        "Greetz && Contributors",IDC_STATIC,9,88,229,108,
+                    BS_CENTER
+    GROUPBOX        "Latest version",IDC_STATIC,9,201,229,24,BS_CENTER
+    CTEXT           "0.xxx",IDC_FDM_ABOUT_LATEST,15,212,218,8
+    EDITTEXT        IDC_FDM_ABOUT_THANKS,15,124,218,66,ES_MULTILINE | 
+                    ES_READONLY | WS_VSCROLL
+    CTEXT           "Static",IDC_FDM_ABOUT_VERSION,15,39,218,29
+    EDITTEXT        IDC_FDM_ABOUT_TTH,37,70,196,12,ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_BORDER
+    LTEXT           "TTH:",IDC_STATIC,15,70,18,12
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -154,6 +175,14 @@ BEGIN
         RIGHTMARGIN, 194
         TOPMARGIN, 9
         BOTTOMMARGIN, 255
+    END
+
+    IDD_FDM_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 251
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 245
     END
 END
 #endif    // APSTUDIO_INVOKED

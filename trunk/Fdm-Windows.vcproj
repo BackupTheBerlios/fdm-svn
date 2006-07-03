@@ -229,6 +229,9 @@
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.h">
 			</File>
 			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AboutDlg.h">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.h">
 			</File>
 			<File

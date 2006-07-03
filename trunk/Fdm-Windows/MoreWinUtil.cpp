@@ -22,6 +22,7 @@
 
 #include "MoreWinUtil.h"
 #include "../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
+#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
 #include "../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
 
 bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
@@ -31,14 +32,17 @@ bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	return false;
 }
 
-void MoreWinUtil::initilize() {
-	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
-	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
-	StaticWindowsSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
-	StaticWindowsSettings::myNickSpoken		= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+void MoreWinUtil::additionMenuStuff(CMenu& mainMenu) {
+	CMenuHandle fdmMenu;
+	fdmMenu.CreatePopupMenu();
+
+	fdmMenu.AppendMenu(MF_STRING, IDD_FDM_ABOUT, FDMCTSTRING(MENU_FDM_ABOUT));
+	fdmMenu.AppendMenu(MF_SEPARATOR);
+
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)fdmMenu, FDMCTSTRING(MENU_FDM));
 }
 
-bool MoreWinUtil::possibleCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
+bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& message, tstring& /*status*/) {
 	if(Util::stricmp(cmd.c_str(), _T("fdm")) == 0 || Util::stricmp(cmd.c_str(), _T("fdm++")) == 0) {
 		string tmp = "\r\nSmile and be happy. :)\r\nhttp://fdm.berlios.de/ <";
 		tmp += FDMAPPNAME;
@@ -50,6 +54,13 @@ bool MoreWinUtil::possibleCommand(tstring& cmd, tstring& param, tstring& message
 		return false;
 	}
 	return true;
+}
+
+void MoreWinUtil::initilize() {
+	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
+	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
+	StaticWindowsSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
+	StaticWindowsSettings::myNickSpoken		= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
 }
 
 COLORREF StaticWindowsSettings::opSpoken			= 0;

@@ -22,6 +22,7 @@
 
 #include "Fdm-MainFrm.h"
 #include "Fdm-PropertiesDlg.h"
+#include "Fdm-AboutDlg.h"
 #include "Fdm-NotepadFrame.h"
 #include "AutoSearchFrame.h"
 
@@ -92,6 +93,12 @@ void FdmMainFrame::fdmToolTips(int& idCtrl, LPNMTTDISPINFO& pDispInfo, int& stri
 	}
 
 	stringId = -1;
+}
+
+LRESULT FdmMainFrame::OnFdmAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	FdmAboutDlg dlg;
+	dlg.DoModal(WinUtil::mainWnd);
+	return 0;
 }
 
 LRESULT FdmMainFrame::OnFdmFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

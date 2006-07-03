@@ -27,9 +27,11 @@ namespace MoreWinUtil
 {
 	// For allowing for instances
 	bool allowMoreInstances(size_t amountOfProcesses);
-	void initilize();
 
-	bool possibleCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
+	void additionMenuStuff(CMenu& mainMenu);
+	bool possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status);
+
+	void initilize();
 };
 
 class StaticWindowsSettings 
