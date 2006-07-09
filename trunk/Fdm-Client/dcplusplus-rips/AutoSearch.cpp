@@ -65,6 +65,11 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 
 	// If have some searches
 	if (pos < collection.end()) {
+		if (!pos->isActive) {
+			curPos++;
+			return;
+		}
+
 		if (pos->onlyIfOp) {
 			clientsWhereOp.clear();
 
@@ -83,7 +88,7 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 
 			if(!clientsWhereOp.size()) {
 				// Not Op anywhere, next search
-				pos++;
+				curPos++;
 				return;
 			}
 

@@ -4,7 +4,7 @@ rem ----------------------------------------------------------------------------
 set RAR="%PROGRAMFILES%\winRar\rar.exe"
 
 set RARNAME="fdm.rar"
-set RARBIN=a -r -eH -ep1 -idp -inul -m3 RARNAME Temp\*.*
+set RARBIN=a -r -eH -ep1 -idp -inul -m3 %RARNAME% Temp\*.*
 
 rem CONFIG END
 rem -------------------------------------------------------------------------------

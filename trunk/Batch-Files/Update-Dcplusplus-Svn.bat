@@ -46,7 +46,7 @@ ECHO Copying Files Over
 xcopy /q /y /e *.* ..\original-dcplusplus\ > nul
 
 ECHO ------------------------------------------------------------------------
-ECHO Time To Update.  Look In original-dcplusplus Directory.
+ECHO Time To Update.  Look In ..\original-dcplusplus Directory.
 PAUSE
 
 ECHO ------------------------------------------------------------------------
