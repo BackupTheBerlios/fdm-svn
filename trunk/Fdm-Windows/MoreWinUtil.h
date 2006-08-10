@@ -30,6 +30,7 @@ namespace MoreWinUtil
 
 	void additionMenuStuff(CMenu& mainMenu);
 	bool possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status);
+	void winampSpam(tstring& message, tstring& status);
 
 	void initilize();
 };

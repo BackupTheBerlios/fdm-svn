@@ -42,7 +42,7 @@ void MoreWinUtil::additionMenuStuff(CMenu& mainMenu) {
 	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)fdmMenu, FDMCTSTRING(MENU_FDM));
 }
 
-bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& message, tstring& /*status*/) {
+bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& message, tstring& status) {
 	if(Util::stricmp(cmd.c_str(), _T("fdm")) == 0 || Util::stricmp(cmd.c_str(), _T("fdm++")) == 0) {
 		string tmp = "\r\nSmile and be happy. :)\r\nhttp://fdm.berlios.de/ <";
 		tmp += FDMAPPNAME;
@@ -50,6 +50,27 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& messa
 		tmp += FDMVERSIONSTRING;
 		tmp += ">";
 		message = Text::toT(tmp);
+	} else if(Util::stricmp(cmd.c_str(), _T("huh")) == 0) {
+		string tmp = "\r\n\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?              huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?      huh?        huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?                         huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?                           huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?                            huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?                           huh?\r\n";
+		tmp += "huh?huh?huh?huh?huh?          huh?                            huh?          huh?huh?huh?huh?huh?                       huh?\r\n";
+		tmp += "huh?huh?huh?huh?huh?          huh?                            huh?          huh?huh?huh?huh?huh?                  huh?\r\n";
+		tmp += "huh?huh?huh?huh?huh?          huh?                            huh?          huh?huh?huh?huh?huh?              huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?            huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?            huh?\r\n";
+		tmp += "huh?                        huh?          huh?                            huh?          huh?                        huh?            huh?\r\n";
+		tmp += "huh?                        huh?             huh?                       huh?            huh?                        huh?            huh?\r\n";
+		tmp += "huh?                        huh?                 huh?              huh?                 huh?                        huh?\r\n";
+		tmp += "huh?                        huh?                        huh?huh?                        huh?                        huh?            huh?\r\n";
+	    tmp += "\r\n";
+		message = Text::toT(tmp); 
+	} else if((Util::stricmp(cmd.c_str(), _T("winamp")) == 0) || (Util::stricmp(cmd.c_str(), _T("w")) == 0)) {
+		MoreWinUtil::winampSpam(message, status);
 	} else {
 		return false;
 	}

@@ -250,6 +250,32 @@
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="DCDM Rips - Source Files"
+			Filter="">
+			<File
+				RelativePath=".\Other-Projects\dcdm\windows\Winamp_Spam.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PrecompiledHeaderThrough="../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Nullsoft Inc"
+			Filter="">
+			<File
+				RelativePath=".\Other-Projects\Nullsoft\Winamp.h">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
