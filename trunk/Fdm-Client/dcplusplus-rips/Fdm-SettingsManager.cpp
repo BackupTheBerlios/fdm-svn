@@ -31,10 +31,7 @@ const string FdmSettingsManager::settingTags[] =
 	// Strings
 	"FdmLanguageFileLocation",
 	"AutoSearchFrameOrder", "AutoSearchFrameWidths",
-	"FdmNotepadText",
-	// From DCDM
-	"WinampFormat", 
-	// End From DCDM
+	"FdmNotepadText", "WinampFormat", 
 	"SENTRY", 
 	// Ints
 	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour",
@@ -63,9 +60,7 @@ FdmSettingsManager::FdmSettingsManager()
 	setDefault(NOT_OP_SPOKE_COLOUR, 128);
 	setDefault(I_SPOKE_COLOUR, 255);
 	setDefault(MY_NICK_SPOKEN_COLOUR, 32768);
-	// From DCDM
 	setDefault(WINAMP_FORMAT, "winamp(%[version]) %[state] (%[title]) stats(%[percent] of %[length])");
-	// End From DCDM
 
 #ifdef _WIN32
 #endif

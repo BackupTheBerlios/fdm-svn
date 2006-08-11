@@ -6,6 +6,8 @@ Pothead
 	Added a sample database
 	Added Coloured Text and IP's to Main Chat and PM's
 	Added Autosearch.
+	Added Winamp spam (from BCDC++)
+	Added Huh spam (thanks gabberworld)
 	Ripped a few DCplusplus files, so can have own Language and Settings files.
 	Ripped a few DCplusplus files, so can have own Settings and Notepad pages.
 

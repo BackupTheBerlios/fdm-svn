@@ -251,7 +251,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="DCDM Rips - Source Files"
+			Name="BCDC Rips - Source Files"
 			Filter="">
 			<File
 				RelativePath=".\Other-Projects\dcdm\windows\Winamp_Spam.cpp">
