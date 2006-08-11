@@ -211,10 +211,15 @@ private:
 	};
 
 	struct PMTask : public StringTask {
-		PMTask(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), from(from_), to(to_), replyTo(replyTo_) { }
+		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), 
+			from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) { }
+
 		User::Ptr from;
 		User::Ptr to;
 		User::Ptr replyTo;
+
+		bool hub;
+		bool bot;
 	};
 
 	friend struct CompareItems;
@@ -388,7 +393,6 @@ private:
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();
 	virtual void on(Connected, Client*) throw();
-	virtual void on(BadPassword, Client*) throw();
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
 	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
 	virtual void on(UserRemoved, Client*, const OnlineUser&) throw();
