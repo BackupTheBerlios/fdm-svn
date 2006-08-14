@@ -32,11 +32,13 @@
 #include "UCHandler.h"
 
 #include "../Fdm-Windows/ColourUtil.h"
+#include "../Fdm-Windows/RightClick.h"
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
 class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>, 
 	private ClientManagerListener, public UCHandler<PrivateFrame>
+	, public FdmRightClick
 {
 public:
 	static void gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
@@ -61,6 +63,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
@@ -69,6 +72,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		CHAIN_COMMANDS(ucBase)
+		CHAIN_COMMANDS(FdmRightClick)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -85,6 +89,7 @@ public:
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 	void addLine(const tstring& aLine);
 	void addStatus(const tstring& aLine);
@@ -158,6 +163,7 @@ private:
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
 
+	CMenu chatMenu;
 	CMenu tabMenu;
 
 	User::Ptr replyTo;
