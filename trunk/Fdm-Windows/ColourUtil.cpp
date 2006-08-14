@@ -111,6 +111,24 @@ void SortChat::FdmCRichEditCtrl::AppendText(LPCTSTR aLine) {
 	prepared = false;
 }
 
+long SortChat::FdmCRichEditCtrl::GetSelSize() {
+	long nStartChar, nEndChar;
+	GetSel(nStartChar, nEndChar);
+	return nEndChar - nStartChar;
+}
+
+tstring SortChat::FdmCRichEditCtrl::GetSelectedText() {
+	tstring selectedText = Util::emptyStringT;
+	long range = GetSelSize();
+	if(range > 0) {
+		TCHAR *buf = new TCHAR[range + 1];
+		GetSelText(buf);
+		selectedText = buf;
+		delete[] buf;
+	}
+	return selectedText;
+}
+
 void SortChat::FdmCRichEditCtrl::SetSel(long nStartChar, long nEndChar, BOOL notScroll) {
 	if (notScroll && nStartChar == 0 && nEndChar == LineIndex(LineFromChar(2000))) {
 		// okay dc++ is going to remove some text.

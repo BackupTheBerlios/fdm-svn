@@ -40,6 +40,8 @@ namespace SortChat
 
 		// over ridden functions
 		void AppendText(LPCTSTR newText);
+		long GetSelSize();
+		tstring GetSelectedText();
 		void SetSel(long nStartChar, long nEndChar, BOOL notScroll);
 		void ReplaceSel(LPCTSTR lpszNewText, BOOL bCanUndo = 0);
 

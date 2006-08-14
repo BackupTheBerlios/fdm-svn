@@ -111,6 +111,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
 
+	FdmRightClick::createCopyMenu(chatMenu);
+
 	userMenu.CreatePopupMenu();
 	appendUserItems(userMenu);
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
@@ -834,6 +836,8 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
 		ctrlClient.ClientToScreen(&pt);
 
+		if (ctrlClient.GetSelSize() > 0) return FdmRightClick::useCopyMenu(chatMenu, pt, m_hWnd, ctrlClient.GetSelectedText()); 
+
 		tstring::size_type end = x.find_first_of(_T(" >\t"), start+1);
 		if(end == string::npos) // get EOL as well
 			end = x.length();
@@ -855,7 +859,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ctrlUsers.EnsureVisible(pos, FALSE);
 
 			doMenu = true; 
-		} 
+		}
 	} 
 	
 	if((doMenu || (reinterpret_cast<HWND>(wParam) == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {

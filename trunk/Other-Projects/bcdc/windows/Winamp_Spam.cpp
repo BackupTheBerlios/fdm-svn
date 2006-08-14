@@ -51,11 +51,21 @@ void MoreWinUtil::winampSpam(tstring& message, tstring& status) {
 		GetWindowText(hwndWinamp, titleBuffer, buffLength);
 		tstring title = titleBuffer;
 		params["rawtitle"] = Text::fromT(title);
+		// there's some winamp bug with scrolling. wa5.09x and 5.1 or something.. see:
+		// http://forums.winamp.com/showthread.php?s=&postid=1768775#post1768775
+		int starpos = title.find(_T("***"));
+		if (starpos >= 1) {
+			tstring firstpart = title.substr(0, starpos - 1);
+			if (firstpart == title.substr(title.size() - firstpart.size(), title.size())) {
+				// fix title
+				title = title.substr(starpos, title.size());
+			}
+		}
 		// fix the title if scrolling is on, so need to put the stairs to the end of it
-		tstring titletmp = title.substr(title.find(_T("***"))+2, title.size());
-		title = titletmp + title.substr(0, title.size()-titletmp.size());
-		title = title.substr(title.find(_T("."))+2, title.size());
-		if (title.rfind(_T("-")) != tstring::npos) {
+		tstring titletmp = title.substr(title.find(_T("***")) + 2, title.size());
+		title = titletmp + title.substr(0, title.size() - titletmp.size());
+		title = title.substr(title.find(_T('.')) + 2, title.size());
+		if (title.rfind(_T('-')) != string::npos) {
 			params["title"] = Text::fromT(title.substr(0, title.rfind(_T('-')) - 1));
 		}
 		int curPos = SendMessage(hwndWinamp,WM_USER, 0, IPC_GETOUTPUTTIME);
@@ -77,6 +87,6 @@ void MoreWinUtil::winampSpam(tstring& message, tstring& status) {
 		params["length"] = Util::formatSeconds(length);
 		message = Text::toT(Util::formatParams(FDMSETTING(WINAMP_FORMAT), params, false));
 	} else {
-		status = _T("Winamp 1.x/2.x is not running");
+		status = _T("Winamp is not running");
 	}
 }

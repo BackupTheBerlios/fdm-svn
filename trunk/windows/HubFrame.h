@@ -36,6 +36,7 @@
 #include "UCHandler.h"
 
 #include "../Fdm-Windows/ColourUtil.h"
+#include "../Fdm-Windows/RightClick.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 #define FILTER_MESSAGE_MAP 8
@@ -44,6 +45,7 @@ struct CompareItems;
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
 	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
 	public UserInfoBaseHandler<HubFrame>
+	, public FdmRightClick
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("HubFrame"), IDR_HUB, 0, COLOR_3DFACE);
@@ -78,6 +80,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
+		CHAIN_COMMANDS(FdmRightClick)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(splitBase)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
@@ -333,6 +336,7 @@ private:
 	CContainedWindow ctrlFilterContainer;
 	CContainedWindow ctrlFilterSelContainer;
 	
+	CMenu chatMenu;
 	CMenu userMenu;
 	CMenu tabMenu;
 

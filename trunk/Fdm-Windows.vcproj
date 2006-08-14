@@ -141,6 +141,9 @@
 			<File
 				RelativePath=".\Fdm-Windows\MoreWinUtil.cpp">
 			</File>
+			<File
+				RelativePath=".\Fdm-Windows\RightClick.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -154,6 +157,9 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\resource.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\RightClick.h">
 			</File>
 		</Filter>
 		<Filter

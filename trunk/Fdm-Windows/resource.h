@@ -46,6 +46,7 @@
 #define IDC_FDM_ABOUT_THANKS            533
 #define IDC_FDM_ABOUT_LATEST            534
 #define IDC_FDM_ABOUT_TTH               535
+#define IDC_COPY_CHAT                   536
 #define ID_FDM_FILE_SETTINGS            32000
 #define ID_FDM_NOTEPAD_FRAME            32001
 #define ID_AUTO_SEARCH_FRAME            32002
