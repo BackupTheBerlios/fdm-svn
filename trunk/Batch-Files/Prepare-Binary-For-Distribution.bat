@@ -46,15 +46,17 @@ xcopy /H /Q /Y changelog*.txt Temp\ > nul
 xcopy /H /Q /Y *.xml Temp\ > nul
 
 IF EXIST "App\GeoIPCountryWhois.csv" (
-	xcopy /H /Q /Y App\*.cvs Temp\ > nul
+	xcopy /H /Q /Y App\*.csv Temp\ > nul
 )
 
 md Temp\Licenses > nul
 xcopy /H /Q /Y License.txt Temp\Licenses > nul
 xcopy /H /Q /Y License-Fdm.txt Temp\Licenses > nul
 xcopy /H /Q /Y LICENSE-GeoIP.txt Temp\Licenses > nul
-xcopy /H /Q /Y bzip2\LICENSE Temp\Licenses\License-bzip2.txt > nul
-xcopy /H /Q /Y Other-Projects\pcre\LICENSE Temp\Licenses\License-pcre.txt > nul
+xcopy /H /Q /Y bzip2\LICENSE Temp\Licenses\ > nul
+rename Temp\Licenses\LICENSE License-bzip2.txt > nul
+xcopy /H /Q /Y Other-Projects\pcre\LICENCE Temp\Licenses\ > nul
+rename Temp\Licenses\LICENCE License-pcre.txt > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO packing executable...
