@@ -336,12 +336,12 @@ private:
 	CContainedWindow ctrlFilterContainer;
 	CContainedWindow ctrlFilterSelContainer;
 	
-	CMenu chatMenu;
 	CMenu userMenu;
 	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
 	SortChat::FdmCRichEditCtrl ctrlClient;
+	CMenu chatMenu;
 	CEdit ctrlMessage;
 	CEdit ctrlFilter;
 	CComboBox ctrlFilterSel;

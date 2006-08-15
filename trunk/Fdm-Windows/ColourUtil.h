@@ -40,10 +40,15 @@ namespace SortChat
 
 		// over ridden functions
 		void AppendText(LPCTSTR newText);
-		long GetSelSize();
-		tstring GetSelectedText();
 		void SetSel(long nStartChar, long nEndChar, BOOL notScroll);
 		void ReplaceSel(LPCTSTR lpszNewText, BOOL bCanUndo = 0);
+
+		// helper functions
+		long GetSelSize();
+		tstring GetSelectedText();
+
+		// kill the function which doesn't exist in CRichEditCtrl's
+		void FmtLines(BOOL /*aBool*/) {}
 
 		void setMyNick(string aMyNick) { myNick = aMyNick; }
 

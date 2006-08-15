@@ -63,7 +63,6 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
@@ -71,8 +70,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
-		CHAIN_COMMANDS(ucBase)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		CHAIN_COMMANDS(FdmRightClick)
+		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -160,10 +160,10 @@ private:
 	static FrameMap frames;
 	SortChat::FdmCRichEditCtrl ctrlClient;
 	string hubUrl;
+	CMenu chatMenu;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
 
-	CMenu chatMenu;
 	CMenu tabMenu;
 
 	User::Ptr replyTo;

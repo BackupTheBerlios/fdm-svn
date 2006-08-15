@@ -222,6 +222,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-PrivateFrame.cpp">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-WinUtil.cpp">
 			</File>
 		</Filter>

@@ -46,7 +46,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 	
-//	ctrlClient.FmtLines(TRUE);
+	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(WinUtil::font);
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -56,8 +56,6 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClientContainer.SubclassWindow(ctrlClient.m_hWnd);
 
 	ctrlMessage.SetFont(WinUtil::font);
-
-	FdmRightClick::createCopyMenu(chatMenu);
 
 	tabMenu.CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
@@ -70,6 +68,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ClientManager::getInstance()->addListener(this);
 
+	FdmRightClick::createCopyMenu(chatMenu);
 	hubUrl = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	ctrlClient.setMyNick(ClientManager::getInstance()->getMyNick(hubUrl));
 
@@ -436,14 +435,4 @@ void PrivateFrame::closeAllOffline() {
 		if(!i->first->isOnline())
 			i->second->PostMessage(WM_CLOSE, 0, 0);
 	}
-}
-
-LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; 
-	
-	if(reinterpret_cast<HWND>(wParam) == ctrlClient) {
-		if(pt.x == -1 && pt.y == -1) WinUtil::getContextMenuPos(ctrlClient, pt);
-		if (ctrlClient.GetSelSize() > 0) return FdmRightClick::useCopyMenu(chatMenu, pt, m_hWnd, ctrlClient.GetSelectedText()); 
-	}
-	return FALSE;
 }
