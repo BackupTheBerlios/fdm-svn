@@ -181,6 +181,9 @@
 			<File
 				RelativePath=".\Fdm-Res\fdm_toolbar20.bmp">
 			</File>
+			<File
+				RelativePath=".\res\notepad.ico">
+			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Source files"

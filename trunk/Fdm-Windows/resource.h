@@ -7,9 +7,9 @@
 #define IDB_FDM_TOOLBAR20_HOT           154
 #define IDD_FDM_APPEARANCEPAGE          400
 #define IDR_FDM_NOTEPAD                 401
-#define IDD_AUTO_SEARCH_PROPERTIES      401
-#define IDR_AUTOSEARCH                  402
-#define IDD_FDM_ABOUT                   403
+#define IDD_AUTO_SEARCH_PROPERTIES      402
+#define IDR_AUTOSEARCH                  403
+#define IDD_FDM_ABOUT                   404
 #define IDC_AUTOS_SOURCE_TYPE           500
 #define IDC_AUTOS_SIZE_TYPE             501
 #define IDC_AUTOS_RES_SIZE_TYPE         502
@@ -55,7 +55,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        404
+#define _APS_NEXT_RESOURCE_VALUE        405
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         4000
 #define _APS_NEXT_SYMED_VALUE           150

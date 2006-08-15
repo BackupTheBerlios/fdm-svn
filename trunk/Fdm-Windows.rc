@@ -204,6 +204,7 @@ IDB_FDM_TOOLBAR20_HOT   BITMAP                  "Fdm-Res\\fdm_toolbar20-highligh
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDR_FDM_NOTEPAD         ICON                    "res\\notepad.ico"
 IDR_AUTOSEARCH          ICON                    "Fdm-Res\\AutoSearch.ico"
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
