@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+/* 
+ * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Fdm-stdinc.h"
+#if !defined(FDM_UTIL_H)
+#define FDM_UTIL_H
 
-#ifdef HAS_STLPORT
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
-#if (_STLPORT_VERSION != 0x462)
-#error STLPort not correctly installed, read compile.txt
-#endif
+namespace RawManager
+{
+};
 
-#ifndef _STLP_NO_IOSTREAMS
-#error You're not using the STLPort from the DC++ homepage, that uses a different configuration than the original one. Remove this line only if you know what you're doing.
-#endif
-
-#endif // HAS_STLPORT
+#endif // !defined(FDM_UTIL_H)

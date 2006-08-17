@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Fdm-stdafx.h"
+#include "stdafx.h"
 #include "../../client/DCPlusPlus.h"
 #include "../Resource.h"
 

@@ -34,7 +34,7 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="Fdm-stdafx.h"
+				PrecompiledHeaderThrough="stdafx.h"
 				WarningLevel="4"
 				DebugInformationFormat="4"
 				CallingConvention="0"
@@ -95,7 +95,7 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="Fdm-stdafx.h"
+				PrecompiledHeaderThrough="stdafx.h"
 				AssemblerOutput="4"
 				WarningLevel="4"
 				DebugInformationFormat="3"
@@ -142,6 +142,9 @@
 				RelativePath=".\Fdm-Windows\MoreWinUtil.cpp">
 			</File>
 			<File
+				RelativePath=".\Fdm-Windows\RawsPage.cpp">
+			</File>
+			<File
 				RelativePath=".\Fdm-Windows\RightClick.cpp">
 			</File>
 		</Filter>
@@ -154,6 +157,9 @@
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\MoreWinUtil.h">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\RawsPage.h">
 			</File>
 			<File
 				RelativePath=".\Fdm-Windows\resource.h">
@@ -210,7 +216,13 @@
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropPage.cpp">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-PrivateFrame.cpp">
+			</File>
+			<File
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-WinUtil.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\stdafx.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -223,12 +235,6 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-PrivateFrame.cpp">
-			</File>
-			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-WinUtil.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -259,7 +265,7 @@
 				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropPage.h">
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-stdafx.h">
+				RelativePath=".\windows\stdafx.h">
 			</File>
 		</Filter>
 		<Filter

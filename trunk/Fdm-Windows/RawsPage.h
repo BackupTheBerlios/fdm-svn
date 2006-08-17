@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
+ * Copyright (C) 2006 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Fdm-stdinc.h"
-#include "../client/DCPlusPlus.h"
+#if !defined(RAWS_PAGE_H)
+#define RAWS_PAGE_H
 
-#include "Fdm-Util.h"
-#include "../client/Util.h"
-#include "dcplusplus-rips/Fdm-ResourceManager.h"
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
-bool FdmUtil::toBool(int aInt) {
-	if (aInt) return true;
-	return false;
-}
-
-string FdmUtil::toString(bool aBool) {
-	if (aBool) return FDMSTRING(STRING_TRUE);
-	return FDMSTRING(STRING_FALSE);
-}
+#endif // !defined(RAWS_PAGE_H)

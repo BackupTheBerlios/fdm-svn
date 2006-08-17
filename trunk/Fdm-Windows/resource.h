@@ -5,11 +5,12 @@
 #define IDB_FDM_TOOLBAR                 152
 #define IDB_FDM_TOOLBAR20               153
 #define IDB_FDM_TOOLBAR20_HOT           154
-#define IDD_FDM_APPEARANCEPAGE          400
+#define IDD_FDM_APPEARANCE_PAGE         400
 #define IDR_FDM_NOTEPAD                 401
 #define IDD_AUTO_SEARCH_PROPERTIES      402
 #define IDR_AUTOSEARCH                  403
 #define IDD_FDM_ABOUT                   404
+#define IDD_RAWS_PAGE                   405
 #define IDC_AUTOS_SOURCE_TYPE           500
 #define IDC_AUTOS_SIZE_TYPE             501
 #define IDC_AUTOS_RES_SIZE_TYPE         502
@@ -47,6 +48,12 @@
 #define IDC_FDM_ABOUT_LATEST            534
 #define IDC_FDM_ABOUT_TTH               535
 #define IDC_COPY_CHAT                   536
+#define IDC_POSSIBLE_RAWS               537
+#define IDC_FDM_ADD                     538
+#define IDC_FDM_EDIT                    539
+#define IDC_FDM_REMOVE                  540
+#define IDC_UP                          541
+#define IDC_DOWN                        542
 #define ID_FDM_FILE_SETTINGS            32000
 #define ID_FDM_NOTEPAD_FRAME            32001
 #define ID_AUTO_SEARCH_FRAME            32002
@@ -55,9 +62,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        405
+#define _APS_NEXT_RESOURCE_VALUE        406
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         4000
+#define _APS_NEXT_CONTROL_VALUE         12000
 #define _APS_NEXT_SYMED_VALUE           150
 #endif
 #endif

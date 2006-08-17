@@ -1,4 +1,4 @@
-#include "Fdm-stdinc.h"
+#include "stdinc.h"
 #include "../../client/DCPlusPlus.h"
 #include "Fdm-ResourceManager.h"
 string FdmResourceManager::strings[] = {

@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)vc7\Debug\Fdm-Client"
-			IntermediateDirectory="$(SolutionDir)vc7\Debug\Fdm-Client"
+			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -37,8 +37,8 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="Fdm-stdinc.h"
-				PrecompiledHeaderFile="$(IntDir)/fdm-client.pch"
+				PrecompiledHeaderThrough="stdinc.h"
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="FALSE"
@@ -74,8 +74,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\vc7\Release\Fdm-Client"
-			IntermediateDirectory="..\vc7\Release\Fdm-Client"
+			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -102,8 +102,8 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="Fdm-stdinc.h"
-				PrecompiledHeaderFile="$(IntDir)/fdm-client.pch"
+				PrecompiledHeaderThrough="stdinc.h"
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerOutput="4"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
@@ -113,7 +113,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\$(OutDir)\Fdm-Client.lib"
+				OutputFile="$(OutDir)/Fdm-Client.lib"
 				AdditionalLibraryDirectories=""
 				SuppressStartupBanner="TRUE"/>
 			<Tool
@@ -144,10 +144,13 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath=".\Fdm-Util.cpp">
+				RelativePath=".\Fdm.cpp">
 			</File>
 			<File
-				RelativePath=".\Fdm.cpp">
+				RelativePath=".\FdmUtil.cpp">
+			</File>
+			<File
+				RelativePath=".\RawsManager.cpp">
 			</File>
 			<File
 				RelativePath=".\UserDatabase.cpp">
@@ -157,10 +160,13 @@
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath=".\Fdm-Util.h">
+				RelativePath=".\Fdm.h">
 			</File>
 			<File
-				RelativePath=".\Fdm.h">
+				RelativePath=".\FdmUtil.h">
+			</File>
+			<File
+				RelativePath=".\RawsManager.h">
 			</File>
 			<File
 				RelativePath=".\UserDatabase.h">
@@ -179,25 +185,20 @@
 				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.cpp">
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-stdinc.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp">
 			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\For-ClientManager.cpp">
+			</File>
+			<File
+				RelativePath="..\client\stdinc.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="stdinc.h"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -211,9 +212,6 @@
 			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.h">
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-stdinc.h">
 			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.h">
@@ -238,6 +236,9 @@
 			</File>
 			<File
 				RelativePath=".\dcplusplus-rips\Fdm-Version.h">
+			</File>
+			<File
+				RelativePath="..\client\stdinc.h">
 			</File>
 		</Filter>
 		<Filter

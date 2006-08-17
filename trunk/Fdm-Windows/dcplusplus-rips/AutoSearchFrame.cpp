@@ -23,12 +23,12 @@
  
 // Pothead used ADLSearchFrame.cpp as a template
 
-#include "Fdm-stdafx.h"
+#include "stdafx.h"
 #include "../Resource.h"
 #include "../../client/DCPlusPlus.h"
 #include "AutoSearchFrame.h"
 #include "AutoSearchProperties.h"
-#include "../../Fdm-client/Fdm-Util.h"
+#include "../../Fdm-client/FdmUtil.h"
 
 int AutoSearchFrame::columnIndexes[] = { 
 	COLUMN_ACTIVE_SEARCH_STRING,

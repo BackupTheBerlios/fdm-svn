@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+/* 
+ * Copyright (C) 2006 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Fdm-stdafx.h"
-#include "../Resource.h"
+#include "stdafx.h"
+#include "../client/DCPlusPlus.h"
 
-// Only need this for older ATL:s
-#if _ATL_VER < 0x0700
-#include <atlimpl.cpp>
-#endif
-
-// Basic sanity check
-#if (_WTL_VER < 0x750)
-#error WTL not correctly installed, read compile.txt
-#endif
+#include "RawsPage.h"

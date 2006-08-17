@@ -1,4 +1,4 @@
-// @Prolog: #include "Fdm-stdinc.h"
+// @Prolog: #include "stdinc.h"
 // @Prolog: #include "../../client/DCPlusPlus.h"
 // @Prolog: #include "Fdm-ResourceManager.h"
 // @Strings: string FdmResourceManager::strings[]

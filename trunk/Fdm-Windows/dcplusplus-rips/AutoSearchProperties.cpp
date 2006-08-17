@@ -18,7 +18,7 @@
 
 // Pothead used ADLSProperties.cpp as a template
  
-#include "Fdm-stdafx.h"
+#include "stdafx.h"
 #include "../../client/DCPlusPlus.h"
 #include "../Resource.h"
 
