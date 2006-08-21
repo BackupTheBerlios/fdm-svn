@@ -85,6 +85,7 @@
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
+				CallingConvention="0"
 				CompileAs="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

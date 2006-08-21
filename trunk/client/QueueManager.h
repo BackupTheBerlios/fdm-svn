@@ -117,6 +117,8 @@ public:
 	
 	GETSET(u_int32_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
+
+	GETSET(bool, blockAutoSearch, BlockAutoSearch);
 private:
 
 	typedef HASH_MAP_X(CID, string, CID::Hash, equal_to<CID>, less<CID>) PfsQueue;

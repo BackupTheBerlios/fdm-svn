@@ -31,12 +31,14 @@
 #include "../../client/File.h"
 #include "../../client/SimpleXML.h"
 #include "../../client/ClientManager.h"
+#include "../../client/QueueManager.h"
 #include "../../client/LogManager.h"
 #include "../FdmUtil.h"
 
 AutoSearchManager::AutoSearchManager() {
 	TimerManager::getInstance()->addListener(this);
 	SearchManager::getInstance()->addListener(this);
+	QueueManager::getInstance()->setBlockAutoSearch(false);
 	Load();
 
 	curPos = 0;
@@ -59,7 +61,7 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 		return;
 
 	if (time == timeToSearch)
-		blockAutoSearch = true;
+		QueueManager::getInstance()->setBlockAutoSearch(true);
 
 	AutoSearchCollection::iterator pos = collection.begin() + curPos;
 
@@ -113,7 +115,7 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 		time = 0;
 		timeToSearch = 7 * 60;
 		curPos = 0;
-		blockAutoSearch = false;
+		QueueManager::getInstance()->setBlockAutoSearch(false);
 	}
 }
 

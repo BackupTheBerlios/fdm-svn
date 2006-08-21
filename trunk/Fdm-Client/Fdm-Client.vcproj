@@ -24,7 +24,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -91,7 +91,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -193,6 +193,12 @@
 			<File
 				RelativePath="..\client\stdinc.cpp">
 				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -239,37 +245,6 @@
 			</File>
 			<File
 				RelativePath="..\client\stdinc.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="CPPSQLite Source"
-			Filter="">
-			<File
-				RelativePath="..\other-projects\CppSQLite\CppSQLite3.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						PrecompiledHeaderThrough=""
-						PrecompiledHeaderFile=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						PrecompiledHeaderThrough=""
-						PrecompiledHeaderFile=""
-						CallingConvention="0"/>
-				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
-			Name="CPPSQLite Header"
-			Filter="">
-			<File
-				RelativePath="..\other-projects\CppSQLite\CppSQLite3.h">
 			</File>
 		</Filter>
 	</Files>

@@ -35,8 +35,6 @@
 #include "StringTokenizer.h"
 #include "DirectoryListing.h"
 
-#include "../Fdm-Client/dcplusplus-rips/AutoSearch.h"
-
 #include <limits>
 
 #ifdef ff
@@ -374,7 +372,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	string fn;
 	string searchString;
 	bool online = false;
-	if (!AutoSearchManager::getInstance()->getBlockAutoSearch())
+	if (!getBlockAutoSearch())
 	{
 		Lock l(cs);
 		QueueItem::UserMap& um = userQueue.getRunning();

@@ -43,7 +43,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "other-projects\s
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fdm-Client", "Fdm-Client\Fdm-Client.vcproj", "{356AC6E6-D883-43FC-B2F5-B1E3E5252949}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D82CE256-FBCB-4E46-87DD-83E5FC16D6E3} = {D82CE256-FBCB-4E46-87DD-83E5FC16D6E3}
+		{1D71F842-7241-4D3F-9045-5362EDB7286E} = {1D71F842-7241-4D3F-9045-5362EDB7286E}
 		{B643EECE-9EEE-4E81-A6BE-3AEA2A4D09AF} = {B643EECE-9EEE-4E81-A6BE-3AEA2A4D09AF}
 		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB} = {F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}
 	EndProjectSection
@@ -53,10 +53,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fdm-Windows", "Fdm-Windows.
 		{356AC6E6-D883-43FC-B2F5-B1E3E5252949} = {356AC6E6-D883-43FC-B2F5-B1E3E5252949}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppSQLite", "Other-Projects\CppSQLite\CppSQLite.vcproj", "{1D71F842-7241-4D3F-9045-5362EDB7286E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D82CE256-FBCB-4E46-87DD-83E5FC16D6E3} = {D82CE256-FBCB-4E46-87DD-83E5FC16D6E3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.Debug.ActiveCfg = Debug|Win32
@@ -103,6 +110,10 @@ Global
 		{00A2876F-0224-4161-AD02-8DF829BE53B3}.Debug.Build.0 = Debug|Win32
 		{00A2876F-0224-4161-AD02-8DF829BE53B3}.Release.ActiveCfg = Release|Win32
 		{00A2876F-0224-4161-AD02-8DF829BE53B3}.Release.Build.0 = Release|Win32
+		{1D71F842-7241-4D3F-9045-5362EDB7286E}.Debug.ActiveCfg = Debug|Win32
+		{1D71F842-7241-4D3F-9045-5362EDB7286E}.Debug.Build.0 = Debug|Win32
+		{1D71F842-7241-4D3F-9045-5362EDB7286E}.Release.ActiveCfg = Release|Win32
+		{1D71F842-7241-4D3F-9045-5362EDB7286E}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
