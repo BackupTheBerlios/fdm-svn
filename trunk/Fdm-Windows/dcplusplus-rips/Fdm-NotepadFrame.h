@@ -33,8 +33,7 @@ class FdmNotepadFrame : public MDITabChildWindowImpl<FdmNotepadFrame>, public St
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("FdmNotepadFrame"), IDR_FDM_NOTEPAD, 0, COLOR_3DFACE);
 
-	FdmNotepadFrame() : dirty(false),
-		ctrlClientContainer(_T("edit"), this, FDM_NOTEPAD_MESSAGE_MAP) { }
+	FdmNotepadFrame() : ctrlClientContainer(_T("edit"), this, FDM_NOTEPAD_MESSAGE_MAP) { }
 	virtual ~FdmNotepadFrame() { }
 	
 	typedef MDITabChildWindowImpl<FdmNotepadFrame> baseClass;
@@ -74,7 +73,6 @@ public:
 	
 private:
 	
-	bool dirty;
 	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;
 

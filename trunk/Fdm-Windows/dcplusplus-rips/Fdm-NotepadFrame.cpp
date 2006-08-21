@@ -39,14 +39,6 @@ LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		// ...
 	}
 	
-	if(tmp.empty()) {
-		tmp = FDMSETTING(FDM_NOTEPAD_TEXT);
-		if(!tmp.empty()) {
-			dirty = true;
-			FdmSettingsManager::getInstance()->set(FdmSettingsManager::FDM_NOTEPAD_TEXT, Util::emptyString);
-		}
-	}
-
 	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
 	ctrlPad.EmptyUndoBuffer();
 	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
@@ -57,7 +49,7 @@ LRESULT FdmNotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT FdmNotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 
-	if(dirty || ctrlPad.GetModify()) {
+	if(ctrlPad.GetModify()) {
 		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {

@@ -8,6 +8,8 @@ Pothead
 	Added Autosearch.
 	Added Winamp spam (from BCDC++)
 	Added Huh spam (thanks gabberworld)
+	Added IP column to hubframe
+	Updated to STLPort 5.0.2
 	Ripped a few DCplusplus files, so can have own Language and Settings files.
 	Ripped a few DCplusplus files, so can have own Settings and Notepad pages.
 

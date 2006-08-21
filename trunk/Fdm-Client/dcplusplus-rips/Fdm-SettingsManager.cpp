@@ -31,7 +31,7 @@ const string FdmSettingsManager::settingTags[] =
 	// Strings
 	"FdmLanguageFileLocation",
 	"AutoSearchFrameOrder", "AutoSearchFrameWidths",
-	"FdmNotepadText", "WinampFormat", 
+	"WinampFormat", 
 	"SENTRY", 
 	// Ints
 	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour",
