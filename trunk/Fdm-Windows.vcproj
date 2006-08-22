@@ -272,10 +272,10 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="BCDC Rips - Source Files"
+			Name="BCDC++ Rips - Source Files"
 			Filter="">
 			<File
-				RelativePath=".\Other-Projects\bcdc\windows\Winamp_Spam.cpp">
+				RelativePath=".\Other-Projects\BCDC++\windows\Winamp_Spam.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool

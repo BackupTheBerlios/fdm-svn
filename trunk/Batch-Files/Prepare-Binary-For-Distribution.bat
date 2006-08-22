@@ -23,11 +23,10 @@ IF EXIST "%RARNAME%" (
 	del /q %RARNAME% > nul
 )
 
-IF EXIST "..\updateGeoIP.py" (
-	ECHO ------------------------------------------------------------------------
-	ECHO updating Geo ip database...
-	..\updateGeoIP.py
-)
+
+ECHO ------------------------------------------------------------------------
+ECHO updating Geo ip database...
+Other-Projects\fulDC\updateGeoIP.py
 
 ECHO ------------------------------------------------------------------------
 ECHO Make sure the path is clear

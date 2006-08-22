@@ -57,7 +57,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)Other-Projects\fulDC\versiontemplate.py"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -122,7 +123,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)Other-Projects\fulDC\versiontemplate.py"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool

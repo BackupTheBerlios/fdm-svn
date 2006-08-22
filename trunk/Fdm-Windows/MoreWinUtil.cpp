@@ -77,6 +77,11 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& messa
 	return true;
 }
 
+void MoreWinUtil::addFdmStuffToExceptionInfo(char* buf, File& aFile) {
+	sprintf(buf, "FDM Version: %s\t %s", FDMVERSIONSTRING, FDMSVNVERSIONSTRING);
+	aFile.write(buf, strlen(buf));
+}
+
 void MoreWinUtil::initilize() {
 	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
 	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);

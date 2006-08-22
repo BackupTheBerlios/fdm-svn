@@ -98,6 +98,8 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	f.write(buf, strlen(buf));
 
+	MoreWinUtil::addFdmStuffToExceptionInfo(buf, f);
+
 	OSVERSIONINFOEX ver;
 	WinUtil::getVersionInfo(ver);
 
@@ -125,7 +127,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	f.close();
 
 	if(MessageBox(WinUtil::mainWnd, _T("DC++ just encountered a fatal bug and should have written an exceptioninfo.txt the same directory as the executable. You can upload this file at http://dcplusplus.sf.net/crash/ to help us find out what happened (please do not report this bug in the bug tracker unless you know the exact steps to reproduce it...). Go there now?"), _T("DC++ Has Crashed"), MB_YESNO | MB_ICONERROR) == IDYES) {
-		WinUtil::openLink(_T("http://dcplusplus.sf.net/crash/"));
+		//WinUtil::openLink(_T("http://dcplusplus.sf.net/crash/"));
 	}
 
 #ifndef _DEBUG

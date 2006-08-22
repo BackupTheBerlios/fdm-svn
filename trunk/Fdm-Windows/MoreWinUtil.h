@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../client/File.h"
+
 namespace MoreWinUtil
 {
 	// For allowing for instances
@@ -31,6 +33,8 @@ namespace MoreWinUtil
 	void additionMenuStuff(CMenu& mainMenu);
 	bool possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status);
 	void winampSpam(tstring& message, tstring& status);
+
+	void addFdmStuffToExceptionInfo(char* buf, File& aFile);
 
 	void initilize();
 };
