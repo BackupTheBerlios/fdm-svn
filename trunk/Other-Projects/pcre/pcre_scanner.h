@@ -47,8 +47,8 @@
 #include <assert.h>
 #include <string>
 #include <vector>
-#include "pcrecpp.h"
-#include "pcre_stringpiece.h"
+#include <pcrecpp.h>
+#include <pcre_stringpiece.h>
 
 namespace pcrecpp {
 

@@ -52,17 +52,6 @@ the definition is next to the definition of the opcodes in internal.h. */
 
 const uschar _pcre_OP_lengths[] = { OP_LENGTHS };
 
-/*************************************************
-*             Default character tables           *
-*************************************************/
-
-/* A default set of character tables is included in the PCRE binary. Its source
-is built by the maketables auxiliary program, which uses the default C ctypes
-functions, and put in the file chartables.c. These tables are used by PCRE
-whenever the caller of pcre_compile() does not provide an alternate set of
-tables. */
-
-#include "pcre_chartables.c"
 
 
 /*************************************************

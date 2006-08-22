@@ -4,7 +4,7 @@ rem ----------------------------------------------------------------------------
 set RAR="%PROGRAMFILES%\winRar\rar.exe"
 
 set DCSVN="original-dcplusplus-svn-files.rar"
-set UNRARSVNFILES=x -r -idp -inul "..\%DCSVN%" "..\"
+set UNRARSVNFILES=x -r -idp -inul "..\..\%DCSVN%" "..\"
 
 rem CONFIG END
 rem -------------------------------------------------------------------------------

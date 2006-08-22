@@ -4,8 +4,8 @@ rem ----------------------------------------------------------------------------
 set RAR="%PROGRAMFILES%\winRar\rar.exe"
 
 set DCSVN="original-dcplusplus-svn-files.rar"
-set UNRARSVNFILES=x -r -idp -inul "..\%DCSVN%" "..\"
-set RARSVNFILES=a -r -eH -ep1 -idp -inul -m3 %DCSVN% ..\original-dcplusplus
+set UNRARSVNFILES=x -r -idp -inul "..\..\%DCSVN%" "..\"
+set RARSVNFILES=a -r -eH -ep1 -idp -inul -m3 "..\%DCSVN%" "..\original-dcplusplus"
 
 rem CONFIG END
 rem -------------------------------------------------------------------------------
@@ -71,9 +71,9 @@ del /q ..\original-dcplusplus\client\*.* > nul
 del /q ..\original-dcplusplus\help\*.* > nul
 del /q ..\original-dcplusplus\res\*.* > nul
 del /q ..\original-dcplusplus\stlport\*.*  > nul
-del /q ..\original-dcplusplus\stlport\config\*.*  > nul
-del /q ..\original-dcplusplus\stlport\stl\*.*  > nul
-del /q ..\original-dcplusplus\stlport\using\*.*  > nul
+rd /q /s ..\original-dcplusplus\stlport\config  > nul
+rd /q /s ..\original-dcplusplus\stlport\stl  > nul
+rd /q /s ..\original-dcplusplus\stlport\using > nul
 del /q ..\original-dcplusplus\windows\*.* > nul
 del /q ..\original-dcplusplus\wtl\*.* > nul
 del /q ..\original-dcplusplus\yassl\*.* > nul
@@ -89,7 +89,7 @@ del /q ..\original-dcplusplus\zlib\*.* > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO Raring DC++'s Svn Structure
-del /a /q %DCSVN% > nul
+del /a /q "..\%DCSVN%" > nul
 %RAR% %RARSVNFILES%
 
 ECHO ------------------------------------------------------------------------
@@ -110,10 +110,10 @@ attrib -h Changelog-Fdm.txt > nul
 attrib -h License-Fdm.txt > nul
 attrib -h *.rar > nul
 
-IF EXIST "C:\Shared\Bot Share\fdm\original-dcplusplus-svn-files.rar" (
+IF EXIST "C:\Shared\Bot Share\fdm\%DCSVN%" (
 	ECHO ------------------------------------------------------------------------
 	ECHO Copying DC++ SVN Directory Rar Files To Share
-	copy /Y original-dcplusplus-svn-files.rar "C:\Shared\Bot Share\fdm\" > nul
+	copy /Y "..\%DCSVN%" "C:\Shared\Bot Share\fdm\" > nul
 	pause
 	goto:eof
 )

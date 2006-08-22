@@ -48,7 +48,6 @@ local functions. This source file is used in two places:
 (2) It is always #included by pcretest.c, which can be asked to print out a
 compiled regex for debugging purposes. */
 
-#include "pcre_internal.h"
 
 static const char *OP_names[] = { OP_NAME_LIST };
 

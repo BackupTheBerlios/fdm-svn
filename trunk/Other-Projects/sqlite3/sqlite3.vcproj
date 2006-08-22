@@ -33,7 +33,7 @@
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"
-				CompileAs="1"/>
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -71,6 +71,8 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="FALSE"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SQLITE3_EXPORTS"
 				StringPooling="TRUE"
@@ -85,8 +87,8 @@
 				WarningLevel="0"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
-				CallingConvention="0"
-				CompileAs="1"/>
+				CallingConvention="1"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool

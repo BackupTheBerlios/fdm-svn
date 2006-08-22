@@ -18,20 +18,26 @@
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="4"
 				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="0"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="FALSE"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\pcre&quot;"
+				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)Other-Projects\pcre&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="FALSE"
+				StringPooling="TRUE"
+				MinimalRebuild="TRUE"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="FALSE"
+				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
@@ -39,10 +45,10 @@
 				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
 				WarningLevel="0"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
 				CallingConvention="0"
-				CompileAs="2"/>
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -76,15 +82,21 @@
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\pcre&quot;"
+				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)Other-Projects\pcre&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
@@ -93,7 +105,7 @@
 				WarningLevel="0"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CompileAs="2"/>
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
