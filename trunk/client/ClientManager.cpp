@@ -443,9 +443,10 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 			++i;
 		}
 	}
-
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
+		try {
 		(*j)->info(false);
+		} catch (...) { continue; }
 	}
 }
 
