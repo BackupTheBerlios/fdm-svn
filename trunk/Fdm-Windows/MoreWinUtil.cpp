@@ -78,7 +78,7 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& messa
 }
 
 void MoreWinUtil::addFdmStuffToExceptionInfo(char* buf, File& aFile) {
-	sprintf(buf, "FDM Version: %s\t %s", FDMVERSIONSTRING, FDMSVNVERSIONSTRING);
+	sprintf(buf, "FDM Version: %s\t %s\r\n", FDMVERSIONSTRING, FDMSVNVERSIONSTRING);
 	aFile.write(buf, strlen(buf));
 }
 

@@ -128,6 +128,10 @@ void AutoSearchManager::clearAndAddToStringList(StringList& aStringList, string 
 }
 
 void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
+	// Not searched for anything, ignore
+	if (resMatch.empty())
+		return;
+	
 	if (sr->getType() == SearchResult::TYPE_FILE)
 		if (sr->getSize() < resMinSize || (resMaxSize > 0 && sr->getSize() > resMaxSize)) return;
 
@@ -139,10 +143,10 @@ void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() 
 	for(iter = resMatch.begin(); iter != resMatch.end(); ++iter)
 		if (fullPathInLower.find(*iter) == string::npos) return;
 
-	if (sr->getType() == SearchResult::TYPE_FILE) {
+	if (sr->getType() == SearchResult::TYPE_FILE && !resExtensions.empty()) {
 		extension = Util::getFileExt(fullPathInLower);
 	
-		if (extension == Util::emptyString || resExtensions.empty()) return;
+		if (extension == Util::emptyString) return;
 
 		for(iter = resExtensions.begin(); iter != resExtensions.end(); ++iter)
 			if (extension == *iter) break;
