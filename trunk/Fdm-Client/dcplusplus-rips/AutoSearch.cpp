@@ -94,7 +94,6 @@ void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) th
 				return;
 			}
 
-			// Woo, a non-tth auto search.  Eventually made Fdm detectable.  In ADC hubs only. lol
 			SearchManager::getInstance()->search(clientsWhereOp, pos->searchString, (int64_t)pos->size * AutoSearch::GetSize(pos->typeFileSize), (SearchManager::TypeModes)pos->sourceType, (SearchManager::SizeModes)pos->typeFileSize, "auto");
 		} else {
 			SearchManager::getInstance()->search(pos->searchString, (int64_t)pos->size * AutoSearch::GetSize(pos->typeFileSize), (SearchManager::TypeModes)pos->sourceType, (SearchManager::SizeModes)pos->typeFileSize, "auto");

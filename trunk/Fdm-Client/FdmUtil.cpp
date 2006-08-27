@@ -23,6 +23,8 @@
 #include "../client/Util.h"
 #include "dcplusplus-rips/Fdm-ResourceManager.h"
 
+#include "dcplusplus-rips/Fdm-Version.h"
+
 bool FdmUtil::toBool(int aInt) {
 	if (aInt) return true;
 	return false;
@@ -31,4 +33,8 @@ bool FdmUtil::toBool(int aInt) {
 string FdmUtil::toString(bool aBool) {
 	if (aBool) return FDMSTRING(STRING_TRUE);
 	return FDMSTRING(STRING_FALSE);
+}
+
+string FdmUtil::addFdmDes(string aCurDes) {
+	return ("<" FDMAPPNAME " " FDMVERSIONSTRING ">" + aCurDes);
 }

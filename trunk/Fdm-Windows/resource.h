@@ -52,8 +52,6 @@
 #define IDC_FDM_ADD                     538
 #define IDC_FDM_EDIT                    539
 #define IDC_FDM_REMOVE                  540
-#define IDC_UP                          541
-#define IDC_DOWN                        542
 #define ID_FDM_FILE_SETTINGS            32000
 #define ID_FDM_NOTEPAD_FRAME            32001
 #define ID_AUTO_SEARCH_FRAME            32002

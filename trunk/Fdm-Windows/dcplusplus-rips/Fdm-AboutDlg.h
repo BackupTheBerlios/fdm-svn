@@ -29,7 +29,7 @@
 #include "../../windows/WinUtil.h"
 #include "../../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
 
-static const TCHAR fdmThanks[] = _T("Big thanks everyone mentioned by Arnetheduck in the other about page. And to Arne himself. :)\r\n")
+static const TCHAR fdmThanks[] = _T("Big thanks to everyone mentioned by Arnetheduck in the other about page. And to Arne himself. :)\r\n")
 _T("Thanks go out to berlios for hosting the project.\r\n")
 _T("Fdm uses a few more projects than dc++, so I would like to also thank\r\n")
 _T("Philip Hazel for PCRE, http://www.pcre.org/ \r\n")
@@ -56,7 +56,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_FDM_ABOUT_VERSION, _T("Fdm v") _T(FDMVERSIONSTRING) _T("\n(c) Copyright 2006 Michael Jones\nFdm  is licenced under GPL\nhttp://fdm.berlios.de/"));
+		SetDlgItemText(IDC_FDM_ABOUT_VERSION, _T("Fdm v") _T(FDMVERSIONSTRING) _T(" ") _T(FDMSVNVERSIONSTRING) _T("\n(c) Copyright 2006 Michael Jones\nFdm  is licenced under GPL\nhttp://fdm.berlios.de/"));
 		CEdit ctrl(GetDlgItem(IDC_FDM_ABOUT_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(fdmThanks, TRUE);

@@ -27,6 +27,8 @@ namespace FdmUtil
 {
 	bool toBool(int aInt);
 	string toString(bool aBool);
+
+	string addFdmDes(string aCurDes);
 };
 
 

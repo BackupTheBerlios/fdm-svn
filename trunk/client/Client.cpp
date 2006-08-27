@@ -27,6 +27,8 @@
 #include "TimerManager.h"
 #include "ResourceManager.h"
 
+#include "../Fdm-Client/FdmUtil.h"
+
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
@@ -81,6 +83,7 @@ void Client::reloadSettings(bool updateNick) {
 		}
 		setCurrentDescription(SETTING(DESCRIPTION));
 	}
+	setCurrentDescription(FdmUtil::addFdmDes(getCurrentDescription()));
 }
 
 void Client::connect() {
