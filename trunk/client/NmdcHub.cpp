@@ -202,7 +202,13 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string nick = line.substr(1, i-1);
-		string message = line.substr(i+2);
+		string message;
+		if((line.length()-1) > i) {
+			message = line.substr(i+2);
+		} else {
+			fire(ClientListener::StatusMessage(), this, unescape(line));
+			return;
+		}
 
 		OnlineUser* ou = findUser(nick);
 		if(ou) {
@@ -689,7 +695,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			}
 			if(from == 0) {
 				// Assume it's from the hub
-				from = &getUser(rtNick);
+				from = &getUser(fromNick);
 				from->getIdentity().setHub(true);
 				from->getIdentity().setHidden(true);
 				fire(ClientListener::UserUpdated(), this, *from);
@@ -698,8 +704,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			// Update pointers just in case they've been invalidated
 			replyTo = findUser(rtNick);
 			from = findUser(fromNick);
-
-		}	
+		}
+		
 		OnlineUser& to = getUser(getMyNick());
 		fire(ClientListener::PrivateMessage(), this, *from, to, *replyTo, unescape(msg));
 	} else if(cmd == "$GetPass") {
@@ -800,13 +806,16 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 		tmp[i] = '$';
 	}
 	int chars = 0;
+	size_t BUF_SIZE;
 	if(ClientManager::getInstance()->isActive()) {
 		string x = ClientManager::getInstance()->getCachedIp();
-		buf = new char[x.length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		BUF_SIZE = x.length() + aString.length() + 64;
+		buf = new char[BUF_SIZE];
+		chars = snprintf(buf, BUF_SIZE, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
-		buf = new char[getMyNick().length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", toAcp(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		BUF_SIZE = getMyNick().length() + aString.length() + 64;
+		buf = new char[BUF_SIZE];
+		chars = snprintf(buf, BUF_SIZE, "$Search Hub:%s %c?%c?%s?%d?%s|", toAcp(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
 	send(buf, chars);
 }
