@@ -105,7 +105,7 @@ LRESULT FdmAppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	GetDlgItemText(IDC_FDM_LANGUAGE, buf, MAX_PATH);
 	tstring x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false, Text::toT(Util::getAppPath()), types) == IDOK) {
+	if(WinUtil::browseFile(x, m_hWnd, false, Text::toT(Util::getDataPath()), types) == IDOK) {
 		SetDlgItemText(IDC_FDM_LANGUAGE, x.c_str());
 	}
 	return 0;

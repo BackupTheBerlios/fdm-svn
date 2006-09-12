@@ -28,7 +28,7 @@
 
 using namespace std;
 
-const string userDataFile = Util::getAppPath() + "user.db";  
+const string userDataFile = Util::getDataPath() + "user.db";  
 const char* userDatabase = userDataFile.c_str();  
 
 void UserDatabase::createUserDB() {
