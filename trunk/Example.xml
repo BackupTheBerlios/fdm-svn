@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.695" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.696" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -304,6 +304,7 @@
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
+		<String Name="NotListening">Not listening for connections - please restart DC++</String>
 		<String Name="Notepad">Notepad</String>
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
@@ -551,6 +552,7 @@
 		<String Name="SocksFailed">The socks server failed establish a connection</String>
 		<String Name="SocksNeedsAuth">The socks server requires authentication</String>
 		<String Name="SocksSetupError">Failed to set up the socks server for UDP relay (check socks address and port)</String>
+		<String Name="SourceTooOld">Remote client does not fully support TTH - cannot download</String>
 		<String Name="SourceTooSlow">Source too slow</String>
 		<String Name="SourceType">Source Type</String>
 		<String Name="SpecifySearchString">Specify a search string</String>
@@ -562,7 +564,7 @@
 		<String Name="SystemLog">System Log</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
-		<String Name="TcpPortBusy">Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port</String>
+		<String Name="TcpPortBusy">Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port</String>
 		<String Name="Tib">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>

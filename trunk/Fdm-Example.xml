@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="Pothead" Version="0.694" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="Pothead" Version="0.695" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="ActiveSearchString">Active / Search String</String>
 		<String Name="AutoSearchProperties">Autosearch Properties</String>

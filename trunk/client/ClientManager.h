@@ -33,8 +33,8 @@
 
 class UserCommand;
 
-class ClientManager : public Speaker<ClientManagerListener>, 
-	private ClientListener, public Singleton<ClientManager>, 
+class ClientManager : public Speaker<ClientManagerListener>,
+	private ClientListener, public Singleton<ClientManager>,
 	private TimerManagerListener, private SettingsManagerListener
 {
 public:
@@ -49,7 +49,7 @@ public:
 	string getConnection(const CID& cid);
 
 	bool isConnected(const string& aUrl);
-	
+
 	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void infoUpdated();
@@ -79,7 +79,7 @@ public:
 	void putOffline(OnlineUser& ou) throw();
 
 	User::Ptr& getMe();
-	
+
 	void connect(const User::Ptr& p);
 	void send(AdcCommand& c, const CID& to);
 	void privateMessage(const User::Ptr& p, const string& msg);
@@ -87,7 +87,7 @@ public:
 	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility);
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
-	
+
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
 
@@ -98,7 +98,6 @@ public:
 	CID getMyCID();
 	const CID& getMyPID();
 
-	void save();
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
@@ -112,36 +111,33 @@ private:
 
 	Client::List clients;
 	mutable CriticalSection cs;
-	
+
 	UserMap users;
 	OnlineMap onlineUsers;
 
 	User::Ptr me;
-	
-	Socket s;
+
+	Socket udp;
 
 	string cachedIp;
 	CID pid;
 
 	friend class Singleton<ClientManager>;
 
-	ClientManager() { 
-		TimerManager::getInstance()->addListener(this); 
+	ClientManager() {
+		TimerManager::getInstance()->addListener(this);
 		SettingsManager::getInstance()->addListener(this);
 	}
 
-	virtual ~ClientManager() throw() { 
+	virtual ~ClientManager() throw() {
 		SettingsManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->removeListener(this); 
+		TimerManager::getInstance()->removeListener(this);
 	}
-
-	string getUsersFile() { return Util::getConfigPath() + "Users.xml"; }
 
 	void updateCachedIp();
 
 	// SettingsManagerListener
-	virtual void on(Load, SimpleXML*) throw();
-	virtual void on(Save, SimpleXML*) throw();
+	virtual void on(Load, SimpleXML&);
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
@@ -150,7 +146,7 @@ private:
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
-	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
+	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize,
 		int aFileType, const string& aString) throw();
 	virtual void on(AdcSearch, Client* c, const AdcCommand& adc, const CID& from) throw();
 	// TimerManagerListener

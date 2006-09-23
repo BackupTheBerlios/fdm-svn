@@ -42,7 +42,7 @@ _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, laur
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
 _T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, ")
-_T("steven sheehy, tobias nygren, poy. ")
+_T("steven sheehy, tobias nygren, poy, dorian. ")
 _T("Keep it coming!");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
@@ -89,7 +89,7 @@ public:
 		delete x;
 		return 0;
 	}
-		
+
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		EndDialog(wID);
 		return 0;
@@ -99,7 +99,7 @@ private:
 	HttpConnection c;
 
 	AboutDlg(const AboutDlg&) { dcassert(0); }
-	
+
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);
 	}
