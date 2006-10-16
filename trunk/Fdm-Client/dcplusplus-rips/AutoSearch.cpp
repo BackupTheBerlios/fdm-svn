@@ -52,7 +52,7 @@ AutoSearchManager::~AutoSearchManager() {
 	Save();
 }
 
-void AutoSearchManager::on(TimerManagerListener::Minute, u_int32_t /*aTick*/) throw() {
+void AutoSearchManager::on(TimerManagerListener::Minute, uint32_t /*aTick*/) throw() {
 	Lock l(cs);
 	time++;
 

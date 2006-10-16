@@ -1,7 +1,7 @@
 @ECHO OFF
 rem CONFIG START
 rem -------------------------------------------------------------------------------
-set NET="%PROGRAMFILES%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.exe"
+set NET="%PROGRAMFILES%\Microsoft Visual Studio 8\Common7\IDE\devenv.exe"
 
 set OPTS=dcplusplus.sln /build release
 set CLEAN=dcplusplus.sln /clean release
@@ -12,7 +12,7 @@ set SOURCE="dcdm-svn-src.rar"
 rem CONFIG END
 rem -------------------------------------------------------------------------------
 
-IF NOT EXIST "%PROGRAMFILES%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.exe" (
+IF NOT EXIST "%PROGRAMFILES%\Microsoft Visual Studio 8\Common7\IDE\devenv.exe" (
 	echo "visual studio could not be found."
 	pause
 	goto:eof
