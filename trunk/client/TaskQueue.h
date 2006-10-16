@@ -16,45 +16,48 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(BIT_OUTPUT_STREAM_H)
-#define BIT_OUTPUT_STREAM_H
+#if !defined(TASK_H)
+#define TASK_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "CriticalSection.h"
 
-class BitOutputStream
-{
-public:
-	BitOutputStream(string& aStream) : is(aStream), bitPos(0), next(0) { }
-	~BitOutputStream() { }
-
-	void put(vector<uint8_t>& b) {
-		for(vector<uint8_t>::iterator i = b.begin(); i != b.end(); ++i) {
-			next |= (*i) << bitPos++;
-
-			if(bitPos > 7) {
-				bitPos-=8;
-				is += next;
-				next = 0;
-			}
-
-		}
-	}
-
-	void skipToByte() {
-		if(bitPos > 0) {
-			bitPos = 0;
-			is += next;
-			next = 0;
-		}
-	}
-
-private:
-	BitOutputStream& operator=(const BitOutputStream&);
-	string& is;
-	int bitPos;
-	uint8_t next;
+struct Task {
+	virtual ~Task() = 0 { }
+};
+struct StringTask : public Task {
+	StringTask(const string& str_) : str(str_) { }
+	string str;
 };
 
-#endif // !defined(BIT_OUTPUT_STREAM_H)
+class TaskQueue {
+public:
+	typedef pair<int, Task*> Pair;
+	typedef vector<Pair> List;
+	typedef List::iterator Iter;
+
+	TaskQueue() {
+	}
+
+	~TaskQueue() {
+		clear();
+	}
+
+	void add(int type, Task* data) { Lock l(cs); tasks.push_back(make_pair(type, data)); }
+	void get(List& list) { Lock l(cs); swap(tasks, list); }
+	void clear() {
+		List tmp;
+		get(tmp);
+		for(Iter i = tmp.begin(); i != tmp.end(); ++i) {
+			delete i->second;
+		}
+	}
+private:
+
+	TaskQueue(const TaskQueue&);
+	TaskQueue& operator=(const TaskQueue&);
+
+	CriticalSection cs;
+	List tasks;
+};
+
+#endif TASK_H

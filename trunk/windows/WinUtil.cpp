@@ -220,6 +220,7 @@ void WinUtil::init(HWND hWnd) {
 
 	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CTSTRING(MENU_OPEN_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_OWN_LIST, CTSTRING(MENU_OPEN_OWN_LIST));
+	file.AppendMenu(MF_STRING, IDC_MATCH_ALL, CTSTRING(MENU_OPEN_MATCH_ALL));
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CTSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
 	file.AppendMenu(MF_SEPARATOR);
@@ -419,8 +420,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 		SHGetPathFromIDList(pidl, buf);
 		target = buf;
 
-		if(target.size() > 0 && target[target.size()-1] != L'\\')
-			target+=L'\\';
+		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
+			target+=_T('\\');
 
 		if(SHGetMalloc(&ma) != E_FAIL) {
 			ma->Free(pidl);
@@ -930,7 +931,7 @@ void WinUtil::openLink(const tstring& url) {
 
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
-	u_int16_t port = 411;
+	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
 		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
@@ -951,7 +952,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 
 void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	string server, file;
-	u_int16_t port = 0; //make sure we get a port since adc doesn't have a standard one
+	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
 		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));

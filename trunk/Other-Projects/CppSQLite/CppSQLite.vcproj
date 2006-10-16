@@ -1,117 +1,163 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="CppSQLite"
 	ProjectGUID="{1D71F842-7241-4D3F-9045-5362EDB7286E}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="1">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				StringPooling="TRUE"
-				MinimalRebuild="TRUE"
+				StringPooling="true"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
-				Detect64BitPortabilityProblems="FALSE"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/CppSQLite.lib"/>
+				OutputFile="$(OutDir)/CppSQLite.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="1">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
-				OmitFramePointers="TRUE"
-				EnableFiberSafeOptimizations="FALSE"
-				OptimizeForProcessor="3"
-				OptimizeForWindowsApplication="TRUE"
+				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="false"
 				PreprocessorDefinitions="WIN32;NDEBUG"
-				StringPooling="TRUE"
-				MinimalRebuild="TRUE"
+				StringPooling="true"
+				MinimalRebuild="true"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
-				Detect64BitPortabilityProblems="FALSE"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 				CallingConvention="1"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"/>
+				OutputFile="$(OutDir)/$(ProjectName).lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -120,17 +166,21 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
-				RelativePath=".\CppSQLite3.cpp">
+				RelativePath=".\CppSQLite3.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<File
-				RelativePath=".\CppSQLite3.h">
+				RelativePath=".\CppSQLite3.h"
+				>
 			</File>
 		</Filter>
 	</Files>

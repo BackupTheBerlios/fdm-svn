@@ -30,8 +30,8 @@
 #include "FilteredFile.h"
 #include "ZUtils.h"
 #include "MerkleTree.h"
+#include "QueueItem.h"
 
-class QueueItem;
 class ConnectionQueueItem;
 
 /**
@@ -60,24 +60,16 @@ public:
 		FLAG_TTH_CHECK = 0x800
 	};
 
-	Download() throw();
-	Download(QueueItem* qi) throw();
+	Download(UserConnection& conn) throw();
+	Download(UserConnection& conn, QueueItem& qi) throw();
 
-	virtual ~Download() { }
+	virtual void getParams(const UserConnection& aSource, StringMap& params);
 
-	/**
-	 * @remarks This function is only used from DownloadManager but its
-	 * functionality could be useful in TransferView.
-	 *
-	 * @return Target filename without path.
-	 */
+	virtual ~Download();
+
+	/** @return Target filename without path. */
 	string getTargetFileName() {
-		string::size_type i = getTarget().rfind('\\');
-		if(i != string::npos) {
-			return getTarget().substr(i + 1);
-		} else {
-			return getTarget();
-		}
+		return Util::getFileName(getTarget());
 	}
 
 	/** @internal */
@@ -98,18 +90,15 @@ public:
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-	GETSET(TTHValue, tth, TTH);
 	GETSET(bool, treeValid, TreeValid);
 
 private:
 	Download(const Download&);
-
 	Download& operator=(const Download&);
 
 	TigerTree tt;
 	string pfs;
 };
-
 
 /**
  * Use this listener interface to get progress information for downloads.
@@ -176,21 +165,8 @@ public:
 	void addConnection(UserConnection::Ptr conn);
 	void checkIdle(const User::Ptr& user);
 
-	/**
-	 * @remarks This is only used in the tray icons. In MainFrame this is
-	 * calculated instead so there seems to be a little duplication of code.
-	 *
-	 * @return Average download speed in Bytes/s
-	 */
-	int getAverageSpeed() {
-		Lock l(cs);
-		int avg = 0;
-		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
-			Download* d = *i;
-			avg += (int)d->getRunningAverage();
-		}
-		return avg;
-	}
+	/** @return Running average download speed in Bytes/s */
+	int64_t getRunningAverage();
 
 	/** @return Number of downloads. */
 	size_t getDownloadCount() {
@@ -198,8 +174,7 @@ public:
 		return downloads.size();
 	}
 
-	static const string USER_LIST_NAME;
-	static const string USER_LIST_NAME_BZ;
+	bool startDownload(QueueItem::Priority prio);
 private:
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {
@@ -224,7 +199,7 @@ private:
 	Download::List downloads;
 	UserConnection::List idlers;
 
-	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
+	bool checkRollback(Download* aDownload, const uint8_t* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn);
 	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
@@ -232,8 +207,8 @@ private:
 
 	void moveFile(const string& source, const string&target);
 	void logDownload(UserConnection* aSource, Download* d);
-	u_int32_t calcCrc32(const string& file) throw(FileException);
-	bool checkSfv(UserConnection* aSource, Download* d, u_int32_t crc);
+	uint32_t calcCrc32(const string& file) throw(FileException);
+	bool checkSfv(UserConnection* aSource, Download* d, uint32_t crc);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
 	void failDownload(UserConnection* aSource, const string& reason);
@@ -247,7 +222,8 @@ private:
 	void handleEndData(UserConnection* aSource);
 
 	// UserConnectionListener
-	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
+	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw();
+	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(Sending, UserConnection*, int64_t) throw();
 	virtual void on(FileLength, UserConnection*, int64_t) throw();
@@ -259,7 +235,7 @@ private:
 
 	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
 };
 
 #endif // !defined(DOWNLOAD_MANAGER_H)

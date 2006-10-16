@@ -1,134 +1,179 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="Fdm-Windows"
 	ProjectGUID="{00A2876F-0224-4161-AD02-8DF829BE53B3}"
 	RootNamespace="FdmWindows"
-	Keyword="ManagedCProj">
+	Keyword="ManagedCProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfATL="0"
 			CharacterSet="1"
-			ManagedExtensions="FALSE">
+			ManagedExtensions="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="2"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
-				StringPooling="TRUE"
-				MinimalRebuild="TRUE"
+				StringPooling="true"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="3"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				WarningLevel="4"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
-				AdditionalLibraryDirectories=""/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				Culture="2057"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/$(ProjectName).lib"
+				AdditionalLibraryDirectories=""
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
-			ManagedExtensions="FALSE">
+			ManagedExtensions="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
-				OmitFramePointers="TRUE"
-				OptimizeForProcessor="3"
-				OptimizeForWindowsApplication="TRUE"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
-				StringPooling="TRUE"
-				MinimalRebuild="TRUE"
+				StringPooling="true"
+				MinimalRebuild="true"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="3"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				AssemblerOutput="4"
 				WarningLevel="4"
 				DebugInformationFormat="3"
 				CallingConvention="1"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/$(ProjectName).lib"
-				AdditionalLibraryDirectories=""/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				Culture="2057"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/$(ProjectName).lib"
+				AdditionalLibraryDirectories=""
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -137,164 +182,211 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
-				RelativePath=".\Fdm-Windows\ColourUtil.cpp">
+				RelativePath=".\Fdm-Windows\ColourUtil.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\MoreWinUtil.cpp">
+				RelativePath=".\Fdm-Windows\MoreWinUtil.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\RawsPage.cpp">
+				RelativePath=".\Fdm-Windows\RawsPage.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\RightClick.cpp">
+				RelativePath=".\Fdm-Windows\RightClick.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<File
-				RelativePath=".\Fdm-Windows\ColourUtil.h">
+				RelativePath=".\Fdm-Windows\ColourUtil.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\MoreWinUtil.h">
+				RelativePath=".\Fdm-Windows\MoreWinUtil.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\RawsPage.h">
+				RelativePath=".\Fdm-Windows\RawsPage.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\resource.h">
+				RelativePath=".\Fdm-Windows\resource.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\RightClick.h">
+				RelativePath=".\Fdm-Windows\RightClick.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
 			<File
-				RelativePath=".\Fdm-Res\AutoSearch.ico">
+				RelativePath=".\Fdm-Res\AutoSearch.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows.rc">
+				RelativePath=".\Fdm-Windows.rc"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Res\fdm_toolbar.bmp">
+				RelativePath=".\Fdm-Res\fdm_toolbar.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Res\fdm_toolbar20-highlight.bmp">
+				RelativePath=".\Fdm-Res\fdm_toolbar20-highlight.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Res\fdm_toolbar20.bmp">
+				RelativePath=".\Fdm-Res\fdm_toolbar20.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\notepad.ico">
+				RelativePath=".\res\notepad.ico"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Source files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchFrame.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchFrame.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropertiesDlg.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropertiesDlg.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropPage.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropPage.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-PrivateFrame.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-PrivateFrame.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-WinUtil.cpp">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\For-WinUtil.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\windows\stdafx.cpp">
+				RelativePath=".\windows\stdafx.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Header files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchFrame.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchFrame.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\AutoSearchProperties.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AboutDlg.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AboutDlg.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-AppearancePage.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-NotepadFrame.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropertiesDlg.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropertiesDlg.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropPage.h">
+				RelativePath=".\Fdm-Windows\dcplusplus-rips\Fdm-PropPage.h"
+				>
 			</File>
 			<File
-				RelativePath=".\windows\stdafx.h">
+				RelativePath=".\windows\stdafx.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="BCDC++ Rips - Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Other-Projects\BCDC++\windows\Winamp_Spam.cpp">
+				RelativePath=".\Other-Projects\BCDC++\windows\Winamp_Spam.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						PrecompiledHeaderThrough="../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"/>
+						PrecompiledHeaderThrough="../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						PrecompiledHeaderThrough="../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"/>
+						PrecompiledHeaderThrough="../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Nullsoft Inc"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Other-Projects\Nullsoft\Winamp.h">
+				RelativePath=".\Other-Projects\Nullsoft\Winamp.h"
+				>
 			</File>
 		</Filter>
 	</Files>

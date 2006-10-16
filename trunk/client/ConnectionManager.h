@@ -54,7 +54,7 @@ public:
 	const User::Ptr& getUser() const { return user; }
 
 	GETSET(State, state, State);
-	GETSET(u_int32_t, lastAttempt, LastAttempt);
+	GETSET(uint32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
@@ -70,13 +70,14 @@ public:
 		expectedConnections.insert(make_pair(aNick, make_pair(aMyNick, aHubUrl)));
 	}
 
-	pair<string, string> remove(const string& aNick) {
+	StringPair remove(const string& aNick) {
 		Lock l(cs);
 		ExpectMap::iterator i = expectedConnections.find(aNick);
 
-		if(i == expectedConnections.end()) return make_pair(Util::emptyString, Util::emptyString);
+		if(i == expectedConnections.end()) 
+			return make_pair(Util::emptyString, Util::emptyString);
 
-		pair<string, string> tmp = make_pair(i->second.first, i->second.second);
+		StringPair tmp = i->second;
 		expectedConnections.erase(i);
 
 		return tmp;
@@ -84,7 +85,7 @@ public:
 
 private:
 	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
-	typedef map<string, pair<string, string> > ExpectMap;
+	typedef map<string, StringPair> ExpectMap;
 	ExpectMap expectedConnections;
 
 	CriticalSection cs;
@@ -151,7 +152,7 @@ private:
 
 	ExpectedMap expectedConnections;
 
-	u_int32_t floodCounter;
+	uint32_t floodCounter;
 
 	Server* server;
 	Server* secureServer;
@@ -188,8 +189,8 @@ private:
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 
 };
 

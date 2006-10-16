@@ -43,26 +43,26 @@ public:
 		HIGH = THREAD_PRIORITY_ABOVE_NORMAL
 	};
 
-	Thread() throw() : threadHandle(NULL), threadId(0){ }
+	Thread() throw() : threadHandle(INVALID_HANDLE_VALUE), threadId(0){ }
 	virtual ~Thread() {
-		if(threadHandle)
+		if(threadHandle != INVALID_HANDLE_VALUE)
 			CloseHandle(threadHandle);
 	}
 
 	void start() throw(ThreadException);
 	void join() throw(ThreadException) {
-		if(threadHandle == NULL) {
+		if(threadHandle == INVALID_HANDLE_VALUE) {
 			return;
 		}
 
 		WaitForSingleObject(threadHandle, INFINITE);
 		CloseHandle(threadHandle);
-		threadHandle = NULL;
+		threadHandle = INVALID_HANDLE_VALUE;
 	}
 
 	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); }
 
-	static void sleep(u_int32_t millis) { ::Sleep(millis); }
+	static void sleep(uint32_t millis) { ::Sleep(millis); }
 	static void yield() { ::Sleep(1); }
 	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); }
 	static long safeDec(volatile long& v) { return InterlockedDecrement(&v); }
@@ -91,7 +91,7 @@ public:
 	}
 
 	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); }
-	static void sleep(u_int32_t millis) { ::usleep(millis*1000); }
+	static void sleep(uint32_t millis) { ::usleep(millis*1000); }
 	static void yield() { ::sched_yield(); }
 	static long safeInc(volatile long& v) {
 		pthread_mutex_lock(&mtx);

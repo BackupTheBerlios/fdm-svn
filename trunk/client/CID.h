@@ -31,10 +31,15 @@ public:
 	enum { SIZE = 192 / 8 };
 
 	struct Hash {
+#ifdef _MSC_VER
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+#endif
 		size_t operator()(const CID& c) const { return c.toHash(); }
+		bool operator()(const CID& a, const CID& b) const { return a < b; }
 	};
 	CID() { memset(cid, 0, sizeof(cid)); }
-	explicit CID(const u_int8_t* data) { memcpy(cid, data, sizeof(cid)); }
+	explicit CID(const uint8_t* data) { memcpy(cid, data, sizeof(cid)); }
 	explicit CID(const string& base32) { Encoder::fromBase32(base32.c_str(), cid, sizeof(cid)); }
 
 	bool operator==(const CID& rhs) const { return memcmp(cid, rhs.cid, sizeof(cid)) == 0; }
@@ -44,20 +49,20 @@ public:
 	string& toBase32(string& tmp) const { return Encoder::toBase32(cid, sizeof(cid), tmp); }
 
 	size_t toHash() const { return *reinterpret_cast<const size_t*>(cid); }
-	const u_int8_t* data() const { return cid; }
+	const uint8_t* data() const { return cid; }
 
-	bool isZero() const { return find_if(cid, cid+SIZE, bind2nd(not_equal_to<u_int8_t>(), 0)) == (cid+SIZE); }
+	bool isZero() const { return find_if(cid, cid+SIZE, bind2nd(not_equal_to<uint8_t>(), 0)) == (cid+SIZE); }
 
 	static CID generate() {
-		u_int8_t data[CID::SIZE];
+		uint8_t data[CID::SIZE];
 		for(size_t i = 0; i < sizeof(data); ++i) {
-			data[i] = (u_int8_t)Util::rand();
+			data[i] = (uint8_t)Util::rand();
 		}
 		return CID(data);
 	}
 
 private:
-	u_int8_t cid[SIZE];
+	uint8_t cid[SIZE];
 };
 
 #endif // !defined(CID_H)

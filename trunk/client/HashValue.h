@@ -29,21 +29,17 @@ template<class Hasher>
 struct HashValue : FastAlloc<HashValue<Hasher> >{
 	static const size_t SIZE = Hasher::HASH_SIZE;
 
-	typedef HashValue* Ptr;
-	struct PtrHash {
-		size_t operator()(const Ptr rhs) const { return *(size_t*)rhs; }
-		bool operator()(const Ptr lhs, const Ptr rhs) const { return (*lhs) == (*rhs); }
-	};
-	struct PtrLess {
-		bool operator()(const Ptr lhs, const Ptr rhs) const { return (*lhs) < (*rhs); }
-	};
-
 	struct Hash {
+#ifdef _MSC_VER
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+#endif
 		size_t operator()(const HashValue& rhs) const { return *(size_t*)&rhs; }
+		bool operator()(const HashValue& a, const HashValue& b) const { return a < b; }
 	};
 
 	HashValue() { }
-	explicit HashValue(u_int8_t* aData) { memcpy(data, aData, SIZE); }
+	explicit HashValue(uint8_t* aData) { memcpy(data, aData, SIZE); }
 	explicit HashValue(const string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); }
 	HashValue(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); }
 	HashValue& operator=(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); return *this; }
@@ -54,7 +50,7 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 	string toBase32() const { return Encoder::toBase32(data, SIZE); }
 	string& toBase32(string& tmp) const { return Encoder::toBase32(data, SIZE, tmp); }
 
-	u_int8_t data[SIZE];
+	uint8_t data[SIZE];
 };
 
 #endif // !defined(HASH_VALUE_H)

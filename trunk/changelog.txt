@@ -1,4 +1,39 @@
-﻿-- 0.696 2006-09-22 --
+﻿-- --
+* Switched to VC8/VS2005
+* Removed some unused options
+* Antifrag is now default
+* Confirm hub removal is now default
+* SFV checking is now default
+* Fixed TLS port not being greyed out
+
+-- 0.698 2006-10-10 --
+* [bug 1065] Code cleanup (thanks steven sheehy)
+* Fixed readme.txt (thanks ullner)
+* More code cleanup
+* Fixed trusted/untrusted upload view
+* Fixed crash on invalid remote command during upload
+* [ADC] Improved GFI command support
+* Lowest priority downloads are no longer started if there are other downloads running
+* Upgraded to STLport 5.0.2
+* Updated compile instructions
+* Updated unsigned types to C99
+* Removed unmaintained autoconf files
+* Reworked match listing to make it slightly faster
+* Fixed a few random crashes
+* [ADC] Removed obsolete DSC command
+* Fixed user list not being updated in some cases
+* [bug 1071] Added fasthash for unix (thanks steven sheehy)
+
+-- 0.697 2006-09-29 --
+* [ADC] Fixed a few protocol issues
+* Some code cleanup
+* Queue frame fixes and memory saves
+* TLS port change without restart fixed
+* [bug 1007] Fixed nick character check
+* Fixed some transfer view sorting issues
+* [bug 59] Added option to match all local lists
+
+-- 0.696 2006-09-22 --
 * Fixed a possible deadlock
 * [bug 1058] Removed some whitespace (big thanks to pothead)
 * Removed the possibility to download files without TTH

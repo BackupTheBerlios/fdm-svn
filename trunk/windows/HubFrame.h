@@ -31,6 +31,7 @@
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
 #include "../client/FastAlloc.h"
+#include "../client/TaskQueue.h"
 
 #include "WinUtil.h"
 #include "UCHandler.h"
@@ -166,7 +167,7 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-	enum Speakers { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
+	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
 	};
@@ -198,26 +199,15 @@ private:
 		NOT_EQUAL
 	};
 
-	struct Task {
-		Task(Speakers speaker_) : speaker(speaker_) { }
-		virtual ~Task() { }
-		Speakers speaker;
-	};
-
 	struct UserTask : public Task {
-		UserTask(Speakers speaker_, const OnlineUser& ou) : Task(speaker_), user(ou.getUser()), identity(ou.getIdentity()) { }
+		UserTask(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) { }
 
 		User::Ptr user;
 		Identity identity;
 	};
 
-	struct StringTask : public Task {
-		StringTask(Speakers speaker_, const tstring& msg_) : Task(speaker_), msg(msg_) { }
-		tstring msg;
-	};
-
 	struct PMTask : public StringTask {
-		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m),
+		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const string& m) : StringTask(m),
 			from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) { }
 
 		User::Ptr from;
@@ -255,7 +245,7 @@ private:
 
 		bool update(const Identity& identity, int sortCol);
 
-		const string& getNick() const { return identity.getNick(); }
+		string getNick() const { return identity.getNick(); }
 		bool isHidden() const { return identity.isHidden(); }
 
 		tstring columns[COLUMN_LAST];
@@ -291,8 +281,6 @@ private:
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 
-	typedef vector<Task*> TaskList;
-	typedef TaskList::iterator TaskIter;
 	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
 	typedef UserMap::iterator UserMapIter;
 
@@ -361,8 +349,7 @@ private:
 	bool tabMenuShown;
 
 	UserMap userMap;
-	TaskList taskList;
-	CriticalSection taskCS;
+	TaskQueue tasks;
 	bool updateUsers;
 	bool resort;
 
@@ -381,7 +368,7 @@ private:
 
 	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(FilterModes& mode, int64_t& size);
-	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = FilterModes::NONE, int64_t size = 0);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();
@@ -395,7 +382,7 @@ private:
 	void updateStatusBar() { if(m_hWnd) speak(STATS); }
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t /*aTick*/) throw();
 
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();
@@ -413,10 +400,10 @@ private:
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
-	void speak(Speakers s) { Lock l(taskCS); taskList.push_back(new Task(s)); PostMessage(WM_SPEAKER); }
-	void speak(Speakers s, const string& msg) { Lock l(taskCS); taskList.push_back(new StringTask(s, Text::toT(msg))); PostMessage(WM_SPEAKER); }
-	void speak(Speakers s, const OnlineUser& u) { Lock l(taskCS); taskList.push_back(new UserTask(s, u)); updateUsers = true; }
-	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { Lock l(taskCS); taskList.push_back(new PMTask(from, to, replyTo, Text::toT(line))); }
+	void speak(Tasks s) { tasks.add(s, 0); PostMessage(WM_SPEAKER); }
+	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); PostMessage(WM_SPEAKER); }
+	void speak(Tasks s, const OnlineUser& u) { tasks.add(s, new UserTask(u)); updateUsers = true; }
+	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { tasks.add(PRIVATE_MESSAGE, new PMTask(from, to, replyTo, line)); PostMessage(WM_SPEAKER); }
 };
 
 #endif // !defined(HUB_FRAME_H)

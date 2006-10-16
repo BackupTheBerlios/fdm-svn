@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define FDMAPPNAME "FDM"
+#define FDMAPPNAME "Fdm"
 #define FDMVERSIONSTRING "0.00"
 #define FDMVERSIONFLOAT 0.00
 #define FDMSVNVERSIONSTRING "svn$revision"

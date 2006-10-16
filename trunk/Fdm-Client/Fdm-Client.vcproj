@@ -1,143 +1,185 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="Fdm-Client"
 	ProjectGUID="{356AC6E6-D883-43FC-B2F5-B1E3E5252949}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="1">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)Other-Projects\fulDC\versiontemplate.py"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="2"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
-				StringPooling="TRUE"
-				MinimalRebuild="TRUE"
-				ExceptionHandling="TRUE"
+				StringPooling="true"
+				MinimalRebuild="true"
+				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
-				SmallerTypeCheck="FALSE"
+				SmallerTypeCheck="false"
 				RuntimeLibrary="1"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="3"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdinc.h"
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				Culture="1053"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)/$(ProjectName).lib"
 				AdditionalLibraryDirectories=""
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="$(SolutionDir)Other-Projects\fulDC\versiontemplate.py"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				Culture="1053"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
-			WholeProgramOptimization="FALSE">
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)Other-Projects\fulDC\versiontemplate.py"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
-				OmitFramePointers="TRUE"
-				OptimizeForProcessor="3"
-				OptimizeForWindowsApplication="TRUE"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
-				StringPooling="TRUE"
-				MinimalRebuild="TRUE"
-				ExceptionHandling="TRUE"
+				StringPooling="true"
+				MinimalRebuild="true"
+				ExceptionHandling="1"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="3"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdinc.h"
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerOutput="4"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CallingConvention="1"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)/$(ProjectName).lib"
 				AdditionalLibraryDirectories=""
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="$(SolutionDir)Other-Projects\fulDC\versiontemplate.py"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -145,109 +187,135 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Fdm.cpp">
+				RelativePath=".\Fdm.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\FdmUtil.cpp">
+				RelativePath=".\FdmUtil.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\RawsManager.cpp">
+				RelativePath=".\RawsManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\UserDatabase.cpp">
+				RelativePath=".\UserDatabase.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Fdm.h">
+				RelativePath=".\Fdm.h"
+				>
 			</File>
 			<File
-				RelativePath=".\FdmUtil.h">
+				RelativePath=".\FdmUtil.h"
+				>
 			</File>
 			<File
-				RelativePath=".\RawsManager.h">
+				RelativePath=".\RawsManager.h"
+				>
 			</File>
 			<File
-				RelativePath=".\UserDatabase.h">
+				RelativePath=".\UserDatabase.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Source files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\dcplusplus-rips\AutoSearch.cpp">
+				RelativePath=".\dcplusplus-rips\AutoSearch.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.cpp">
+				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.cpp">
+				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp">
+				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\For-ClientManager.cpp">
+				RelativePath=".\dcplusplus-rips\For-ClientManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\client\stdinc.cpp">
+				RelativePath="..\client\stdinc.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="stdinc.h"/>
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="stdinc.h"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="DC++ Rips - Header files"
-			Filter="">
+			>
 			<File
-				RelativePath=".\dcplusplus-rips\AutoSearch.h">
+				RelativePath=".\dcplusplus-rips\AutoSearch.h"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h">
+				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.h">
+				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.h"
+				>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.h">
+				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.h"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building Fdm-StringDefs.cpp and Fdm-Example.xml from Fdm-StringDefs.h (you need python installed for this to work)"
-						CommandLine="dcplusplus-rips\Fdm-Makedefs.py
-"
-						Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"/>
+						CommandLine="dcplusplus-rips\Fdm-Makedefs.py&#x0D;&#x0A;"
+						Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building Fdm-StringDefs.cpp and Fdm-Example.xml from Fdm-StringDefs.h (you need python installed for this to work)"
-						CommandLine="dcplusplus-rips\Fdm-Makedefs.py
-"
-						Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"/>
+						CommandLine="dcplusplus-rips\Fdm-Makedefs.py&#x0D;&#x0A;"
+						Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\dcplusplus-rips\Fdm-Version.h">
+				RelativePath=".\dcplusplus-rips\Fdm-Version.h"
+				>
 			</File>
 			<File
-				RelativePath="..\client\stdinc.h">
+				RelativePath="..\client\stdinc.h"
+				>
 			</File>
 		</Filter>
 	</Files>

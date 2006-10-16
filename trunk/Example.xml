@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.696" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.698" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -263,6 +263,7 @@
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenDownloadsDir">Open downloads directory</String>
 		<String Name="MenuOpenFileList">Open file list...	Ctrl+L</String>
+		<String Name="MenuOpenMatchAll">Match downloaded lists</String>
 		<String Name="MenuOpenOwnList">Open own list</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
@@ -463,7 +464,6 @@
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">Connection settings</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
-		<String Name="SettingsOnlyDlTthFiles">Only download files that have a TTH</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
@@ -580,6 +580,7 @@
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="UnableToOpenFilelist">Unable to open filelist: </String>
 		<String Name="UnableToRename">Unable to rename </String>
+		<String Name="UnableToSendFile">Unable to send file </String>
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>
 		<String Name="UnknownCommand">Unknown command: </String>

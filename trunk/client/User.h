@@ -52,7 +52,7 @@ public:
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
-		TLS = 1<<TLS_BIT,				//< Client supports SSL
+		TLS = 1<<TLS_BIT,				//< Client supports TLS
 		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
 	};
 
@@ -61,27 +61,30 @@ public:
 	typedef List::iterator Iter;
 
 	struct HashFunction {
+#ifdef _MSC_VER
 		static const size_t bucket_size = 4;
 		static const size_t min_buckets = 8;
+#endif
 		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); }
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
 	};
 
-	User(const string& nick) : Flags(NMDC), firstNick(nick) { }
 	User(const CID& aCID) : cid(aCID) { }
 
 	virtual ~User() throw() { }
 
-	operator CID() { return cid; }
+	const CID& getCID() const { return cid; }
+	operator const CID&() const { return cid; }
 
 	bool isOnline() const { return isSet(ONLINE); }
 	bool isNMDC() const { return isSet(NMDC); }
 
-	GETSET(CID, cid, CID);
 	GETSET(string, firstNick, FirstNick);
 private:
 	User(const User&);
 	User& operator=(const User&);
+
+	CID cid;
 };
 
 /** One of possibly many identities of a user, mainly for UI purposes */
@@ -91,17 +94,17 @@ public:
 		GOT_INF_BIT,
 		NMDC_PASSIVE_BIT
 	};
-	enum Flags {
+	enum IdentityFlags {
 		GOT_INF = 1 << GOT_INF_BIT,
 		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
 
 	Identity() : sid(0) { }
-	Identity(const User::Ptr& ptr, u_int32_t aSID) : user(ptr), sid(aSID) { }
-	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
+	Identity(const User::Ptr& ptr, uint32_t aSID) : user(ptr), sid(aSID) { }
+	Identity(const Identity& rhs) : Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { Lock l(cs); *static_cast<Flags*>(this) = rhs; user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
-#define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
+#define GS(n, x) string get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
 	GS(Description, "DE")
 	GS(Ip, "I4")
@@ -116,16 +119,7 @@ public:
 	void setHub(bool hub) { set("HU", hub ? "1" : Util::emptyString); }
 	void setBot(bool bot) { set("BO", bot ? "1" : Util::emptyString); }
 	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
-
-	string getTag() const {
-		if(!get("TA").empty())
-			return get("TA");
-		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
-			return Util::emptyString;
-		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" +
-			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
-	}
-
+	string getTag() const;
 	bool supports(const string& name) const;
 	bool isHub() const { return !get("HU").empty(); }
 	bool isOp() const { return !get("OP").empty(); }
@@ -135,35 +129,20 @@ public:
 	bool isAway() const { return !get("AW").empty(); }
 	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
-
-	const string& get(const char* name) const {
-		RLock<> l(rw);
-		InfMap::const_iterator i = info.find(*(short*)name);
-		return i == info.end() ? Util::emptyString : i->second;
-	}
-
-	void set(const char* name, const string& val) {
-		WLock<> l(rw);
-		if(val.empty())
-			info.erase(*(short*)name);
-		else
-			info[*(short*)name] = val;
-	}
-
-	string getSIDString() const {
-		return string((const char*)&sid, 4);
-	}
+	string get(const char* name) const;
+	void set(const char* name, const string& val);
+	string getSIDString() const { return string((const char*)&sid, 4); }
 
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
-	GETSET(u_int32_t, sid, SID);
+	GETSET(uint32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 	InfMap info;
 	/** @todo there are probably more threading issues here ...*/
-	static RWLock<> rw;
+	mutable CriticalSection cs;
 };
 
 class Client;
@@ -174,7 +153,7 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
+	OnlineUser(const User::Ptr& ptr, Client& client_, uint32_t sid_);
 
 	operator User::Ptr&() { return getUser(); }
 	operator const User::Ptr&() const { return getUser(); }
@@ -182,8 +161,8 @@ public:
 	User::Ptr& getUser() { return getIdentity().getUser(); }
 	const User::Ptr& getUser() const { return getIdentity().getUser(); }
 	Identity& getIdentity() { return identity; }
-	Client& getClient() { return *client; }
-	const Client& getClient() const { return *client; }
+	Client& getClient() { return client; }
+	const Client& getClient() const { return client; }
 
 	GETSET(Identity, identity, Identity);
 private:
@@ -192,7 +171,7 @@ private:
 	OnlineUser(const OnlineUser&);
 	OnlineUser& operator=(const OnlineUser&);
 
-	Client* client;
+	Client& client;
 };
 
 #endif // !defined(USER_H)
