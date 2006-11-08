@@ -4,7 +4,7 @@ rem ----------------------------------------------------------------------------
 set RAR="%PROGRAMFILES%\winRar\rar.exe"
 
 set DCSVN="original-dcplusplus-svn-files.rar"
-set UNRARSVNFILES=x -r -idp -inul "..\..\%DCSVN%" "..\"
+set UNRARSVNFILES=x -r -idp -inul "..\%DCSVN%" "..\"
 set RARSVNFILES=a -r -eH -ep1 -idp -inul -m3 "..\%DCSVN%" "..\original-dcplusplus"
 
 rem CONFIG END
@@ -70,10 +70,6 @@ del /q ..\original-dcplusplus\bzip2\*.* > nul
 del /q ..\original-dcplusplus\client\*.* > nul
 del /q ..\original-dcplusplus\help\*.* > nul
 del /q ..\original-dcplusplus\res\*.* > nul
-del /q ..\original-dcplusplus\stlport\*.*  > nul
-rd /q /s ..\original-dcplusplus\stlport\config  > nul
-rd /q /s ..\original-dcplusplus\stlport\stl  > nul
-rd /q /s ..\original-dcplusplus\stlport\using > nul
 del /q ..\original-dcplusplus\windows\*.* > nul
 del /q ..\original-dcplusplus\wtl\*.* > nul
 del /q ..\original-dcplusplus\yassl\*.* > nul
@@ -110,7 +106,7 @@ attrib -h Changelog-Fdm.txt > nul
 attrib -h License-Fdm.txt > nul
 attrib -h *.rar > nul
 
-IF EXIST "C:\Shared\Bot Share\fdm\%DCSVN%" (
+IF EXIST "C:\Shared On C\Bot Share\fdm\%DCSVN%" (
 	ECHO ------------------------------------------------------------------------
 	ECHO Copying DC++ SVN Directory Rar Files To Share
 	copy /Y "..\%DCSVN%" "C:\Shared\Bot Share\fdm\" > nul

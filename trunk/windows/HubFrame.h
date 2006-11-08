@@ -183,6 +183,7 @@ private:
 		COLUMN_DESCRIPTION,
 		COLUMN_TAG,
 		COLUMN_CONNECTION,
+		COLUMN_IP,
 		COLUMN_EMAIL,
 		COLUMN_CID,
 		COLUMN_IP,
@@ -256,7 +257,7 @@ private:
 	HubFrame(const tstring& aServer) :
 	waitingForPW(false), extraSort(false), server(aServer), closed(false),
 		showUsers(BOOLSETTING(GET_USER_INFO)), updateUsers(false), resort(false),
-		curCommandPosition(0), timeStamps(BOOLSETTING(TIME_STAMPS)),
+		curCommandPosition(0), timeStamps(BOOLSETTING(TIME_STAMPS)), inTabComplete(false),
 		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
@@ -289,6 +290,8 @@ private:
 	bool showJoins;
 	bool favShowJoins;
 	tstring complete;
+	StringList tabCompleteNicks;
+	bool inTabComplete;
 
 	bool waitingForPW;
 	bool extraSort;
@@ -362,6 +365,13 @@ private:
 
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
+
+	static bool compareCharsNoCase(string::value_type a, string::value_type b) {
+		return Text::toLower(a) == Text::toLower(b);
+	}
+
+	string stripNick(const string& nick) const;
+	tstring scanNickPrefix(const tstring& prefix);
 
 	bool updateUser(const UserTask& u);
 	void removeUser(const User::Ptr& aUser);
