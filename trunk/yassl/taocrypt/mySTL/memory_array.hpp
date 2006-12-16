@@ -1,4 +1,4 @@
-/* mySTL memory.hpp                                
+/* mySTL memory_array.hpp                                
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
@@ -24,12 +24,12 @@
  */
 
 
-/* mySTL memory implements auto_ptr
+/* mySTL memory_arry implements auto_array
  *
  */
 
-#ifndef mySTL_MEMORY_HPP
-#define mySTL_MEMORY_HPP
+#ifndef mySTL_MEMORY_ARRAY_HPP
+#define mySTL_MEMORY_ARRAY_HPP
 
 
 #ifdef _MSC_VER
@@ -42,43 +42,40 @@ namespace mySTL {
 
 
 template<typename T>
-struct auto_ptr_ref {
-    typedef void (*Deletor)(T*);
-    T*      ptr_;
-    Deletor del_;
-    auto_ptr_ref(T* p, Deletor d) : ptr_(p), del_(d) {}
+struct auto_array_ref {
+    T* ptr_;
+    explicit auto_array_ref(T* p) : ptr_(p) {}
 };
 
 
 template<typename T>
-class auto_ptr {
-    typedef void (*Deletor)(T*);
+class auto_array {
     T*       ptr_;
-    Deletor  del_;
 
     void Destroy()
     {
-        del_(ptr_);
+        #ifdef YASSL_LIB
+            yaSSL::ysArrayDelete(ptr_);
+        #else
+            TaoCrypt::tcArrayDelete(ptr_);
+        #endif
     }
 public:
-    auto_ptr(T* p, Deletor d) : ptr_(p), del_(d) {}
+    explicit auto_array(T* p = 0) : ptr_(p) {}
 
-    explicit auto_ptr(Deletor d) : ptr_(0), del_(d) {}
-
-    ~auto_ptr() 
+    ~auto_array() 
     {
         Destroy();
     }
 
 
-    auto_ptr(auto_ptr& other) : ptr_(other.release()), del_(other.del_) {}
+    auto_array(auto_array& other) : ptr_(other.release()) {}
 
-    auto_ptr& operator=(auto_ptr& that)
+    auto_array& operator=(auto_array& that)
     {
         if (this != &that) {
             Destroy();
             ptr_ = that.release();
-            del_ = that.del_;
         }
         return *this;
     }
@@ -114,33 +111,32 @@ public:
         }
     }
 
-    // auto_ptr_ref conversions
-    auto_ptr(auto_ptr_ref<T> ref) : ptr_(ref.ptr_), del_(ref.del_) {}
+    // auto_array_ref conversions
+    auto_array(auto_array_ref<T> ref) : ptr_(ref.ptr_) {}
 
-    auto_ptr& operator=(auto_ptr_ref<T> ref)
+    auto_array& operator=(auto_array_ref<T> ref)
     {
         if (this->ptr_ != ref.ptr_) {
             Destroy();
             ptr_ = ref.ptr_;
-            del_ = ref.del_;
         }
         return *this;
     }
 
     template<typename T2>
-    operator auto_ptr<T2>()
+    operator auto_array<T2>()
     {
-        return auto_ptr<T2>(this->release(), this->del_);
+        return auto_array<T2>(this->release());
     }
 
     template<typename T2>
-    operator auto_ptr_ref<T2>()
+    operator auto_array_ref<T2>()
     {
-        return auto_ptr_ref<T2>(this->release(), this->del_);
+        return auto_array_ref<T2>(this->release());
     }
 };
 
 
 } // namespace mySTL
 
-#endif // mySTL_MEMORY_HPP
+#endif // mySTL_MEMORY_ARRAY_HPP

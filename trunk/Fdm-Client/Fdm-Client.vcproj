@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="Fdm-Client"
 	ProjectGUID="{356AC6E6-D883-43FC-B2F5-B1E3E5252949}"
+	RootNamespace="Fdm-Client"
 	>
 	<Platforms>
 		<Platform
@@ -43,7 +44,6 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;"
-				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="true"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
@@ -130,7 +130,6 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;"
-				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="true"
 				MinimalRebuild="true"
 				ExceptionHandling="1"

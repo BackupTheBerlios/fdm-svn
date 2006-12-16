@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="client"
 	ProjectGUID="{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}"
 	RootNamespace="client"
@@ -143,6 +143,7 @@
 				AssemblerOutput="4"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 				CallingConvention="1"
 				DisableSpecificWarnings="4996"

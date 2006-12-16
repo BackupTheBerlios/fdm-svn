@@ -1,4 +1,4 @@
-/* mySTL pair.hpp                                
+/* crypto.cpp                                
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
@@ -23,43 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-
-/* mySTL pair implements pair
- *
- */
-
-#ifndef mySTL_PAIR_HPP
-#define mySTL_PAIR_HPP
+/* put features that other apps expect from OpenSSL type crypto */
 
 
 
-namespace mySTL {
+extern "C" {
 
-
-template<typename T1, typename T2>
-struct pair {
-    typedef T1 first_type;
-    typedef T2 second_type;
-
-    first_type  first;
-    second_type second;
-
-    pair() {}
-    pair(const T1& t1, const T2& t2) : first(t1), second(t2) {}
-
-    template<typename U1, typename U2>
-    pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
-};
-
-
-template<typename T1, typename T2>
-inline pair<T1, T2> make_pair(const T1& a, const T2& b)
-{
-    return pair<T1, T2>(a, b);
-}
+    // for libcurl configure test, these are the signatures they use
+    // locking handled internally by library
+    char CRYPTO_lock() { return 0;}
+    char CRYPTO_add_lock() { return 0;}
+}  // extern "C"
 
 
 
-} // namespace mySTL
-
-#endif // mySTL_PAIR_HPP
