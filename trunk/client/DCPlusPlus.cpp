@@ -88,7 +88,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 	if(f != NULL)
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
-
 	Fdm::newInstance();
 }
 
