@@ -1,4 +1,4 @@
-
+#if 0
 /*-----------------------------------------------------------*/
 /*--- A block-sorting, lossless compressor        bzip2.c ---*/
 /*-----------------------------------------------------------*/
@@ -220,7 +220,7 @@
 #if BZ_LCCWIN32
 #   include <io.h>
 #   include <fcntl.h>
-#   include <sys\stat.h>
+#   include <sys/stat.h>
 
 #   define NORETURN       /**/
 #   define PATH_SEP       '\\'
@@ -2105,3 +2105,4 @@ IntNative main ( IntNative argc, Char *argv[] )
 /*-----------------------------------------------------------*/
 /*--- end                                         bzip2.c ---*/
 /*-----------------------------------------------------------*/
+#endif

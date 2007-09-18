@@ -35,7 +35,7 @@ attrib +h Fdm-*.* > nul
 attrib +h Changelog-Fdm.txt > nul
 attrib +h License-Fdm.txt > nul
 attrib +h *.rar > nul
-rd /s /q ..\original-dcplusplus
+rd /s /q ..\original-dcplusplus < nul
 
 ECHO ------------------------------------------------------------------------
 ECHO Extracting DC++ Svn's Files
@@ -65,23 +65,7 @@ xcopy /q /y /e ..\original-dcplusplus\*.* > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO Removing DC++ Files
-del /q ..\original-dcplusplus\*.* > nul
-del /q ..\original-dcplusplus\bzip2\*.* > nul
-del /q ..\original-dcplusplus\client\*.* > nul
-del /q ..\original-dcplusplus\help\*.* > nul
-del /q ..\original-dcplusplus\res\*.* > nul
-del /q ..\original-dcplusplus\windows\*.* > nul
-del /q ..\original-dcplusplus\wtl\*.* > nul
-del /q ..\original-dcplusplus\yassl\*.* > nul
-del /q ..\original-dcplusplus\yassl\certs\*.* > nul
-del /q ..\original-dcplusplus\yassl\include\*.* > nul
-del /q ..\original-dcplusplus\yassl\include\openssl\*.* > nul
-del /q ..\original-dcplusplus\yassl\mySTL\*.* > nul
-del /q ..\original-dcplusplus\yassl\src\*.* > nul
-del /q ..\original-dcplusplus\yassl\taocrypt\*.* > nul
-del /q ..\original-dcplusplus\yassl\taocrypt\include\*.* > nul
-del /q ..\original-dcplusplus\yassl\taocrypt\src\*.* > nul
-del /q ..\original-dcplusplus\zlib\*.* > nul
+del /q /s ..\original-dcplusplus\*.* > nul
 
 ECHO ------------------------------------------------------------------------
 ECHO Raring DC++'s Svn Structure
