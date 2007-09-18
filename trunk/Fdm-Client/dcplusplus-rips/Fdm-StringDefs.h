@@ -1,6 +1,6 @@
 // @Prolog: #include "stdinc.h"
-// @Prolog: #include "../../client/DCPlusPlus.h"
-// @Prolog: #include "Fdm-ResourceManager.h"
+// @Prolog: #include "../client/DCPlusPlus.h"
+// @Prolog: #include "../Other-Projects/DC++/client/ResourceManager.h"
 // @Strings: string FdmResourceManager::strings[]
 // @Names: string FdmResourceManager::names[]
 
@@ -29,7 +29,11 @@ enum FdmStrings { // @DontAdd
 	MENU_FDM_SETTINGS, // "Fdm Settings"
 	MENU_NOTEPAD_FRAME, // "Fdm Notepad"
 	ONLY_WHERE_OP, // "Only where op"
+	PASTE, // "Paste"
 	RESULTS, // "Results"
+	SEARCH, // "Search"
+	SEARCH_BY_TTH, // "Search by TTH"
+	SEARCH_SITES, // "Search Sites"
 	SEARCH_STRING, // "Search string"
 	SETTINGS_APPEARANCE_PAGE, // "Extra Appearance"
 	SETTINGS_APPEARANCE_I_SPOKE, // "Text you write"

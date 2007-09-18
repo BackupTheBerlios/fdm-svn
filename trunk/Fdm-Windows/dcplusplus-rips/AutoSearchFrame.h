@@ -30,11 +30,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../../windows/FlatTabCtrl.h"
-#include "../../windows/ExListViewCtrl.h"
-#include "../../windows/WinUtil.h"
+#include "../windows/FlatTabCtrl.h"
+#include "../windows/ExListViewCtrl.h"
+#include "../windows/WinUtil.h"
 
-#include "../../Fdm-client/dcplusplus-rips/AutoSearch.h"
+#include "../Fdm-client/dcplusplus-rips/AutoSearch.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //

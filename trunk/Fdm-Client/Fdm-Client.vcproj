@@ -185,137 +185,157 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="DC++"
 			>
-			<File
-				RelativePath=".\Fdm.cpp"
+			<Filter
+				Name="Source files"
 				>
-			</File>
-			<File
-				RelativePath=".\FdmUtil.cpp"
+				<File
+					RelativePath=".\dcplusplus-rips\AutoSearch.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Other-Projects\DC++\client\ClientManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Other-Projects\DC++\client\ResourceManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Other-Projects\DC++\client\SettingsManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\client\stdinc.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="1"
+							PrecompiledHeaderThrough="stdinc.h"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Header files"
 				>
-			</File>
-			<File
-				RelativePath=".\RawsManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UserDatabase.cpp"
-				>
-			</File>
+				<File
+					RelativePath=".\dcplusplus-rips\AutoSearch.h"
+					>
+				</File>
+				<File
+					RelativePath=".\dcplusplus-rips\Fdm-StringDefs.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Building Fdm-StringDefs.cpp and Fdm-Example.xml from Fdm-StringDefs.h (you need python installed for this to work)"
+							CommandLine="dcplusplus-rips\Fdm-Makedefs.py&#x0D;&#x0A;"
+							Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Building Fdm-StringDefs.cpp and Fdm-Example.xml from Fdm-StringDefs.h (you need python installed for this to work)"
+							CommandLine="dcplusplus-rips\Fdm-Makedefs.py&#x0D;&#x0A;"
+							Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\dcplusplus-rips\Fdm-Version.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Other-Projects\DC++\client\ResourceManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Other-Projects\DC++\client\SettingsManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\client\stdinc.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Fdm"
 			>
-			<File
-				RelativePath=".\Fdm.h"
+			<Filter
+				Name="Header Files"
 				>
-			</File>
-			<File
-				RelativePath=".\FdmUtil.h"
+				<File
+					RelativePath=".\Fdm.h"
+					>
+				</File>
+				<File
+					RelativePath=".\FdmUtil.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RawsManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserDatabase.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
 				>
-			</File>
-			<File
-				RelativePath=".\RawsManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UserDatabase.h"
-				>
-			</File>
+				<File
+					RelativePath=".\Fdm.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FdmUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RawsManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UserDatabase.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="DC++ Rips - Source files"
+			Name="FulDC"
 			>
-			<File
-				RelativePath=".\dcplusplus-rips\AutoSearch.cpp"
+			<Filter
+				Name="Source Files"
 				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\For-ClientManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\client\stdinc.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
+				<File
+					RelativePath="..\Other-Projects\fulDC\client\For-FdmUtil.cpp"
 					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="stdinc.h"
-					/>
-				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
-			Name="DC++ Rips - Header files"
-			>
-			<File
-				RelativePath=".\dcplusplus-rips\AutoSearch.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-ResourceManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-SettingsManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-StringDefs.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Building Fdm-StringDefs.cpp and Fdm-Example.xml from Fdm-StringDefs.h (you need python installed for this to work)"
-						CommandLine="dcplusplus-rips\Fdm-Makedefs.py&#x0D;&#x0A;"
-						Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Building Fdm-StringDefs.cpp and Fdm-Example.xml from Fdm-StringDefs.h (you need python installed for this to work)"
-						CommandLine="dcplusplus-rips\Fdm-Makedefs.py&#x0D;&#x0A;"
-						Outputs="dcplusplus-rips\Fdm-StringDefs.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\dcplusplus-rips\Fdm-Version.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\stdinc.h"
-				>
-			</File>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

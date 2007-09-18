@@ -25,10 +25,10 @@
 
 #include "stdafx.h"
 #include "../Resource.h"
-#include "../../client/DCPlusPlus.h"
+#include "../client/DCPlusPlus.h"
 #include "AutoSearchFrame.h"
 #include "AutoSearchProperties.h"
-#include "../../Fdm-client/FdmUtil.h"
+#include "../Fdm-client/FdmUtil.h"
 
 int AutoSearchFrame::columnIndexes[] = { 
 	COLUMN_ACTIVE_SEARCH_STRING,

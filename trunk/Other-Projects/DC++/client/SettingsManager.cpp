@@ -16,15 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// From DC++ Trunk - svn700
+
 #include "stdinc.h"
-#include "../../client/DCPlusPlus.h"
+#include "../client/DCPlusPlus.h"
 
-#include "Fdm-SettingsManager.h"
-#include "Fdm-ResourceManager.h"
+#include "SettingsManager.h"
+#include "ResourceManager.h"
 
-#include "../../client/SimpleXML.h"
-#include "../../client/Util.h"
-#include "../../client/File.h"
+#include "../client/SimpleXML.h"
+#include "../client/Util.h"
+#include "../client/File.h"
 
 const string FdmSettingsManager::settingTags[] =
 {
@@ -35,6 +37,7 @@ const string FdmSettingsManager::settingTags[] =
 	"SENTRY", 
 	// Ints
 	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour",
+	"ThrottleEnable", "DownloadSpeed", "UploadSpeed",
 	"SENTRY",
 	// Int64
 	"aInt64",
@@ -61,6 +64,9 @@ FdmSettingsManager::FdmSettingsManager()
 	setDefault(I_SPOKE_COLOUR, 255);
 	setDefault(MY_NICK_SPOKEN_COLOUR, 32768);
 	setDefault(WINAMP_FORMAT, "winamp(%[version]) %[state] (%[title]) stats(%[percent] of %[length])");
+	setDefault(THROTTLE_ENABLE, 1);
+	setDefault(DOWNLOAD_SPEED, 0);
+	setDefault(UPLOAD_SPEED, 20);
 
 #ifdef _WIN32
 #endif
@@ -70,24 +76,24 @@ void FdmSettingsManager::load(string const& aFileName)
 {
 	try {
 		SimpleXML xml;
-		
+
 		xml.fromXML(File(aFileName, File::READ, File::OPEN).read());
-		
+
 		xml.resetCurrentChild();
-		
+
 		xml.stepIn();
-		
+
 		if(xml.findChild("FdmSettings"))
 		{
 			xml.stepIn();
 
 			int i;
-			
+
 			for(i=STR_FIRST; i<STR_LAST; i++)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(StrSetting(i), xml.getChildData());
 				xml.resetCurrentChild();
@@ -96,7 +102,7 @@ void FdmSettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(IntSetting(i), Util::toInt(xml.getChildData()));
 				xml.resetCurrentChild();
@@ -105,16 +111,16 @@ void FdmSettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(Int64Setting(i), Util::toInt64(xml.getChildData()));
 				xml.resetCurrentChild();
 			}
-			
+
 			xml.stepOut();
 		}
-	
-		fire(FdmSettingsManagerListener::Load(), &xml);
+
+		fire(FdmSettingsManagerListener::Load(), xml);
 		xml.stepOut();
 
 	} catch(const Exception&) {
@@ -131,7 +137,7 @@ void FdmSettingsManager::save(string const& aFileName) {
 
 	int i;
 	string type("type"), curType("string");
-	
+
 	for(i=STR_FIRST; i<STR_LAST; i++)
 	{
 		if(isSet[i]) {
@@ -158,8 +164,8 @@ void FdmSettingsManager::save(string const& aFileName) {
 		}
 	}
 	xml.stepOut();
-	
-	fire(FdmSettingsManagerListener::Save(), &xml);
+
+	fire(FdmSettingsManagerListener::Save(), xml);
 
 	try {
 		File out(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);

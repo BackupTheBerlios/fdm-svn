@@ -16,14 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// From DC++ Trunk - svn700
+
 #include "stdinc.h"
-#include "../../client/DCPlusPlus.h"
+#include "../client/DCPlusPlus.h"
 
-#include "Fdm-ResourceManager.h"
+#include "ResourceManager.h"
 
-#include "../../client/SimpleXML.h"
-#include "../../client/File.h"
-#include "../../client/Text.h"
+#include "../client/SimpleXML.h"
+#include "../client/File.h"
+#include "../client/Text.h"
 
 wstring FdmResourceManager::wstrings[FdmResourceManager::LAST];
 
@@ -34,7 +36,7 @@ void FdmResourceManager::loadLanguage(const string& aFile) {
 		xml.fromXML(f.read());
 
 		HASH_MAP<string, int> h;
-		
+
 		for(int i = 0; i < LAST; ++i) {
 			h[names[i]] = i;
 		}

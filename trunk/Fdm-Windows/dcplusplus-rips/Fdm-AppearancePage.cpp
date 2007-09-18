@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include "../../client/DCPlusPlus.h"
+#include "../client/DCPlusPlus.h"
 #include "../Resource.h"
 
 #include "Fdm-AppearancePage.h"
-#include "../../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
-#include "../../client/StringTokenizer.h"
-#include "../../windows/WinUtil.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
+#include "../client/StringTokenizer.h"
+#include "../windows/WinUtil.h"
 
 FdmPropPage::TextItem FdmAppearancePage::texts[] = {
 	{ IDC_FDM_SETTINGS_TEXT_COLOURING, FdmResourceManager::SETTINGS_APPEARANCE_TEXT_COLOURING },

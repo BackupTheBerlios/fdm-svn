@@ -34,6 +34,8 @@
 
 #include <limits>
 
+#include "../Fdm-Client/FdmUtil.h"
+
 // some strange mac definition
 #ifdef ff
 #undef ff
@@ -96,6 +98,8 @@ void Download::getParams(const UserConnection& aSource, StringMap& params) {
 
 DownloadManager::DownloadManager() {
 	TimerManager::getInstance()->addListener(this);
+	mDownloadLimit = 0;
+	mBytesSent = 0;
 }
 
 DownloadManager::~DownloadManager() throw() {
@@ -906,4 +910,69 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
+}
+
+void DownloadManager::throttleReturnBytes(uint32_t b) {
+	if (b > 0 && b < 2*mByteSlice) {
+		mBytesSpokenFor -= b;
+		if (mBytesSpokenFor < 0)
+			mBytesSpokenFor = 0;
+	}
+}
+
+size_t DownloadManager::throttleGetSlice()  {
+	if (mThrottleEnable) {
+		size_t left = mDownloadLimit - mBytesSpokenFor;
+		if (left > 0) {
+			if (left > 2*mByteSlice) {
+				mBytesSpokenFor += mByteSlice;
+				return mByteSlice;
+			}
+			else {
+				mBytesSpokenFor += left;
+				return left;
+			}
+		}
+		else
+			return 0;
+	} else {
+		return (size_t)-1;
+	}
+}
+
+size_t DownloadManager::throttleCycleTime() {
+	if (mThrottleEnable)
+		return mCycleTime;
+	return 0;
+}
+
+void DownloadManager::throttleZeroCounters() {
+	mBytesSpokenFor = 0;
+	mBytesSent = 0;
+}
+
+void DownloadManager::throttleBytesTransferred(uint32_t i) {
+	mBytesSent += i;
+}
+
+void DownloadManager::throttleSetup() {
+// called once a second, plus when a download starts
+// from the constructor to BufferedSocket
+// with 64k, a few people get winsock error 0x2747
+#define INBUFSIZE 64*1024
+	unsigned int num_transfers = getDownloadCount();
+	mDownloadLimit = FdmUtil::getSettingDownloadSpeed()*1024;
+	mThrottleEnable = FdmUtil::getSettingThrottleEnable() && (mDownloadLimit > 0) && (num_transfers > 0);
+	if (mThrottleEnable) {
+		if (mDownloadLimit <= (INBUFSIZE * 10 * num_transfers)) {
+			mByteSlice = mDownloadLimit / (7 * num_transfers);
+			if (mByteSlice > INBUFSIZE)
+				mByteSlice = INBUFSIZE;
+			mCycleTime = 1000 / 10;
+		}
+		else {
+			mByteSlice = INBUFSIZE;
+			mCycleTime = 1000 * INBUFSIZE / mDownloadLimit;
+		}
+	}
 }

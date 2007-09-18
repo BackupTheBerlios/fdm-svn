@@ -22,8 +22,8 @@
 
 #include "MoreWinUtil.h"
 #include "../Fdm-Client/dcplusplus-rips/Fdm-Version.h"
-#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
+#include "../Other-Projects/DC++/client/ResourceManager.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
 
 bool MoreWinUtil::allowMoreInstances(size_t amountOfProcesses) {
 	if(amountOfProcesses == 0)
@@ -75,6 +75,21 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& messa
 		return false;
 	}
 	return true;
+}
+
+string MoreWinUtil::findNickInString(const string aLine) {
+	string::size_type i;
+	string::size_type j;
+
+	//Check For <Nick>
+	if (((i = aLine.find_first_of('<')) != string::npos) && ((j = aLine.find_first_of('>')) != string::npos && j > i))
+		return aLine.substr(i + 1, j - i - 1);
+	return "";
+}
+
+void MoreWinUtil::addIPToString(string& aLine, string ip) {
+	if (ip != "")
+		aLine = "[ " + ip + " ] " + aLine;
 }
 
 void MoreWinUtil::addFdmStuffToExceptionInfo(char* buf, File& aFile) {

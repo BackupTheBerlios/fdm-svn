@@ -19,17 +19,17 @@
 // Pothead used ADLSProperties.cpp as a template
  
 #include "stdafx.h"
-#include "../../client/DCPlusPlus.h"
+#include "../client/DCPlusPlus.h"
 #include "../Resource.h"
 
 #include "AutoSearchProperties.h"
 
-#include "../../client/SearchManager.h"
-#include "../../client/ADLSearch.h"
-#include "../../client/Util.h"
-#include "../../client/ResourceManager.h"
-#include "../../Fdm-client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../../Fdm-client/dcplusplus-rips/AutoSearch.h"
+#include "../client/SearchManager.h"
+#include "../client/ADLSearch.h"
+#include "../client/Util.h"
+#include "../client/ResourceManager.h"
+#include "../Other-Projects/DC++/client/ResourceManager.h"
+#include "../Fdm-client/dcplusplus-rips/AutoSearch.h"
 
 // Initialize dialog
 LRESULT AutoSearchProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {

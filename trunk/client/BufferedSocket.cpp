@@ -29,6 +29,11 @@
 #include "SSLSocket.h"
 #include "CryptoManager.h"
 
+#include "UploadManager.h"
+#include "DownloadManager.h"
+
+#include "../Fdm-Client/FdmUtil.h"
+
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
@@ -81,9 +86,9 @@ void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted)
 		sock = secure ? CryptoManager::getInstance()->getServerSocket(allowUntrusted) : new Socket;
 
 		sock->accept(srv);
-		if(SETTING(SOCKET_IN_BUFFER) > 0)
+		if(SETTING(SOCKET_IN_BUFFER) > 1023)
 			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-		if(SETTING(SOCKET_OUT_BUFFER) > 0)
+		if(SETTING(SOCKET_OUT_BUFFER) > 1023)
 			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 		sock->setBlocking(false);
 
@@ -159,7 +164,26 @@ void BufferedSocket::threadRead() throw(SocketException) {
 	dcassert(sock);
 	if(!sock)
 		return;
-	int left = sock->read(&inbuf[0], (int)inbuf.size());
+//	int left = sock->read(&inbuf[0], (int)inbuf.size());
+
+	DownloadManager *dm = DownloadManager::getInstance();
+	size_t readsize = inbuf.size();
+	bool throttling = false;
+	if(mode == MODE_DATA)
+	{
+		uint32_t getMaximum;
+		throttling = dm->throttle();
+		if (throttling)
+		{
+			getMaximum = dm->throttleGetSlice();
+			readsize = (uint32_t)min((int64_t)inbuf.size(), (int64_t)getMaximum);
+			if (readsize <= 0  || readsize > inbuf.size()) { // FIX
+				sleep(dm->throttleCycleTime());
+				return;
+			}
+		}
+	}
+	int left = sock->read(&inbuf[0], (int)readsize);
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
 		return;
@@ -251,6 +275,13 @@ void BufferedSocket::threadRead() throw(SocketException) {
 							fire(BufferedSocketListener::ModeChange());
 						}
 					}
+					if (throttling) {
+						if (left > 0 && left < (int)readsize) {
+							dm->throttleReturnBytes(left - readsize);
+						}
+						uint32_t sleep_interval =  dm->throttleCycleTime();
+						Thread::sleep(sleep_interval);
+					}
 				}
 				break;
 		}
@@ -276,6 +307,9 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 
 	bool readDone = false;
 	dcdebug("Starting threadSend\n");
+	UploadManager *um = UploadManager::getInstance();
+	size_t sendMaximum, start = 0, current= 0;
+	bool throttling;
 	while(true) {
 		if(!readDone && readBuf.size() > readPos) {
 			// Fill read buffer
@@ -308,12 +342,37 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		while(writePos < writeBuf.size()) {
 			if(disconnecting)
 				return;
-			size_t writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+//			size_t writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+
+			throttling = FdmUtil::getSettingThrottleEnable();
+			size_t writeSize;
+			if(throttling) {
+				start = TimerManager::getTick();
+				sendMaximum = um->throttleGetSlice();
+				if(sendMaximum < 0) {
+					throttling = false;
+					writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+				} else {
+					writeSize = min(min(sockSize / 2, writeBuf.size() - writePos), sendMaximum);
+				}
+			} else {
+				writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+			}
+			
 			int written = sock->write(&writeBuf[writePos], writeSize);
 			if(written > 0) {
 				writePos += written;
 
 				fire(BufferedSocketListener::BytesSent(), 0, written);
+
+				if(throttling) {
+					int32_t cycle_time = um->throttleCycleTime();
+					current = TimerManager::getTick();
+					int32_t sleep_time = cycle_time - (current - start);
+					if (sleep_time > 0 && sleep_time <= cycle_time) {
+						Thread::sleep(sleep_time);
+					}
+				}
 			} else if(written == -1) {
 				if(!readDone && readPos < readBuf.size()) {
 					// Read a little since we're blocking anyway...

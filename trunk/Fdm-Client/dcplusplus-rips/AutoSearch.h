@@ -30,18 +30,18 @@
 #pragma once
 #endif
 
-#include "../../client/Util.h"
+#include "../client/Util.h"
 
-#include "Fdm-SettingsManager.h"
-#include "../../client/SearchManager.h"
-#include "../../client/ADLSearch.h"
-#include "../../client/ResourceManager.h"
-#include "Fdm-ResourceManager.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
+#include "../Other-Projects/DC++/client/ResourceManager.h"
+#include "../client/SearchManager.h"
+#include "../client/ADLSearch.h"
+#include "../client/ResourceManager.h"
 
-#include "../../client/CriticalSection.h"
-#include "../../client/Singleton.h"
-#include "../../client/TimerManager.h"
-#include "../../client/SearchManagerListener.h"
+#include "../client/CriticalSection.h"
+#include "../client/Singleton.h"
+#include "../client/TimerManager.h"
+#include "../client/SearchManagerListener.h"
 
 class AutoSearch
 {

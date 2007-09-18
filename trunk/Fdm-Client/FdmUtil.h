@@ -29,6 +29,13 @@ namespace FdmUtil
 	string toString(bool aBool);
 
 	string addFdmDes(string aCurDes);
+
+	tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
+	string replace(const string& aString, const string& fStr, const string& rStr);
+
+	bool getSettingThrottleEnable();
+	int getSettingDownloadSpeed();
+	int getSettingUploadSpeed();
 };
 
 

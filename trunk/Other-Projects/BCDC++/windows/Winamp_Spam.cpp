@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "../../../Fdm-Windows/dcplusplus-rips/Fdm-stdafx.h"
-#include "../../../client/DCPlusPlus.h"
+#include "stdafx.h"
+#include "../client/DCPlusPlus.h"
 
 
-#include "../../../Fdm-Windows/MoreWinUtil.h"
-#include "../../../Fdm-client/dcplusplus-rips/Fdm-SettingsManager.h"
+#include "../Fdm-Windows/MoreWinUtil.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
 #include "../../Nullsoft/Winamp.h"
-#include "../../../client/Util.h"
+#include "../client/Util.h"
 
 void MoreWinUtil::winampSpam(tstring& message, tstring& status) {
 	HWND hwndWinamp = FindWindow(_T("Winamp v1.x"), NULL);

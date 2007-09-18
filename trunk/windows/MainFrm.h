@@ -36,7 +36,7 @@
 #include "TransferView.h"
 #include "UPnP.h"
 
-#include "..\Fdm-Windows\dcplusplus-rips\Fdm-MainFrm.h"
+#include "../Other-Projects/DC++/windows/MainFrm.h"
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,

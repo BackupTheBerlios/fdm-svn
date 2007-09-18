@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// From DC++ Trunk - svn700
+
 #if !defined(FDM_SETTINGS_MANAGER_H)
 #define FDM_SETTINGS_MANAGER_H
 
@@ -23,22 +25,22 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../../client/Util.h"
-#include "../../client/Speaker.h"
-#include "../../client/Singleton.h"
+#include "../client/Util.h"
+#include "../client/Speaker.h"
+#include "../client/Singleton.h"
 
 class SimpleXML;
 
 class FdmSettingsManagerListener {
 public:
 	virtual ~FdmSettingsManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Load;
 	typedef X<1> Save;
 
-	virtual void on(Load, SimpleXML*) throw() { }
-	virtual void on(Save, SimpleXML*) throw() { }
+	virtual void on(Load, SimpleXML&) throw() { }
+	virtual void on(Save, SimpleXML&) throw() { }
 };
 
 class FdmSettingsManager : public Singleton<FdmSettingsManager>, public Speaker<FdmSettingsManagerListener>
@@ -53,10 +55,13 @@ public:
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		OP_SPOKE_COLOUR = INT_FIRST, NOT_OP_SPOKE_COLOUR, I_SPOKE_COLOUR, MY_NICK_SPOKEN_COLOUR,
+		THROTTLE_ENABLE, DOWNLOAD_SPEED, UPLOAD_SPEED,
 		INT_LAST };
 
 	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
-		AINT64 = INT64_FIRST, INT64_LAST, SETTINGS_LAST = INT64_LAST };
+		AINT64 = INT64_FIRST,
+		INT64_LAST,
+		SETTINGS_LAST = INT64_LAST };
 
 	const string& get(StrSetting key, bool useDefault = true) const {
 		return (isSet[key] || !useDefault) ? strSettings[key - STR_FIRST] : strDefaults[key - STR_FIRST];
@@ -74,7 +79,7 @@ public:
 	}
 
 	void set(StrSetting key, string const& value) {
-		strSettings[key - STR_FIRST] = value;
+			strSettings[key - STR_FIRST] = value;
 		isSet[key] = !value.empty();
 	}
 

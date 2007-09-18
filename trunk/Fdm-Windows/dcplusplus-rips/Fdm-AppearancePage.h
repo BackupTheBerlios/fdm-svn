@@ -24,8 +24,8 @@
 #endif // _MSC_VER > 1000
 
 #include <atlcrack.h>
-#include "Fdm-PropPage.h"
-#include "../../windows/ExListViewCtrl.h"
+#include "../Other-Projects/DC++/windows/PropPage.h"
+#include "../windows/ExListViewCtrl.h"
 
 class FdmAppearancePage : public CPropertyPage<IDD_FDM_APPEARANCE_PAGE>, public FdmPropPage
 {

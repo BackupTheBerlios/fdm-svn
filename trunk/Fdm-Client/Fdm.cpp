@@ -23,8 +23,8 @@
 
 #include "../client/File.h"
 
-#include "dcplusplus-rips/Fdm-ResourceManager.h"
-#include "dcplusplus-rips/Fdm-SettingsManager.h"
+#include "../Other-Projects/DC++/client/ResourceManager.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
 #include "dcplusplus-rips/AutoSearch.h"
 #include "UserDatabase.h"
 

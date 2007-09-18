@@ -5,7 +5,7 @@ import re
 #make sure relative paths work from the vc7.1 dir too
 os.chdir(sys.argv[0][0: sys.argv[0].rfind("\\")])
 
-ENTRIESSUBPATH = ".svn/entries"
+ENTRIESSUBPATH = "../../.svn/entries"
 TEMPLATE = "../../Fdm-client/dcplusplus-rips/versiontemplate.h"
 TARGET = "../../Fdm-client/dcplusplus-rips/Fdm-Version.h"
 

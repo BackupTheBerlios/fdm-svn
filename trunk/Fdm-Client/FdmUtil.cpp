@@ -21,7 +21,8 @@
 
 #include "FdmUtil.h"
 #include "../client/Util.h"
-#include "dcplusplus-rips/Fdm-ResourceManager.h"
+#include "../Other-Projects/DC++/client/ResourceManager.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
 
 #include "dcplusplus-rips/Fdm-Version.h"
 
@@ -37,4 +38,16 @@ string FdmUtil::toString(bool aBool) {
 
 string FdmUtil::addFdmDes(string aCurDes) {
 	return ("<" FDMAPPNAME " " FDMVERSIONSTRING ">" + aCurDes);
+}
+
+bool FdmUtil::getSettingThrottleEnable() {
+	return FDMBOOLSETTING(THROTTLE_ENABLE);
+}
+
+int FdmUtil::getSettingDownloadSpeed() {
+	return FDMSETTING(DOWNLOAD_SPEED);
+}
+
+int FdmUtil::getSettingUploadSpeed() {
+	return FDMSETTING(UPLOAD_SPEED);
 }

@@ -27,8 +27,8 @@
 #include "../client/SettingsManager.h"
 #include "../client/User.h"
 #include "../client/MerkleTree.h"
-#include "../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
+#include "../Other-Projects/DC++/client/ResourceManager.h"
+#include "../Other-Projects/DC++/client/SettingsManager.h"
 
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus

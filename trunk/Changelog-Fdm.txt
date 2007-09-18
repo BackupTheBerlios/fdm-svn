@@ -4,13 +4,15 @@ Pothead
 	Added Sqlite 
 	Added CppSQLite3
 	Added a sample database
-	Added Coloured Text and IP's to Main Chat and PM's
+	Added IP's to Main Chat and PM's
 	Added Autosearch.
 	Added Winamp spam (from BCDC++)
 	Added Huh spam (thanks gabberworld)
 	Added IP column to hubframe
 	Added a few python scripts (thanks fulDC)
-	Updated to STLPort 5.0.2
+	Added Bandwidth Limiting (thanks BCDC)
+	Added Coloured Text
+	Changed to fulDC's Coloured Text (thanks fulDC)
 	Ripped a few DCplusplus files, so can have own Language and Settings files.
 	Ripped a few DCplusplus files, so can have own Settings and Notepad pages.
 

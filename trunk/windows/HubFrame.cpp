@@ -35,6 +35,8 @@
 #include "../client/ConnectionManager.h"
 #include "../client/SearchManager.h"
 
+#include "../Fdm-Windows/MoreWinUtil.h"
+
 HubFrame::FrameMap HubFrame::frames;
 
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
@@ -517,6 +519,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			clearUserList();
 			setTabColor(RED);
 		} else if(i->first == ADD_CHAT_LINE) {
+			UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(static_cast<StringTask*>(i->second)->str)));
+			if (ui) MoreWinUtil::addIPToString(static_cast<StringTask*>(i->second)->str, ui->getIdentity().getIp());
 			addLine(Text::toT(static_cast<StringTask*>(i->second)->str));
 		} else if(i->first == ADD_STATUS_LINE) {
 			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str));
@@ -553,6 +557,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			}
 		} else if(i->first == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(i->second);
+			UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(pm.str)));
+			if (ui) MoreWinUtil::addIPToString(pm.str, ui->getIdentity().getIp());
 			if(pm.hub) {
 				if(BOOLSETTING(IGNORE_HUB_PMS)) {
 					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);

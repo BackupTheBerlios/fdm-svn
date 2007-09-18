@@ -34,6 +34,9 @@ namespace MoreWinUtil
 	bool possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status);
 	void winampSpam(tstring& message, tstring& status);
 
+	string findNickInString(const string aLine);
+	void addIPToString(string& aLine, string ip);
+
 	void addFdmStuffToExceptionInfo(char* buf, File& aFile);
 
 	void initilize();

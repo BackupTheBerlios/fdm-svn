@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// From DC++ Trunk - svn700
+
 #if !defined(FDM_RESOURCE_MANAGER_H)
 #define FDM_RESOURCE_MANAGER_H
 
@@ -23,12 +25,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../../client/Singleton.h"
+#include "../client/Singleton.h"
 
 class FdmResourceManager : public Singleton<FdmResourceManager> {
 public:
 	
-#include "Fdm-StringDefs.h"
+#include "../Fdm-Client/dcplusplus-rips/Fdm-StringDefs.h"
 
 	void loadLanguage(const string& aFile);
 	const string& getString(FdmStrings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; }

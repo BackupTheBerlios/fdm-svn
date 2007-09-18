@@ -175,7 +175,24 @@ public:
 	}
 
 	bool startDownload(QueueItem::Priority prio);
+	
+	// the following functions were added to help download throttle
+	bool throttle() { return mThrottleEnable; }
+	void throttleReturnBytes(uint32_t b);
+	size_t throttleGetSlice();
+	size_t throttleCycleTime();
+
 private:
+	void throttleZeroCounters();
+	void throttleBytesTransferred(uint32_t i);
+	void throttleSetup();
+	bool mThrottleEnable;
+	size_t mBytesSent,
+		   mBytesSpokenFor,
+		   mDownloadLimit,
+		   mCycleTime,
+		   mByteSlice; // download throttling
+
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {
 	public:

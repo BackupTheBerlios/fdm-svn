@@ -17,9 +17,9 @@
  */
 
 #include "stdafx.h"
-#include "../../client/DCPlusPlus.h"
+#include "../client/DCPlusPlus.h"
 
-#include "../../windows/WinUtil.h"
+#include "../windows/WinUtil.h"
 
 int WinUtil::textUnderCursor(POINT p, CRichEditCtrl& ctrl, tstring& x) {
 	

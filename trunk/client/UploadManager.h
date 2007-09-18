@@ -111,10 +111,26 @@ public:
 		conn->setState(UserConnection::STATE_GET);
 	}
 
-	GETSET(int, running, Running);
+	void notifyQueuedUsers();
+	void setRunning(int _running) { running = _running; notifyQueuedUsers(); }
 	GETSET(int, extra, Extra);
+	// Upload throttling
+	bool throttle() { return mThrottleEnable; }
+	size_t throttleGetSlice();
+	size_t throttleCycleTime();
 	GETSET(uint32_t, lastGrant, LastGrant);
 private:
+	int running;
+	void throttleZeroCounters();
+	void throttleBytesTransferred(uint32_t i);
+	void throttleSetup();
+	bool mThrottleEnable;
+	size_t mBytesSent,
+		   mBytesSpokenFor,
+		   mUploadLimit,
+		   mCycleTime,
+		   mByteSlice;
+
 	Upload::List uploads;
 	CriticalSection cs;
 

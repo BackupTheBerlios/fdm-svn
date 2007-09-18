@@ -35,6 +35,8 @@
 
 #include <functional>
 
+#include "../Fdm-Client/FdmUtil.h"
+
 static const string UPLOAD_AREA = "Uploads";
 
 Upload::Upload(UserConnection& conn) : Transfer(conn), stream(0) { 
@@ -54,6 +56,7 @@ void Upload::getParams(const UserConnection& aSource, StringMap& params) {
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) {
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
+	throttleZeroCounters();
 }
 
 UploadManager::~UploadManager() throw() {
@@ -216,6 +219,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	uploads.push_back(u);
 
+	throttleSetup();
 	if(!aSource.isSet(UserConnection::FLAG_HASSLOT)) {
 		if(extraSlot) {
 			if(!aSource.isSet(UserConnection::FLAG_HASEXTRASLOT)) {
@@ -262,6 +266,7 @@ void UploadManager::removeUpload(Upload* aUpload) {
 	Lock l(cs);
 	dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
 	uploads.erase(remove(uploads.begin(), uploads.end(), aUpload), uploads.end());
+	throttleSetup();
 	delete aUpload;
 }
 
@@ -336,6 +341,7 @@ void UploadManager::on(UserConnectionListener::BytesSent, UserConnection* aSourc
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
 	u->addPos(aBytes, aActual);
+	throttleBytesTransferred(aActual);
 }
 
 void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
@@ -366,6 +372,24 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 
 	fire(UploadManagerListener::Complete(), u);
 	removeUpload(u);
+}
+
+void UploadManager::notifyQueuedUsers()
+{
+	Lock l(cs);
+	int freeSlots = getFreeSlots()*2;		//because there will be non-connecting users
+
+	//while all contacted users may not connect, many probably will; it's fine that the rest are filled with randomly allocated slots
+	while (freeSlots) {
+		//get rid of offline users
+		while (!waitingUsers.empty() && !waitingUsers.front().first->isOnline()) waitingUsers.pop_front();
+		if (waitingUsers.empty()) break;		//no users to notify
+
+		ClientManager::getInstance()->connect(waitingUsers.front().first, Util::toString(Util::rand()));
+		--freeSlots;
+
+		waitingUsers.pop_front();
+	}
 }
 
 void UploadManager::addFailedUpload(const UserConnection& source, string filename) {
@@ -493,6 +517,9 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 	Lock l(cs);
 	Upload::List ticks;
+	
+	throttleSetup();
+	throttleZeroCounters();
 
 	for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
 		ticks.push_back(*i);
@@ -505,5 +532,63 @@ void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
 	if(!aUser->isOnline()) {
 		clearUserFiles(aUser);
+	}
+}
+
+size_t UploadManager::throttleGetSlice()  {
+	if (mThrottleEnable) {
+		size_t left = mUploadLimit - mBytesSpokenFor;
+		if (left > 0) {
+			if (left > 2*mByteSlice) {
+				mBytesSpokenFor += mByteSlice;
+				return mByteSlice;
+			}
+			else {
+				mBytesSpokenFor += left;
+				return left;
+			}
+		}
+		else
+			return 16; // must send > 0 bytes or threadSendFile thinks the transfer is complete
+	} else {
+		return (size_t)-1;
+	}
+}
+
+size_t UploadManager::throttleCycleTime() {
+	if (mThrottleEnable)
+		return mCycleTime;
+	return 0;
+}
+
+void UploadManager::throttleZeroCounters()  { // throttling
+	if (mThrottleEnable) {
+		mBytesSpokenFor = 0;
+		mBytesSent = 0;
+	}
+}
+
+void UploadManager::throttleBytesTransferred(uint32_t i)  { // throttling
+	mBytesSent += i;
+}
+
+void UploadManager::throttleSetup() {
+// called once a second, plus when uploads start
+// from the constructor to BufferedSocket
+	size_t INBUFSIZE = SETTING(SOCKET_OUT_BUFFER);
+	unsigned int num_transfers = getUploadCount();
+	mUploadLimit = FdmUtil::getSettingUploadSpeed()*1024;
+	mThrottleEnable = FdmUtil::getSettingThrottleEnable() && (mUploadLimit > 0 && mUploadLimit != 1337) && (num_transfers > 0);
+	if (mThrottleEnable) {
+		if (mUploadLimit <= (INBUFSIZE * 10 * num_transfers)) {
+			mByteSlice = mUploadLimit / (5 * num_transfers);
+			if (mByteSlice > INBUFSIZE)
+				mByteSlice = INBUFSIZE;
+			mCycleTime = 1000 / 10;
+		}
+		else {
+			mByteSlice = INBUFSIZE;
+			mCycleTime = 1000 * INBUFSIZE / mUploadLimit;
+		}
 	}
 }
