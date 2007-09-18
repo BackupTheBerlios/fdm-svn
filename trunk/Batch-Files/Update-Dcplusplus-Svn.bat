@@ -26,11 +26,6 @@ attrib +h /S /D Fdm-Res > nul
 attrib +h /S /D Other-Projects > nul
 attrib +h /S /D .svn > nul
 attrib +h /S /D _svn > nul
-attrib +h /S /D vc7 > nul
-attrib +h /S /D app > nul
-attrib +h /S *.ncb > nul
-attrib +h /S *.suo > nul
-attrib +h /S *.aps > nul
 attrib +h Fdm-*.* > nul
 attrib +h Changelog-Fdm.txt > nul
 attrib +h License-Fdm.txt > nul
@@ -80,11 +75,6 @@ attrib -h /S /D Fdm-Client > nul
 attrib -h /S /D Fdm-Windows > nul
 attrib -h /S /D Fdm-Res > nul
 attrib -h /S /D Other-Projects > nul
-attrib -h /S /D vc7 > nul
-attrib -h /S /D app > nul
-attrib -h /S *.ncb > nul
-attrib -h /S *.suo > nul
-attrib -h /S *.aps > nul
 attrib -h Fdm-*.* > nul
 attrib -h Changelog-Fdm.txt > nul
 attrib -h License-Fdm.txt > nul
