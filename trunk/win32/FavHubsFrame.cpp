@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "stdafx.h"
 
 #include "FavHubsFrame.h"
@@ -28,11 +28,16 @@
 
 int FavHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
 int FavHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT, ResourceManager::DESCRIPTION,
-	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
+static const char* columnNames[] = {
+	N_("Auto connect / Name"),
+	N_("Description"),
+	N_("Nick"),
+	N_("Password"),
+	N_("Server"),
+	N_("User Description")
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) : 
+FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	hubs(0),
 	connect(0),
@@ -44,15 +49,13 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	nosave(false)
 {
 	{
-		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		hubs = createDataGrid(cs);
-		hubs->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		hubs->setFont(WinUtil::font);
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_NOSORTHEADER;
+		cs.lvStyle |= LVS_EX_CHECKBOXES;
+		hubs = createListView(cs);
 		addWidget(hubs);
 
-		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		hubs->createColumns(WinUtil::getStrings(columnNames));
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -63,71 +66,67 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 
-		cs.caption = TSTRING(CONNECT);
+		cs.caption = T_("&Connect");
 		connect = createButton(cs);
 		connect->onClicked(std::tr1::bind(&FavHubsFrame::openSelected, this));
 		addWidget(connect);
 
-		cs.caption = TSTRING(NEW);
+		cs.caption = T_("&New...");
 		add = createButton(cs);
 		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 
-		cs.caption = TSTRING(PROPERTIES);
+		cs.caption = T_("&Properties");
 		properties = createButton(cs);
 		properties->onClicked(std::tr1::bind(&FavHubsFrame::handleProperties, this));
 		addWidget(properties);
 
-		cs.caption = TSTRING(MOVE_UP);
+		cs.caption = T_("Move &Up");
 		up = createButton(cs);
 		up->onClicked(std::tr1::bind(&FavHubsFrame::handleUp, this));
 		addWidget(up);
 
-		cs.caption = TSTRING(MOVE_DOWN);
+		cs.caption = T_("Move &Down");
 		down = createButton(cs);
 		down->onClicked(std::tr1::bind(&FavHubsFrame::handleDown, this));
 		addWidget(down);
 
-		cs.caption = TSTRING(REMOVE);
+		cs.caption = T_("&Remove");
 		remove = createButton(cs);
 		remove->onClicked(std::tr1::bind(&FavHubsFrame::handleRemove, this));
 		addWidget(remove);
 	}
 
 	initStatus();
-	statusSizes[STATUS_DUMMY] = 16;
 
 	layout();
 
-	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();
-	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i)
+	const FavoriteHubEntryList& fl = FavoriteManager::getInstance()->getFavoriteHubs();
+	for(FavoriteHubEntryList::const_iterator i = fl.begin(); i != fl.end(); ++i)
 		addEntry(*i);
 
 	FavoriteManager::getInstance()->addListener(this);
 
 	hubsMenu = createMenu(true);
-	hubsMenu->appendItem(IDC_CONNECT, TSTRING(CONNECT), std::tr1::bind(&FavHubsFrame::openSelected, this));
+	hubsMenu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
 	hubsMenu->appendSeparatorItem();
-	hubsMenu->appendItem(IDC_NEWFAV, TSTRING(NEW), std::tr1::bind(&FavHubsFrame::handleAdd, this));
-	hubsMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&FavHubsFrame::handleProperties, this));
-	hubsMenu->appendItem(IDC_MOVE_UP, TSTRING(MOVE_UP), std::tr1::bind(&FavHubsFrame::handleUp, this));
-	hubsMenu->appendItem(IDC_MOVE_DOWN, TSTRING(MOVE_DOWN), std::tr1::bind(&FavHubsFrame::handleDown, this));
+	hubsMenu->appendItem(IDC_NEWFAV, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
+	hubsMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&FavHubsFrame::handleProperties, this));
+	hubsMenu->appendItem(IDC_MOVE_UP, T_("Move &Up"), std::tr1::bind(&FavHubsFrame::handleUp, this));
+	hubsMenu->appendItem(IDC_MOVE_DOWN, T_("Move &Down"), std::tr1::bind(&FavHubsFrame::handleDown, this));
 	hubsMenu->appendSeparatorItem();
-	hubsMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&FavHubsFrame::handleRemove, this));
+	hubsMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&FavHubsFrame::handleRemove, this));
 	hubsMenu->setDefaultItem(IDC_CONNECT);
-	hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+	hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 }
 
 FavHubsFrame::~FavHubsFrame() {
-	
+
 }
 
 void FavHubsFrame::layout() {
-	const int border = 2;
-	
 	SmartWin::Rectangle r(getClientAreaSize());
 
 	layoutStatus(r);
@@ -177,7 +176,7 @@ void FavHubsFrame::handleAdd() {
 	while(true) {
 		if(dlg.run() == IDOK) {
 			if(FavoriteManager::getInstance()->isFavoriteHub(e.getServer())) {
-				createMessageBox().show(TSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+				createMessageBox().show(T_("Hub already exists as a favorite"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
 			} else {
 				FavoriteManager::getInstance()->addFavorite(e);
 				break;
@@ -194,19 +193,19 @@ void FavHubsFrame::handleProperties() {
 		dcassert(e != NULL);
 		FavHubProperties dlg(this, e);
 		if(dlg.run() == IDOK) {
-			hubs->setText(COLUMN_NAME, i, Text::toT(e->getName()));
-			hubs->setText(COLUMN_DESCRIPTION, i, Text::toT(e->getDescription()));
-			hubs->setText(COLUMN_SERVER, i, Text::toT(e->getServer()));
-			hubs->setText(COLUMN_NICK, i, Text::toT(e->getNick(false)));
-			hubs->setText(COLUMN_PASSWORD, i, tstring(e->getPassword().size(), '*'));
-			hubs->setText(COLUMN_USERDESCRIPTION, i, Text::toT(e->getUserDescription()));
+			hubs->setText(i, COLUMN_NAME, Text::toT(e->getName()));
+			hubs->setText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()));
+			hubs->setText(i, COLUMN_SERVER, Text::toT(e->getServer()));
+			hubs->setText(i, COLUMN_NICK, Text::toT(e->getNick(false)));
+			hubs->setText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*'));
+			hubs->setText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()));
 		}
 	}
 }
 
 void FavHubsFrame::handleUp() {
 	nosave = true;
-	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntryList& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
 	std::vector<unsigned> selected = hubs->getSelected();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
@@ -224,7 +223,7 @@ void FavHubsFrame::handleUp() {
 
 void FavHubsFrame::handleDown() {
 	nosave = true;
-	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntryList& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
 	std::vector<unsigned> selected = hubs->getSelected();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
@@ -241,7 +240,7 @@ void FavHubsFrame::handleDown() {
 }
 
 void FavHubsFrame::handleRemove() {
-	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
+	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
 		int i;
 		while((i = hubs->getNext(-1, LVNI_SELECTED)) != -1)
 			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i)));
@@ -281,10 +280,8 @@ LRESULT FavHubsFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT FavHubsFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-	if(pt.x == -1 && pt.y == -1) {
+bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
 		pt = hubs->getContextMenuPos();
 	}
 
@@ -295,8 +292,8 @@ LRESULT FavHubsFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
 	hubsMenu->setItemEnabled(IDC_MOVE_DOWN, status);
 	hubsMenu->setItemEnabled(IDC_REMOVE, status);
 
-	hubsMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-	return TRUE;
+	hubsMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return true;
 }
 
 void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int index) {
@@ -308,8 +305,11 @@ void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int index) {
 	l.push_back(Text::toT(entry->getServer()));
 	l.push_back(Text::toT(entry->getUserDescription()));
 	bool b = entry->getConnect();
-	int i = hubs->insert(l, reinterpret_cast<LPARAM>(entry), index);
-	hubs->setChecked(i, b);
+	int itemCount = hubs->insert(l, reinterpret_cast<LPARAM>(entry), index);
+	if(index == -1)
+		index = itemCount;
+	hubs->setChecked(index, b);
+	hubs->ensureVisible(index);
 }
 
 void FavHubsFrame::openSelected() {
@@ -317,7 +317,7 @@ void FavHubsFrame::openSelected() {
 		return;
 
 	if(SETTING(NICK).empty()) {
-		createMessageBox().show(TSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		createMessageBox().show(T_("Please enter a nickname in the settings dialog!"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 		return;
 	}
 

@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SHARE_MANAGER_H)
-#define SHARE_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_SHARE_MANAGER_H
+#define DCPLUSPLUS_DCPP_SHARE_MANAGER_H
 
 #include "TimerManager.h"
 #include "SearchManager.h"
 #include "SettingsManager.h"
-#include "HashManager.h"
-#include "DownloadManager.h"
+#include "HashManagerListener.h"
+#include "DownloadManagerListener.h"
 
 #include "Exception.h"
 #include "CriticalSection.h"
@@ -80,6 +80,8 @@ public:
 
 	string getShareSizeString() const { return Util::toString(getShareSize()); }
 	string getShareSizeString(const string& aDir) const { return Util::toString(getShareSize(aDir)); }
+	
+	void getBloom(ByteVector& v, size_t k, size_t m) const;
 
 	SearchManager::TypeModes getType(const string& fileName) const throw();
 
@@ -256,7 +258,7 @@ private:
 	// Map real name to directory structure
 	Directory::Map directories;
 
-	typedef unordered_map<TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash> HashFileMap;
+	typedef unordered_map<TTHValue, Directory::File::Set::const_iterator> HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;

@@ -11,7 +11,6 @@ void WidgetMenu::appendItem
 	callbacks.insert(std::make_pair(id, IdDispatcher(f)));
 }
 
-
 void WidgetMenu::appendItem
 	( unsigned int id, const SmartUtil::tstring & name
 	, ULONG_PTR data, const SimpleDispatcher::F& f
@@ -35,10 +34,8 @@ void WidgetMenu::appendItem( unsigned int id, const SmartUtil::tstring & name
 
 SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
 {
-	MENUITEMINFO mi;
-	memset( & mi, 0, sizeof( MENUITEMINFO ) );
+	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
-	mi.cbSize = sizeof( MENUITEMINFO );
 	mi.fMask = MIIM_TYPE;
 	if ( ::GetMenuItemInfo( this->handle(), id, byPosition, & mi ) == 0 )
 	{
@@ -46,12 +43,11 @@ SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
 	}
 	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
 	mi.dwTypeData = buffer.get();
-	if ( ::GetMenuItemInfo( this->handle(), id, FALSE, & mi ) == 0 )
+	if ( ::GetMenuItemInfo( this->handle(), id, byPosition, & mi ) == 0 )
 	{
 		xAssert( false, _T( "Error while trying to get MenuItemInfo in WidgetMenu::getText..." ) );
 	}
-	SmartUtil::tstring retVal = mi.dwTypeData;
-	return retVal;
+	return mi.dwTypeData;
 }
 
 void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
@@ -73,6 +69,34 @@ void WidgetMenuBase::addCommands(Widget* widget) {
 	for(std::vector< std::tr1::shared_ptr<WidgetMenu> >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
 		(*i)->addCommands(widget);
 	}
+}
+
+unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, const ScreenCoordinate& sc, unsigned flags )
+{
+	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
+	addCommands(mainWindow);
+	
+	long x = sc.getPoint().x, y = sc.getPoint().y;
+
+	if ( x == - 1 && y == - 1 ) {
+		DWORD pos = ::GetMessagePos();
+		x = LOWORD( pos );
+		y = HIWORD( pos );
+	}
+	
+	int retVal = ::TrackPopupMenu(this->handle(), flags, x, y, 0, mainWindow->handle(), 0);
+	return retVal;
+}
+
+WidgetMenu::ObjectType WidgetMenu::getChild( unsigned position ) {
+	HMENU h = ::GetSubMenu(handle(), position);
+	for(size_t i = 0; i < this->itsChildren.size(); ++i) {
+		ObjectType& menu = this->itsChildren[i];
+		if(menu->handle() == h) {
+			return menu;
+		}
+	}
+	return ObjectType();
 }
 
 }

@@ -30,7 +30,7 @@ int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
 static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING, ResourceManager::COUNT, ResourceManager::TIME };
 
-SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
+SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	searches(0),
 	ignoreTTH(0),
@@ -41,34 +41,30 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	memset(perSecond, 0, sizeof(perSecond));
 
 	{
-		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		searches = createDataGrid(cs);
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_SINGLESEL;
+		searches = createListView(cs);
 		addWidget(searches);
-		searches->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+
 		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
-		searches->setSort(COLUMN_COUNT, SmartWin::WidgetDataGrid::SORT_INT, false);
+		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
 		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
+		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
+		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
+
 	}
 
 	{
-		WidgetCheckBox::Seed cs;
-		cs.caption = TSTRING(IGNORE_TTH_SEARCHES);
+		WidgetCheckBox::Seed cs(TSTRING(IGNORE_TTH_SEARCHES));
 		ignoreTTH = createCheckBox(cs);
 		ignoreTTH->setChecked(bIgnoreTTH);
-#ifdef PORT_ME
-		ignoreTTH->setFont(WinUtil::systemFont);
-#endif
-
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
 	}
 
 	initStatus();
 	statusSizes[STATUS_IGNORE_TTH] = 150; ///@todo get real checkbox + text width
-	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
 
 	layout();
 
@@ -77,9 +73,6 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	ShareManager::getInstance()->setHits(0);
 
 	ClientManager::getInstance()->addListener(this);
-
-	searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
-	searches->onRaw(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 	initSecond();
 #if 0
@@ -173,18 +166,16 @@ void SpyFrame::handleColumnClick(int column) {
 			searches->setSort(searches->getSortColumn(), searches->getSortType(), false);
 	} else {
 		if(column == COLUMN_COUNT) {
-			searches->setSort(column, SmartWin::WidgetDataGrid::SORT_INT);
+			searches->setSort(column, SmartWin::WidgetListView::SORT_INT);
 		} else {
-			searches->setSort(column, SmartWin::WidgetDataGrid::SORT_STRING_NOCASE);
+			searches->setSort(column, SmartWin::WidgetListView::SORT_STRING_NOCASE);
 		}
 	}
 }
 
-LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	if(searches->getSelectedCount() == 1) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = searches->getContextMenuPos();
 		}
 
@@ -193,10 +184,10 @@ LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		WidgetMenuPtr contextMenu = createMenu(true);
 		contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
 
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void SpyFrame::handleSearch() {
@@ -218,5 +209,5 @@ void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw(
 	while( (i=x->find(_T('$'))) != string::npos) {
 		(*x)[i] = _T(' ');
 	}
-	speak(SPEAK_SEARCH, static_cast<LPARAM>(SPEAK_SEARCH));
+	speak(SPEAK_SEARCH, reinterpret_cast<LPARAM>(x));
 }

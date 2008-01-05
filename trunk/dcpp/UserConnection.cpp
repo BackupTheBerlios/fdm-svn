@@ -36,8 +36,10 @@ const string UserConnection::FEATURE_ADCGET = "ADCGet";
 const string UserConnection::FEATURE_ZLIB_GET = "ZLIG";
 const string UserConnection::FEATURE_TTHL = "TTHL";
 const string UserConnection::FEATURE_TTHF = "TTHF";
-const string UserConnection::FEATURE_ADC_BASE = "BAS0";
+const string UserConnection::FEATURE_ADC_BAS0 = "BAS0";
+const string UserConnection::FEATURE_ADC_BASE = "BASE";
 const string UserConnection::FEATURE_ADC_BZIP = "BZIP";
+const string UserConnection::FEATURE_ADC_TIGR = "TIGR";
 
 const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
 
@@ -73,7 +75,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 
 	if(cmd == "$MyNick") {
 		if(!param.empty())
-			fire(UserConnectionListener::MyNick(), this, Text::toUtf8(param, encoding));
+			fire(UserConnectionListener::MyNick(), this, param);
 	} else if(cmd == "$Direction") {
 		x = param.find(" ");
 		if(x != string::npos) {
@@ -84,11 +86,10 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			param.rfind(/*path/file*/" no more exists") != string::npos) {
 			fire(UserConnectionListener::FileNotAvailable(), this);
 		} else {
+			dcdebug("Unknown $Error %s\n", param.c_str());
 			fire(UserConnectionListener::Failed(), this, param);
+			disconnect(true);
 		}
-	} else if(cmd == "$FileLength") {
-		if(!param.empty())
-			fire(UserConnectionListener::FileLength(), this, Util::toInt64(param));
 	} else if(cmd == "$GetListLen") {
 		fire(UserConnectionListener::GetListLength(), this);
 	} else if(cmd == "$Get") {
@@ -117,11 +118,6 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::Send(), this);
-	} else if(cmd == "$Sending") {
-		int64_t bytes = -1;
-		if(!param.empty())
-			bytes = Util::toInt64(param);
-		fire(UserConnectionListener::Sending(), this, bytes);
 	} else if(cmd == "$MaxedOut") {
 		fire(UserConnectionListener::MaxedOut(), this);
 	} else if(cmd == "$Supports") {
@@ -157,6 +153,21 @@ void UserConnection::inf(bool withToken) {
 		c.addParam("TO", getToken());
 	}
 	send(c);
+}
+
+void UserConnection::sup(const StringList& features) {
+	AdcCommand c(AdcCommand::CMD_SUP);
+	for(StringIterC i = features.begin(); i != features.end(); ++i)
+		c.addParam(*i);
+	send(c);
+}
+
+void UserConnection::supports(const StringList& feat) {
+	string x;
+	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+		x+= *i + ' ';
+	}
+	send("$Supports " + x + '|');
 }
 
 void UserConnection::on(Connected) throw() {

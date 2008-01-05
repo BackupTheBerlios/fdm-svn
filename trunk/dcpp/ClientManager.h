@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(CLIENT_MANAGER_H)
-#define CLIENT_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_CLIENT_MANAGER_H
+#define DCPLUSPLUS_DCPP_CLIENT_MANAGER_H
 
 #include "TimerManager.h"
 
@@ -34,7 +34,7 @@ class UserCommand;
 
 class ClientManager : public Speaker<ClientManagerListener>,
 	private ClientListener, public Singleton<ClientManager>,
-	private TimerManagerListener, private SettingsManagerListener
+	private TimerManagerListener
 {
 public:
 	Client* getClient(const string& aHubURL);
@@ -91,8 +91,6 @@ public:
 
 	Client::List& getClients() { return clients; }
 
-	string getCachedIp() const { Lock l(cs); return cachedIp; }
-
 	CID getMyCID();
 	const CID& getMyPID();
 
@@ -100,10 +98,10 @@ private:
 	typedef unordered_map<string, UserPtr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
 
-	typedef unordered_map<CID, UserPtr, CID::Hash> UserMap;
+	typedef unordered_map<CID, UserPtr> UserMap;
 	typedef UserMap::iterator UserIter;
 
-	typedef unordered_multimap<CID, OnlineUser*, CID::Hash> OnlineMap;
+	typedef unordered_multimap<CID, OnlineUser*> OnlineMap;
 	typedef OnlineMap::iterator OnlineIter;
 	typedef OnlineMap::const_iterator OnlineIterC;
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
@@ -119,25 +117,17 @@ private:
 
 	Socket udp;
 
-	string cachedIp;
 	CID pid;
 
 	friend class Singleton<ClientManager>;
 
 	ClientManager() {
 		TimerManager::getInstance()->addListener(this);
-		SettingsManager::getInstance()->addListener(this);
 	}
 
 	virtual ~ClientManager() throw() {
-		SettingsManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this);
 	}
-
-	void updateCachedIp();
-
-	// SettingsManagerListener
-	virtual void on(Load, SimpleXML&) throw();
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }

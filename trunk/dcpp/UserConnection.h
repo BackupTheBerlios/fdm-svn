@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_USER_CONNECTION_H
-#define DCPLUSPLUS_CLIENT_USER_CONNECTION_H
+#ifndef DCPLUSPLUS_DCPP_USER_CONNECTION_H
+#define DCPLUSPLUS_DCPP_USER_CONNECTION_H
 
 #include "forward.h"
 #include "TimerManager.h"
@@ -45,9 +45,11 @@ public:
 	static const string FEATURE_ZLIB_GET;
 	static const string FEATURE_TTHL;
 	static const string FEATURE_TTHF;
+	static const string FEATURE_ADC_BAS0;
 	static const string FEATURE_ADC_BASE;
 	static const string FEATURE_ADC_BZIP;
-
+	static const string FEATURE_ADC_TIGR;
+	
 	static const string FILE_NOT_AVAILABLE;
 
 	enum Modes {
@@ -92,7 +94,7 @@ public:
 		STATE_RUNNING,		// Transmitting data
 
 		// DownloadManager
-		STATE_FILELENGTH,
+		STATE_SND,	// Waiting for SND
 		STATE_TREE
 
 	};
@@ -104,35 +106,20 @@ public:
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
-	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); } 	// No acp - utf conversion here...
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
-	void startSend() { send("$Send|"); }
-	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); }
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
 	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); }
 	void fileNotAvail(const std::string& msg = FILE_NOT_AVAILABLE) { isSet(FLAG_NMDC) ? send("$Error " + msg + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, msg)); }
+	void supports(const StringList& feat);
 
 	// ADC Stuff
-	void sup(const StringList& features) {
-		AdcCommand c(AdcCommand::CMD_SUP);
-		for(StringIterC i = features.begin(); i != features.end(); ++i)
-			c.addParam(*i);
-		send(c);
-	}
+	void sup(const StringList& features);
 	void inf(bool withToken);
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) { send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) { send(AdcCommand(AdcCommand::CMD_SND).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
-
 	void send(const AdcCommand& c) { send(c.toString(0, isSet(FLAG_NMDC))); }
 
-	void supports(const StringList& feat) {
-		string x;
-		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-			x+= *i + ' ';
-		}
-		send("$Supports " + x + '|');
-	}
 	void setDataMode(int64_t aBytes = -1) { dcassert(socket); socket->setDataMode(aBytes); }
 	void setLineMode(size_t rollback) { dcassert(socket); socket->setLineMode(rollback); }
 
@@ -151,7 +138,8 @@ public:
 	UserPtr& getUser() { return user; }
 	bool isSecure() const { return socket && socket->isSecure(); }
 	bool isTrusted() const { return socket && socket->isTrusted(); }
-
+	std::string getCipherName() const { return socket ? socket->getCipherName() : Util::emptyString; }
+	
 	string getRemoteIp() const { return socket->getIp(); }
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; }
 	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; }

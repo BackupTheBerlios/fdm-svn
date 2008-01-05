@@ -42,7 +42,9 @@ ConnectionManager::ConnectionManager() : floodCounter(0), server(0), secureServe
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BAS0);
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BASE);
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_TIGR);
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BZIP);
 }
 
@@ -322,17 +324,22 @@ void ConnectionManager::disconnect() throw() {
 void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...@todo fix support updates
-		dcdebug("CM::onMyNick %p sent nick twice\n", (void*)aSource);
+		dcdebug("CM::onSUP %p sent sup twice\n", (void*)aSource);
 		return;
 	}
 
 	bool baseOk = false;
-
+	bool tigrOk = false;
+	
 	for(StringIterC i = cmd.getParameters().begin(); i != cmd.getParameters().end(); ++i) {
 		if(i->compare(0, 2, "AD") == 0) {
 			string feat = i->substr(2);
-			if(feat == UserConnection::FEATURE_ADC_BASE) {
+			if(feat == UserConnection::FEATURE_ADC_BASE || feat == UserConnection::FEATURE_ADC_BAS0) {
 				baseOk = true;
+				// For bas0 tiger is implicit
+				if(feat == UserConnection::FEATURE_ADC_BAS0) {
+					tigrOk = true;
+				}
 				// ADC clients must support all these...
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
@@ -344,6 +351,8 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
 			} else if(feat == UserConnection::FEATURE_ADC_BZIP) {
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+			} else if(feat == UserConnection::FEATURE_ADC_TIGR) {
+				tigrOk = true;
 			}
 		}
 	}
@@ -367,7 +376,7 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 	aSource->setState(UserConnection::STATE_INF);
 }
 
-void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() {
+void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand& cmd) throw() {
 
 }
 
@@ -414,8 +423,11 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		}
 		aSource->setToken(i.first);
 		aSource->setHubUrl(i.second);
+		aSource->setEncoding(ClientManager::getInstance()->findHubEncoding(i.second));
 	}
-	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
+
+	string nick = Text::toUtf8(aNick, aSource->getEncoding());
+	CID cid = ClientManager::getInstance()->makeCid(nick, aSource->getHubUrl());
 
 	// First, we try looking in the pending downloads...hopefully it's one of them...
 	{
@@ -436,7 +448,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 		aSource->setUser(ClientManager::getInstance()->findUser(cid));
 		if(!aSource->getUser() || !ClientManager::getInstance()->isOnline(aSource->getUser())) {
-			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
+			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", nick.c_str());
 			putConnection(aSource);
 			return;
 		}
@@ -587,9 +599,7 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 
 void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_INF) {
-		// Already got this once, ignore...
 		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF"));
-		dcdebug("CM::onINF %p sent INF twice\n", (void*)aSource);
 		aSource->disconnect();
 		return;
 	}
@@ -622,12 +632,18 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 		token = aSource->getToken();
 	}
 
-	bool down = true;
+	bool down = false;
 	{
 		Lock l(cs);
 		ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
-		if(i == downloads.end() || (*i)->getToken() != token) {
-			down = false;
+		
+		if(i != downloads.end()) {
+			const string& to = (*i)->getToken();
+			
+			// 0.698 would send an empty token in some cases...remove this bugfix at some point
+			if(to == token || token.empty()) {
+				down = true;
+			}
 		}
 		/** @todo check tokens for upload connections */
 	}
@@ -723,8 +739,6 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
 		} else if(*i == UserConnection::FEATURE_TTHF) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF);
-			if(conn->getUser())
-				conn->getUser()->setFlag(User::TTH_GET);
 		}
 	}
 }

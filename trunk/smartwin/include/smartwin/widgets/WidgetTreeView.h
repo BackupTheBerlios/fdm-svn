@@ -1,4 +1,3 @@
-// $Revision: 1.36 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,24 +28,18 @@
 #ifndef WidgetTreeView_h
 #define WidgetTreeView_h
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
 #include "../resources/ImageList.h"
-#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectRightClickable.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -68,23 +61,16 @@ class WidgetCreator;
    */
 
 class WidgetTreeView :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspects
 	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
 	public AspectCollection<WidgetTreeView, HTREEITEM>,
+	public AspectControl<WidgetTreeView>,
 	public AspectData<WidgetTreeView, HTREEITEM>,
 	public AspectDblClickable< WidgetTreeView >,
-	public AspectEnabled< WidgetTreeView >,
 	public AspectFocus< WidgetTreeView >,
 	public AspectFont< WidgetTreeView >,
-	public AspectKeyboard< WidgetTreeView >,
-	public AspectRaw< WidgetTreeView >,
-	public AspectRightClickable< WidgetTreeView >,
-	public AspectSelection< WidgetTreeView >,
-	public AspectSizable< WidgetTreeView >,
-	public AspectVisible< WidgetTreeView >
+	public AspectSelection< WidgetTreeView >
 {
 protected:
 	struct Dispatcher
@@ -112,38 +98,20 @@ protected:
 	friend class AspectData<WidgetTreeView, HTREEITEM>;
 	
 public:
-	/// Class type
-	typedef WidgetTreeView ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	 /** This class contains all of the values needed to create the widget. It also
 	   * knows the type of the class whose seed values it contains. Every widget
 	   * should define one of these.
 	   */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetTreeView::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Inserts a "node" into the TreeView
 	/** The return value from a call to this function is a Node. <br>
@@ -177,15 +145,15 @@ public:
 	
 	void setColor(COLORREF text, COLORREF background);
 	
-	Point getContextMenuPos();
+	ScreenCoordinate getContextMenuPos();
 	
 	void expand(HTREEITEM node);
 	
 	void select(HTREEITEM item);
 
-	void select(POINT pt);
+	void select(const ScreenCoordinate& pt);
 	
-	HTREEITEM hitTest(const Point& pt);
+	HTREEITEM hitTest(const ScreenCoordinate& pt);
 	
 	Rectangle getItemRect(HTREEITEM item);
 	/// Deletes just the children of a "node" from the TreeView< br >
@@ -294,7 +262,7 @@ public:
 	}
 
 	// Contract needed by AspectClickable Aspect class
-	static Message & getSelectionChangedMessage();
+	static const Message & getSelectionChangedMessage();
 
 	// Contract needed by AspectClickable Aspect class
 	static const Message& getClickMessage();
@@ -302,12 +270,15 @@ public:
 	// Contract needed by AspectDblClickable Aspect class
 	static const Message& getDblClickMessage();
 
+	/// Returns true if fired, else false
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
+		
 	/// Actually creates the TreeView
 	/** You should call WidgetFactory::createTreeView if you instantiate class
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	static bool isValidSelectionChanged( LPARAM lPar )
 	{ return true;
@@ -315,7 +286,7 @@ public:
 	
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetTreeView( SmartWin::Widget * parent );
+	explicit WidgetTreeView( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -340,10 +311,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetTreeView::Seed::Seed() {
-	 * this = WidgetTreeView::getDefaultSeed();
-}
 
 inline HTREEITEM WidgetTreeView::getNext( HTREEITEM node, unsigned flag ) {
 	return TreeView_GetNextItem( this->handle(), node, flag );
@@ -374,21 +341,16 @@ inline void WidgetTreeView::select(HTREEITEM item) {
 	TreeView_SelectItem(this->handle(), item);
 }
 
-inline void WidgetTreeView::select(POINT pt) {
-	this->screenToClient(pt);
-	HTREEITEM ht = this->hitTest(pt);
-	if(ht != NULL && ht != this->getSelection())
-		this->select(ht);
-}
-
 inline Rectangle WidgetTreeView::getItemRect(HTREEITEM item) {
 	RECT rc;
 	TreeView_GetItemRect(this->handle(), item, &rc, TRUE);
 	return rc;
 }
 
-inline HTREEITEM WidgetTreeView::hitTest(const Point& pt) {
-	return TreeView_HitTest(this->handle(), &pt);
+inline HTREEITEM WidgetTreeView::hitTest(const ScreenCoordinate& pt) {
+	ClientCoordinate cc(pt, this);
+	TVHITTESTINFO tvhti = { cc.getPoint() };
+	return TreeView_HitTest(this->handle(), &tvhti);
 }
 
 inline HTREEITEM WidgetTreeView::getSelection() {
@@ -443,26 +405,24 @@ inline void WidgetTreeView::setEditLabels( bool value ) {
 	this->Widget::addRemoveStyle( TVS_EDITLABELS, value );
 }
 
-inline Message & WidgetTreeView::getSelectionChangedMessage() {
-	static Message retVal = Message( WM_NOTIFY, TVN_SELCHANGED );
+inline const Message & WidgetTreeView::getSelectionChangedMessage() {
+	static const Message retVal( WM_NOTIFY, TVN_SELCHANGED );
 	return retVal;
 }
 
 inline const Message & WidgetTreeView::getClickMessage() {
-	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
+	static const Message retVal( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
 inline const Message & WidgetTreeView::getDblClickMessage() {
-	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
+	static const Message retVal( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a list view without a parent...
-	xAssert( parent, _T( "Cant have a WidgetTreeView without a parent..." ) );
 }
 
 // end namespace SmartWin

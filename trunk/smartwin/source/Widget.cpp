@@ -49,15 +49,21 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+Widget::Widget( Widget * parent, HWND hWnd ) : 
+	itsHandle( hWnd ),
+	itsParent( parent )
+{
+}
+
 Widget::~Widget()
 {
 }
 
 // Subclasses a dialog item inside a dialog, usually used in combination with Dialog resources.
-void Widget::subclass( unsigned id )
+void Widget::attach( unsigned id )
 {
 	if ( !itsParent )
-		throw xCeption( _T( "Can't subclass a Widget without a parent..." ) );
+		throw xCeption( _T( "Can't attach a Widget without a parent..." ) );
 	itsHandle = ::GetDlgItem( itsParent->handle(), id );
 	if ( !itsHandle )
 		throw xCeption( _T( "GetDlgItem failed." ) );
@@ -80,7 +86,7 @@ void Widget::kill()
 	delete this;
 }
 
-void Widget::create( const SmartWin::Seed & cs )
+void Widget::create( const Seed & cs )
 {
 	itsHandle = ::CreateWindowEx( cs.exStyle,
 		cs.className,
@@ -88,57 +94,19 @@ void Widget::create( const SmartWin::Seed & cs )
 		cs.style,
 		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
 		itsParent ? itsParent->handle() : 0,
-		cs.menuHandle == - 1
-			? reinterpret_cast< HMENU >( getCtrlId() )  // This value will become the controls ID when e.g. getting messages in the parent,
-			: reinterpret_cast< HMENU >( cs.menuHandle ),
+		cs.menuHandle,
 		Application::instance().getAppHandle(),
-		reinterpret_cast< LPVOID >( this ) );
+		reinterpret_cast< LPVOID >( this ) 
+	);
 	if ( !itsHandle )
 	{
 		// The most common error is to forget WS_CHILD in the styles
-		xCeption x( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
-		throw x;
+		throw xCeption( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
 	}
 }
 
 void Widget::attach(HWND hwnd) {
 	itsHandle = hwnd;
-}
-
-Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
-	: 
-	itsHandle( hWnd ),
-	itsParent( parent )
-{
-	if ( doReg )
-	{
-		if ( itsParent )
-			itsParent->itsChildren.push_back( this );
-	}
-}
-
-void Widget::killMe()
-{
-	eraseMeFromParentsChildren();
-	Widget::kill();
-}
-
-void Widget::killChildren()
-{
-	// A dialog doesn't clean up after itself when destroyed... Don't know why...
-	for ( std::vector < Widget * >::iterator idx = itsChildren.begin();
-		idx != itsChildren.end();
-		++idx )
-	{
-		( * idx )->kill();
-	}
-}
-
-void Widget::eraseMeFromParentsChildren()
-{
-	if ( ! itsParent ) return;
-
-	itsParent->itsChildren.erase(std::remove(itsParent->itsChildren.begin(), itsParent->itsChildren.end(), this), itsParent->itsChildren.end());
 }
 
 void Widget::addRemoveStyle( DWORD addStyle, bool add )

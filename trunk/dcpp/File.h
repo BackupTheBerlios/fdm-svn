@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FILE_H)
-#define FILE_H
+#ifndef DCPLUSPLUS_DCPP_FILE_H
+#define DCPLUSPLUS_DCPP_FILE_H
 
 #include "SettingsManager.h"
 
@@ -46,7 +46,8 @@ public:
 	enum {
 		OPEN = 0x01,
 		CREATE = 0x02,
-		TRUNCATE = 0x04
+		TRUNCATE = 0x04,
+		SHARED = 0x08
 	};
 
 #ifdef _WIN32

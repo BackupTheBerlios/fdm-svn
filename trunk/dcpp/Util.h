@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(UTIL_H)
-#define UTIL_H
+#ifndef DCPLUSPLUS_DCPP_UTIL_H
+#define DCPLUSPLUS_DCPP_UTIL_H
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -80,20 +80,6 @@ private:
 	const T2& a;
 };
 
-template<class T>
-struct PointerHash {
-#ifdef _MSC_VER
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
-#endif
-	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); }
-	bool operator()(const T* a, const T* b) { return a < b; }
-};
-template<>
-struct PointerHash<void> {
-	size_t operator()(const void* a) const { return ((size_t)a)>>2; }
-};
-
 /**
  * Compares two values
  * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2
@@ -141,6 +127,7 @@ public:
 	static const string& getConfigPath() { return configPath; }
 	static const string& getDataPath() { return dataPath; }
 	static const string& getSystemPath() { return systemPath; }
+	static const string& getLocalePath() { return localePath; }
 
 	/** Path of file lists */
 	static string getListPath() { return getConfigPath() + "FileLists" PATH_SEPARATOR_STR; }
@@ -149,36 +136,7 @@ public:
 	/** Notepad filename */
 	static string getNotepadFile() { return getConfigPath() + "Notepad.txt"; }
 
-	static string translateError(int aError) {
-#ifdef _WIN32
-		LPVOID lpMsgBuf;
-		DWORD chars = FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER |
-			FORMAT_MESSAGE_FROM_SYSTEM |
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
-			aError,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL
-			);
-		if(chars == 0) {
-			return string();
-		}
-		string tmp = Text::fromT((LPCTSTR)lpMsgBuf);
-		// Free the buffer.
-		LocalFree( lpMsgBuf );
-		string::size_type i = 0;
-
-		while( (i = tmp.find_first_of("\r\n", i)) != string::npos) {
-			tmp.erase(i, 1);
-		}
-		return tmp;
-#else // _WIN32
-		return Text::toUtf8(strerror(aError));
-#endif // _WIN32
-	}
+	static string translateError(int aError);
 
 	static string getFilePath(const string& path) {
 		string::size_type i = path.rfind(PATH_SEPARATOR);
@@ -250,7 +208,7 @@ public:
 #ifdef _WIN32
 		return _atoi64(aString.c_str());
 #else
-		return atoll(aString.c_str());
+		return strtoll(aString.c_str(), (char **)NULL, 10);
 #endif
 	}
 
@@ -422,6 +380,8 @@ private:
 	static string systemPath;
 	/** Various resources (help files etc) */
 	static string dataPath;
+	/** Translations */
+	static string localePath;
 
 	static bool away;
 	static bool manualAway;

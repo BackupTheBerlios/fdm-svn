@@ -1,4 +1,3 @@
-// $Revision: 1.20 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -39,7 +38,7 @@ namespace SmartWin
 /// POD structure for defining a point
 /** Used in e.g. functions that take a mouse position etc...
   */
-struct Point
+struct Point : POINT
 {
 	/// Constructor initializing the point with the given arguments.
 	/** Constructor initializing the structure with the given arguments. Takes x and
@@ -52,7 +51,7 @@ struct Point
 	  */
 	Point();
 
-	Point(POINT pt);
+	Point(const POINT& pt);
 	
 	operator POINT() const;
 	
@@ -65,16 +64,47 @@ struct Point
 	/** Each x,y dimension is adjusted by the p Point.
 	  */
 	void minOf( const Point & p );
+};
 
-	/// x position
-	/** The x position of the Point
-	  */
-	long x;
+class ScreenCoordinate {
+public:
+	ScreenCoordinate() { }
+	ScreenCoordinate(const ScreenCoordinate& sc) : point(sc.point) { }
+	
+	explicit ScreenCoordinate(const Point& pt) : point(pt) { }
+	
+	const Point& getPoint() const { return point; }
+	Point& getPoint() { return point; }
+	
+	long x() const { return getPoint().x; }
+	long y() const { return getPoint().y; }
+	
+	ScreenCoordinate& operator=(const ScreenCoordinate& rhs) { point = rhs.point; return *this; }
+private:
+	Point point;
+};
 
-	/// y position
-	/** The y position of the Point
-	  */
-	long y;
+class Widget;
+
+class ClientCoordinate {
+public:
+	explicit ClientCoordinate(const ClientCoordinate& cc, Widget* w_);
+	
+	explicit ClientCoordinate(const ScreenCoordinate& sc, Widget* w_);
+	
+	explicit ClientCoordinate(const Point& pt, Widget* w_) : point(pt), w(w_) { }
+
+	operator ScreenCoordinate() const;
+
+	const Point& getPoint() const { return point; }
+	Point& getPoint() { return point; }
+
+	long x() const { return getPoint().x; }
+	long y() const { return getPoint().y; }
+
+private:
+	Point point;
+	Widget* w;
 };
 
 /// \ingroup GlobalStuff
@@ -406,85 +436,6 @@ bool operator==(const Rectangle& lhs, const Rectangle& rhs);
 /**  The system selects the default position/size for the window.
   */
 extern const Rectangle letTheSystemDecide;
-
-/// Dummy structure
-/** Some classes might be heavy to initialize, and named constructors (static
-  * functions that return an instance of the class) need some way to create an
-  * instance of the class without filling out the values. We use this dummy structure
-  * to code a constructor that does not initialize the members:
-	\code
-	class A
-	{
-		int * _x;
-	public:
-		A() {_x = new int[10000000000000000000000];}  // I know, I know ... but I'm making a point
-		A( DontInitialize ) {}
-		static A giveMeAnA(const int x)         // named constructor
-		{
-			A a( DontInitializeMe );            // it won't exhaust the memory
-			a._x = new int[x];
-			return a;
-		}
-	};
-	\endcode
-  */
-struct DontInitialize
-{
-	DontInitialize()
-	{}
-};
-
-extern const DontInitialize DontInitializeMe;
-
-/// Creational helper structure (deprecated)
-/** Most Widgets can override the creational parameters which sets the style and the
-  * initial position of the Widget, those Widgets will take an object of this type to
-  * their creational function(s).
-  */
-class Seed
-{
-public:
-	/// The style of the object (starts with WS_ or BS_ etc...)
-	/** WARNING: The creation of most of the controls require WS_CHILD to be set.
-	  * This is done, by default, in the appropriate controls. If you override the
-	  * default style, then be sure that WS_CHILD is set (if needed).
-	  */
-	DWORD style;
-
-	/// The Extended Style of the object (starts often with WS_EX_ etc)
-	DWORD exStyle;
-
-	/// The initial position / size of the Widget
-	Rectangle location;
-
-	/// Initial caption
-	/** Windows with a title bar will use this string in the title bar. Controls with
-	  * caption (e.g. static control, edit control) will use it in the control. <br>
-	  * It is feed directly to CreateWindowEx, this means that it follows its
-	  * conventions. In particular, the string "#num" has a special meaning.
-	  */
-	SmartUtil::tstring caption;
-
-	/// Constructor initializing all member variables to default values
-	// The constructor with parameters lead to conversion problems
-	Seed()
-		: style( WS_VISIBLE ), exStyle( 0 ), location( letTheSystemDecide ), className(NULL), menuHandle( - 1 )
-	{}
-
-	/// Clones into e.g. a Seed object
-	template< class To > void cloneInto( To & to ) const
-	{
-		to.style = style;
-		to.exStyle = exStyle;
-		to.location = location;
-	}
-
-	LPCTSTR getClassName() const { return className; }
-	friend class Application;
-	friend class Widget;
-	LPCTSTR className;
-	int menuHandle;
-};
 
 // end namespace SmartWin
 }

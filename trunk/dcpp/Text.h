@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_TEXT_H
-#define DCPLUSPLUS_CLIENT_TEXT_H
+#ifndef DCPLUSPLUS_DCPP_TEXT_H
+#define DCPLUSPLUS_DCPP_TEXT_H
 
 namespace dcpp {
 
@@ -81,7 +81,7 @@ namespace Text {
 #ifdef UNICODE
 	inline const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
 	inline tstring toT(const string& str) throw() { return utf8ToWide(str); }
-
+	
 	inline const string& fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
 	inline string fromT(const tstring& str) throw() { return wideToUtf8(str); }
 #else
@@ -137,7 +137,7 @@ namespace Text {
 	tstring tformat(const tstring& src, T t) {
 		tstring ret(src.size() + 64, _T('\0'));
 		int n = _sntprintf(&ret[0], ret.size(), src.c_str(), t);
-		if(n != -1 && n < ret.size()) {
+		if(n != -1 && n < static_cast<int>(ret.size())) {
 			ret.resize(n);
 		}
 		return ret;
@@ -146,7 +146,7 @@ namespace Text {
 	tstring tformat(const tstring& src, T t, T2 t2, T3 t3) {
 		tstring ret(src.size() + 128, _T('\0'));
 		int n = _sntprintf(&ret[0], ret.size(), src.c_str(), t, t2, t3);
-		if(n != -1 && n < ret.size()) {
+		if(n != -1 && n < static_cast<int>(ret.size())) {
 			ret.resize(n);
 		}
 		return ret;

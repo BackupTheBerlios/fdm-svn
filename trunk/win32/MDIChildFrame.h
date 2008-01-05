@@ -25,44 +25,52 @@
 #include "AspectSpeaker.h"
 #include "AspectStatus.h"
 #include <dcpp/SettingsManager.h>
-#include "MDITab.h"
+#include <dcpp/ResourceManager.h>
+#include "resource.h"
 
 template<typename T>
 class MDIChildFrame : 
-	public WidgetFactory< SmartWin::WidgetMDIChild >,
+	public WidgetFactory< SmartWin::WidgetChildWindow >,
 	public AspectSpeaker<T>, 
 	public AspectStatus<T>
 {
 public:
 	typedef MDIChildFrame<T> ThisType;
-	
+	typedef WidgetFactory< SmartWin::WidgetChildWindow > BaseType;
 protected:
 
-	MDIChildFrame(SmartWin::WidgetMDIParent* mdiClient, const tstring& title, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) : WidgetFactory< SmartWin::WidgetMDIChild >(mdiClient), lastFocus(NULL), reallyClose(false) {
+	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
+		BaseType(tabView->getTab()),
+		lastFocus(NULL),
+		alwaysSameFocus(false),
+		reallyClose(false)
+	{
 		typename ThisType::Seed cs;
-		BOOL max = FALSE;
-		if(!mdiClient->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
-			max = BOOLSETTING(MDI_MAXIMIZED);
+		cs.style |= WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+		if(activate) {
+			cs.style |= WS_VISIBLE;
+		} else {
+			cs.style &= ~WS_VISIBLE;
 		}
-		if(max)
-			cs.style |= WS_MAXIMIZE;
-		cs.style |= WS_CLIPCHILDREN;
 		cs.caption = title;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
-		cs.activate = activate;
 		cs.icon = icon;
-		this->createMDIChild(cs);
+		cs.location = tabView->getClientSize();
+		this->createWindow(cs);
 
-		MDITab::getInstance()->addTab(this, icon);
+		tabView->add(this, icon);
+		this->onTabContextMenu(std::tr1::bind(&ThisType::handleContextMenu, this, _1));
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
 		onSized(std::tr1::bind(&ThisType::handleSized, this, _1));
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
+		onCommand(std::tr1::bind(&ThisType::close, this, true), IDC_CLOSE_WINDOW);
+		addDlgCodeMessage(this);
 	}
 	
 	virtual ~MDIChildFrame() {
-		MDITab::getInstance()->removeTab(this);
+		getParent()->remove(this);
 	}
 	
 	void handleFocus() {
@@ -82,26 +90,62 @@ protected:
 	void postClosing() { }
 	
 	template<typename W>
-	void addWidget(W* widget) {
+	void addWidget(W* widget, bool alwaysFocus = false) {
+		addDlgCodeMessage(widget);
+
 		addColor(widget);
-		if(lastFocus == NULL) {
+
+		if(alwaysFocus || (lastFocus == NULL)) {
 			lastFocus = widget->handle();
+			if(this->getVisible())
+				::SetFocus(lastFocus);
 		}
+		if(alwaysFocus)
+			alwaysSameFocus = true;
 	}
 	
 	void setDirty(SettingsManager::IntSetting setting) {
 		if(SettingsManager::getInstance()->getBool(setting)) {
-			MDITab::getInstance()->markTab(this);
+			getParent()->mark(this);
 		}
 	}
 	
-	void onTabContextMenu(const std::tr1::function<bool (const SmartWin::Point&)>& f) {
-		MDITab::getInstance()->onTabContextMenu(this, f);
+	void onTabContextMenu(const std::tr1::function<bool (const SmartWin::ScreenCoordinate&)>& f) {
+		getParent()->onTabContextMenu(this, f);
+	}
+	
+	void activate() {
+		getParent()->setActive(this);
+	}
+	
+	SmartWin::WidgetTabView* getParent() {
+		return static_cast<SmartWin::WidgetTabView*>(BaseType::getParent()->getParent());
 	}
 	
 private:
-	HWND lastFocus;
+	HWND lastFocus; // last focused widget
+	bool alwaysSameFocus; // always focus the same widget
+
 	bool reallyClose;
+
+	void addDlgCodeMessage(SmartWin::WidgetComboBox* widget) {
+		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+		SmartWin::WidgetTextBox* text = widget->getTextBox();
+		if(text)
+			text->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+	}
+
+	template<typename W>
+	void addDlgCodeMessage(W* widget) {
+		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+	}
+
+	void addColor(SmartWin::WidgetComboBox* widget) {
+		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+		SmartWin::WidgetTextBox* text = widget->getTextBox();
+		if(text)
+			text->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+	}
 
 	template<typename A>
 	void addColor(SmartWin::AspectBackgroundColor<A>* widget) {
@@ -115,25 +159,40 @@ private:
 
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz) { 
 		static_cast<T*>(this)->layout();
-		BOOL max = FALSE;
-		if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
-			SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, max > 0);
-		}
 		return false;
 	}
 	
 	void handleActivate(bool active) {
 		if(active) {
-			// clear dirty...
-		} else {
-			lastFocus = ::GetFocus();
+			if(lastFocus) {
+				::SetFocus(lastFocus);
+			}
+		} else if(!alwaysSameFocus) {
+			HWND focus = ::GetFocus();
+			if(focus != NULL && ::IsChild(static_cast<T*>(this)->handle(), focus))
+				lastFocus = focus;
 		}
 	}
-	
+
+	LRESULT handleGetDlgCode(WPARAM wParam) {
+		 if(wParam != VK_TAB)
+			return DLGC_WANTMESSAGE;
+		return 0;
+	}
+
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
 		canvas.setBkColor(WinUtil::bgColor);
 		canvas.setTextColor(WinUtil::textColor);
 		return WinUtil::bgBrush;
+	}
+	
+	bool handleContextMenu(const SmartWin::ScreenCoordinate& pt) {
+		SmartWin::WidgetMenu::ObjectType menu = SmartWin::WidgetCreator<SmartWin::WidgetMenu>::create(SmartWin::WidgetMenu::Seed(true));
+		menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&ThisType::close, this, true));
+		
+		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return true;
 	}
 	
 	bool handleClosing() {

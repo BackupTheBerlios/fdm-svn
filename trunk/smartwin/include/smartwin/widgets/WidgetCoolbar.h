@@ -1,4 +1,3 @@
-// $Revision: 1.18 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -31,8 +30,8 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
-#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
@@ -48,9 +47,6 @@
 #include "WidgetSpinner.h"
 #include "WidgetTextBox.h"
 #include "WidgetTreeView.h"
-
-//TODO: complete migration to CreationalInfo.
-//The position part of WidgetXxx::Seed::rect is disregarded
 
 namespace SmartWin
 {
@@ -112,24 +108,11 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetCoolbar::ThisType TheWidgetType;
-
-		//TODO: put variables to be filled here
-
-		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// ComboBox object type.
 	typedef WidgetComboBox::ObjectType WidgetComboBoxPtr;
@@ -166,7 +149,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	WidgetRadioButtonPtr sow( WidgetGroupBoxPtr & parent, const WidgetRadioButton::Seed & cs )
 	{
@@ -239,11 +222,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetCoolbar::Seed::Seed()
-{
-	* this = WidgetCoolbar::getDefaultSeed();
-}
 
 inline WidgetCoolbar::WidgetCoolbar( SmartWin::Widget * parent )
 	: PolicyType( parent )

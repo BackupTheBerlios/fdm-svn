@@ -24,7 +24,7 @@
 template< bool horizontal >
 class WidgetPaned :
 	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
-	public SmartWin::AspectMouseClicks< WidgetPaned< horizontal > >,
+	public SmartWin::AspectMouse< WidgetPaned< horizontal > >,
 	public SmartWin::AspectSizable< WidgetPaned< horizontal > >,
 	public SmartWin::AspectVisible< WidgetPaned< horizontal > >,
 	public SmartWin::AspectRaw< WidgetPaned< horizontal > >
@@ -40,19 +40,11 @@ public:
 	typedef ThisType * ObjectType;
 
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef typename WidgetPaned::ThisType WidgetType;
-
 		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( SmartWin::DontInitialize )
-		{}
 	};
-
-	static const Seed & getDefaultSeed();
 
 	void setRelativePos(double pos_) {
 		pos = pos_;
@@ -75,7 +67,7 @@ public:
 		resizeChildren();
 	}
 
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	void setRect(SmartWin::Rectangle r) {
 		rect = r;
@@ -110,11 +102,8 @@ private:
 	void handleMouseMove(const SmartWin::MouseEventResult& event) {
 		if ( event.ButtonPressed == SmartWin::MouseEventResult::LEFT && moving )
 		{
-			POINT pt = { event.pos.x, event.pos.y };
-			this->clientToScreen(pt);
-			this->getParent()->screenToClient(pt);
-			
-			int x = horizontal ? pt.y : pt.x;
+			SmartWin::ClientCoordinate cc(event.pos, getParent());
+			int x = horizontal ? cc.y() : cc.x();
 			int w = horizontal ? rect.size.y : rect.size.x;
 			pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
 			resizeChildren();
@@ -124,29 +113,18 @@ private:
 		::ReleaseCapture();
 		moving = false;
 	}
+	
+	static SmartWin::WindowClass windowClass; 
 };
 
-template< bool horizontal >
-const typename WidgetPaned< horizontal >::Seed & WidgetPaned< horizontal >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( SmartWin::DontInitializeMe );
-	static boost::scoped_ptr<SmartWin::WindowClass> windowClass;
-
-	if ( d_NeedsInit )
-	{
-		windowClass.reset(new SmartWin::WindowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), &ThisType::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE )));
-		d_DefaultValues.className = windowClass->getClassName();
-		d_DefaultValues.style = WS_VISIBLE | WS_CHILD;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
+template<bool horizontal>
+SmartWin::WindowClass WidgetPaned<horizontal>::windowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), 
+	&WidgetPaned<horizontal>::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), 
+	SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE ));
 
 template< bool horizontal >
-WidgetPaned< horizontal >::Seed::Seed()
+WidgetPaned< horizontal >::Seed::Seed() : SmartWin::Widget::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS)
 {
-	* this = WidgetPaned::getDefaultSeed();
 }
 
 template< bool horizontal >

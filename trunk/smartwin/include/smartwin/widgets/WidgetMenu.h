@@ -1,4 +1,3 @@
-// $Revision: 1.32 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -432,7 +431,7 @@ public:
 	  * < li >TPM_VERPOSANIMATION : Animates the menu from top to bottom< /li >
 	  * < /ul >
 	  */
-	unsigned trackPopupMenu( Widget * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
+	unsigned trackPopupMenu( Widget * mainWindow, const ScreenCoordinate& sc, unsigned flags = 0 );
 
 	bool isSystemMenu()
 	{
@@ -468,17 +467,6 @@ inline UINT WidgetMenu::getId(UINT position)
 inline void WidgetMenu::checkItem( unsigned id, bool value )
 {
 	::CheckMenuItem( this->handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
-}
-
-inline WidgetMenu::ObjectType WidgetMenu::getChild( unsigned position ) {
-	HMENU h = reinterpret_cast<HMENU>(getId(position));
-	for(size_t i = 0; i < this->itsChildren.size(); ++i) {
-		ObjectType& menu = this->itsChildren[i];
-		if(menu->handle() == h) {
-			return menu;
-		}
-	}
-	return ObjectType();
 }
 
 inline bool WidgetMenu::getCheckedState( unsigned id )
@@ -536,27 +524,6 @@ inline bool WidgetMenu::isPopup( UINT id, bool byPosition )
 inline bool WidgetMenu::isSeparator( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
-}
-
-inline unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, int x, int y, unsigned flags )
-{
-	
-	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
-	addCommands(mainWindow);
-
-	if ( x == - 1 && y == - 1 )
-	{
-		DWORD pos = ::GetMessagePos();
-		x = LOWORD( pos );
-		y = HIWORD( pos );
-	}
-	
-	int retVal = ::TrackPopupMenu
-		( this->handle()
-		, flags, x, y, 0
-		, mainWindow->handle(), 0
-		);
-	return retVal;
 }
 
 inline WidgetMenu::WidgetMenu( )

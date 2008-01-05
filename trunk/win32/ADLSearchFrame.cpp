@@ -33,7 +33,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::ACTIVE_SEARCH
 	ResourceManager::SOURCE_TYPE, ResourceManager::DESTINATION, ResourceManager::MIN_SIZE, ResourceManager::MAX_SIZE,
 };
 
-ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent) :
+ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	add(0),
 	properties(0),
@@ -43,12 +43,9 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	help(0)
 {
 	{
-		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		items = createDataGrid(cs);
-		items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-		items->setFont(WinUtil::font);
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.lvStyle |= LVS_EX_CHECKBOXES;
+		items = createListView(cs);
 		addWidget(items);
 
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -59,11 +56,11 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		items->onDblClicked(std::tr1::bind(&ADLSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&ADLSearchFrame::handleKeyDown, this, _1));
 		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		items->onContextMenu(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1));
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);
@@ -104,12 +101,6 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	for(ADLSearchManager::SearchCollection::iterator i = collection.begin(); i != collection.end(); ++i)
 		addEntry(*i);
-
-	contextMenu = createMenu(true);
-	contextMenu->appendItem(IDC_ADD, TSTRING(NEW), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
-	contextMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
-	contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
-	items->onRaw(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 }
 
 ADLSearchFrame::~ADLSearchFrame() {
@@ -290,19 +281,22 @@ LRESULT ADLSearchFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT ADLSearchFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-	if(pt.x == -1 && pt.y == -1) {
+bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
 		pt = items->getContextMenuPos();
 	}
+
+	WidgetMenuPtr contextMenu = createMenu(true);
+	contextMenu->appendItem(IDC_ADD, TSTRING(NEW), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
+	contextMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
+	contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 
 	bool status = items->hasSelection();
 	contextMenu->setItemEnabled(IDC_EDIT, status);
 	contextMenu->setItemEnabled(IDC_REMOVE, status);
 
-	contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-	return TRUE;
+	contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return true;
 }
 
 void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
@@ -313,5 +307,8 @@ void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
 	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
 	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
 	int itemCount = items->insert(l, 0, index);
-	items->setChecked((index == -1) ? itemCount : index, search.isActive);
+	if(index == -1)
+		index = itemCount;
+	items->setChecked(index, search.isActive);
+	items->ensureVisible(index);
 }

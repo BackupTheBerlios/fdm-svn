@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_DOWNLOAD_MANAGER_H
-#define DCPLUSPLUS_CLIENT_DOWNLOAD_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_DOWNLOAD_MANAGER_H
+#define DCPLUSPLUS_DCPP_DOWNLOAD_MANAGER_H
 
 #include "forward.h"
 
@@ -57,24 +57,6 @@ public:
 
 	bool startDownload(QueueItem::Priority prio);
 private:
-	enum { MOVER_LIMIT = 10*1024*1024 };
-	class FileMover : public Thread {
-	public:
-		FileMover() : active(false) { }
-		virtual ~FileMover() { join(); }
-
-		void moveFile(const string& source, const string& target);
-		virtual int run();
-	private:
-		typedef pair<string, string> FilePair;
-		typedef vector<FilePair> FileList;
-		typedef FileList::iterator FileIter;
-
-		bool active;
-
-		FileList files;
-		CriticalSection cs;
-	} mover;
 
 	CriticalSection cs;
 	DownloadList downloads;
@@ -85,10 +67,9 @@ private:
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);
 
-	void moveFile(const string& source, const string&target);
 	void logDownload(UserConnection* aSource, Download* d);
 	uint32_t calcCrc32(const string& file) throw(FileException);
-	bool checkSfv(UserConnection* aSource, Download* d, uint32_t crc);
+	bool checkSfv(UserConnection* aSource, Download* d);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
 	void failDownload(UserConnection* aSource, const string& reason);
@@ -105,15 +86,13 @@ private:
 	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw();
 	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
-	virtual void on(Sending, UserConnection*, int64_t) throw();
-	virtual void on(FileLength, UserConnection*, int64_t) throw();
 	virtual void on(MaxedOut, UserConnection*) throw();
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
+	bool prepareFile(UserConnection* aSource, int64_t start, int64_t newSize, bool z);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
 };

@@ -26,13 +26,13 @@
 #include "WinUtil.h"
 
 static const char thanks[] = "Big thanks to all donators and people who have contributed with ideas "
-"and code! Thanks go out to sourceforge for hosting the project. This application uses bzip2 (www.bzip.org), "
-"thanks to Julian Seward and team for providing it. Thiz application uses zlib (www.zlib.net), "
-"thanks to Jean-loup Gailly and Mark Adler for providing it. "
+"and code! Thanks go out to sourceforge.net for hosting the project. "
+"This product uses bzip2 (www.bzip.org), thanks to Julian Seward and team for providing it. "
+"This product uses zlib (www.zlib.net), thanks to Jean-loup Gailly and Mark Adler for providing it. "
 "This product includes GeoIP data created by MaxMind, available from http://maxmind.com/. "
-"This product uses yassl from www.yassl.com, thanks to Todd Ouska and Larry Stefonic."
-"The following people have contributed code to "
-"DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n"
+"This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit. (http://www.openssl.org/). "
+"The following people have contributed code to DC++ (I hope I haven't missed someone, they're "
+"roughly in chronological order...=):\r\n"
 "geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, "
 "patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, "
 "sedulus, sandos, henrik engstr\303\266m, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, "
@@ -41,7 +41,8 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, "
 "bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, "
 "krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, "
-"steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman. "
+"steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman, james ross,"
+"stanislav maslovski. "
 "Keep it coming!";
 
 AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
@@ -53,7 +54,7 @@ AboutDlg::~AboutDlg() {
 }
 
 bool AboutDlg::handleInitDialog() {
-	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2006 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2007 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 	setItemText(IDC_TTH, WinUtil::tth);
 	setItemText(IDC_THANKS, Text::toT(thanks));
 	setItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + Util::formatBytes(SETTING(TOTAL_DOWNLOAD))));
@@ -64,7 +65,7 @@ bool AboutDlg::handleInitDialog() {
 	}
 	setItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
 
-	subclassButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
+	attachButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 
 	centerWindow();
 

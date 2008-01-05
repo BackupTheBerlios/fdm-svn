@@ -31,49 +31,45 @@
 #include <dcpp/UploadManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
+#include <dcpp/Download.h>
+#include <dcpp/Upload.h>
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID, COLUMN_CIPHER };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
-ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
+ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, ResourceManager::CIPHER };
 
-TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetMDIParent* mdi_) : 
+TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
 	transfers(0),
 	mdi(mdi_)
 {
 	createWindow();
-	
 	{
 		arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap tmp(IDB_ARROWS);
 		arrows->add(tmp, RGB(255, 0, 255));
 	}
 	{
-		WidgetTransfers::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, cs);
-		transfers->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		transfers->setFont(WinUtil::font);
+		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, WinUtil::Seeds::listView);
 
 		transfers->setSmallImageList(arrows);
 		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
-		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
-		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
+		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(MAINFRAME_ORDER), columnIndexes));
+		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(MAINFRAME_WIDTHS), columnSizes));
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
-		transfers->setSortColumn(COLUMN_USER);
+		transfers->setSort(COLUMN_USER);
+		transfers->onContextMenu(std::tr1::bind(&TransferView::handleContextMenu, this, _1));
+		transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
+		transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
 	}
 	
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
-	onRaw(std::tr1::bind(&TransferView::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
-	
-	transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
-	transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
+	noEraseBackground();
 	
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
@@ -100,8 +96,6 @@ HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));
 
-	transfers->forEach(&ItemInfo::deleteSelf);
-
 	return 0;
 }
 
@@ -122,11 +116,9 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	return menu;
 }
 
-HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	if (reinterpret_cast<HWND>(wParam) == transfers->handle() && transfers->hasSelection()) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+bool TransferView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if (transfers->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = transfers->getContextMenuPos();
 		}
 
@@ -134,11 +126,11 @@ HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		int i = -1;
 		ItemInfo* ii = transfers->getSelectedData();
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void TransferView::handleRemove() {
@@ -353,7 +345,6 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 				ItemInfo* ii = transfers->getData(i);
 				if(*ui == *ii) {
 					transfers->erase(i);
-					delete ii;
 					break;
 				}
 			}
@@ -448,6 +439,9 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 	if(ui.updateMask & UpdateInfo::MASK_IP) {
 		columns[COLUMN_IP] = ui.IP;
 	}
+	if(ui.updateMask & UpdateInfo::MASK_CIPHER) {
+		columns[COLUMN_CIPHER] = ui.cipher;
+	}
 }
 
 void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw() {
@@ -455,7 +449,6 @@ void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCq
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setStatusString(TSTRING(CONNECTING));
-
 	speak(ADD_ITEM, ui);
 }
 
@@ -484,12 +477,13 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) throw() {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true);
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
-	ui->setPos(aDownload->getTotal());
+	ui->setPos(aDownload->getPos());
 	ui->setActual(aDownload->getActual());
-	ui->setStart(aDownload->getPos());
+	ui->setStart(0);
 	ui->setSize(aDownload->getSize());
-	ui->setFile(Text::toT(aDownload->getTarget()));
+	ui->setFile(Text::toT(aDownload->getPath()));
 	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
+	ui->setCipher(Text::toT(aDownload->getUserConnection().getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aDownload->getUserConnection().getRemoteIp());
 	if(country.empty()) {
@@ -497,7 +491,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) th
 	} else {
 		ui->setIP(country + _T(" (") + ip + _T(")"));
 	}
-	if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	if(aDownload->getType() == Transfer::TYPE_TREE) {
 		ui->file = _T("TTH: ") + ui->file;
 	}
 
@@ -510,9 +504,9 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 
 		UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
 		ui->setActual(d->getActual());
-		ui->setPos(d->getTotal());
+		ui->setPos(d->getPos());
 		ui->setTimeLeft(d->getSecondsLeft());
-		ui->setSpeed(d->getRunningAverage());
+		ui->setSpeed(d->getAverageSpeed());
 
 		tstring pos = Text::toT(Util::formatBytes(d->getPos()));
 		double percent = (double)d->getPos()*100.0/(double)d->getSize();
@@ -551,8 +545,8 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 	ui->setPos(0);
 	ui->setStatusString(Text::toT(aReason));
 	ui->setSize(aDownload->getSize());
-	ui->setFile(Text::toT(aDownload->getTarget()));
-	if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	ui->setFile(Text::toT(aDownload->getPath()));
+	if(aDownload->getType() == Transfer::TYPE_TREE) {
 		ui->file = _T("TTH: ") + ui->file;
 	}
 
@@ -563,12 +557,13 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 	UpdateInfo* ui = new UpdateInfo(aUpload->getUser(), false);
 
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
-	ui->setPos(aUpload->getTotal());
+	ui->setPos(aUpload->getPos());
 	ui->setActual(aUpload->getActual());
 	ui->setStart(aUpload->getPos());
 	ui->setSize(aUpload->getSize());
-	ui->setFile(Text::toT(aUpload->getSourceFile()));
+	ui->setFile(Text::toT(aUpload->getPath()));
 	ui->setStatusString(TSTRING(UPLOAD_STARTING));
+	ui->setCipher(Text::toT(aUpload->getUserConnection().getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aUpload->getUserConnection().getRemoteIp());
 	if(country.empty()) {
@@ -576,7 +571,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 	} else {
 		ui->setIP(country + _T(" (") + ip + _T(")"));
 	}
-	if(aUpload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	if(aUpload->getType() == Transfer::TYPE_TREE) {
 		ui->file = _T("TTH: ") + ui->file;
 	}
 
@@ -591,9 +586,9 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 
 		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
 		ui->setActual(u->getActual());
-		ui->setPos(u->getTotal());
+		ui->setPos(u->getPos());
 		ui->setTimeLeft(u->getSecondsLeft());
-		ui->setSpeed(u->getRunningAverage());
+		ui->setSpeed(u->getAverageSpeed());
 
 		tstring pos = Text::toT(Util::formatBytes(u->getPos()));
 		double percent = (double)u->getPos()*100.0/(double)u->getSize();
@@ -622,6 +617,14 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 	}
 
 	speak();
+}
+
+void TransferView::on(DownloadManagerListener::Complete, Download* aDownload) throw() { 
+	onTransferComplete(aDownload, false);
+}
+
+void TransferView::on(UploadManagerListener::Complete, Upload* aUpload) throw() { 
+	onTransferComplete(aUpload, true); 
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {

@@ -63,6 +63,7 @@ Util::CountryList Util::countries;
 string Util::configPath;
 string Util::systemPath;
 string Util::dataPath;
+string Util::localePath;
 
 static void sgenrand(unsigned long seed);
 
@@ -88,12 +89,14 @@ void Util::initialize() {
 	systemPath = Util::getFilePath(Text::fromT(buf));
 	configPath = systemPath;
 	dataPath = systemPath;
+	localePath = dataPath + "locale\\";
 
 #else
 	systemPath = "/etc/";
 	char* home = getenv("HOME");
 	configPath = home ? Text::toUtf8(home) + "/.dc++/" : "/tmp/";
 	dataPath = configPath; // dataPath in linux is usually prefix + /share/app_name, so we can't represent it here
+	localePath = dataPath; // TODO no good default here either, fix
 #endif
 
 	// Load boot settings
@@ -943,5 +946,37 @@ string Util::toNmdcFile(const string& file) {
 	}
 	return ret;
 }
+
+string Util::translateError(int aError) {
+#ifdef _WIN32
+	LPTSTR lpMsgBuf;
+	DWORD chars = FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		aError,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+		(LPTSTR) &lpMsgBuf,
+		0,
+		NULL
+		);
+	if(chars == 0) {
+		return string();
+	}
+	string tmp = Text::fromT(lpMsgBuf);
+	// Free the buffer.
+	LocalFree( lpMsgBuf );
+	string::size_type i = 0;
+
+	while( (i = tmp.find_first_of("\r\n", i)) != string::npos) {
+		tmp.erase(i, 1);
+	}
+	return tmp;
+#else // _WIN32
+	return Text::toUtf8(strerror(aError));
+#endif // _WIN32
+}
+
 
 } // namespace dcpp

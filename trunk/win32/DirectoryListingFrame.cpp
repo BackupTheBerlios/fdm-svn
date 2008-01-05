@@ -71,12 +71,12 @@ int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int 
 	}
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
 		if(!BOOLSETTING(POPUNDER_FILELIST)) {
-			i->second->activate();
+			//i->second->activate();
 		}
 	} else {
 		DirectoryListingFrame* frame = new DirectoryListingFrame(mdiParent, aUser, aSpeed);
@@ -89,7 +89,7 @@ void DirectoryListingFrame::closeAll(){
 		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -100,7 +100,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, con
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
+DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
 	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
@@ -122,25 +122,17 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParen
 	paned->setRelativePos(0.3);
 
 	{
-		WidgetTreeView::Seed cs;
-		
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
 		addWidget(dirs);
 		paned->setFirst(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
 		dirs->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::handleSelectionChanged, this));
+		dirs->onContextMenu(std::tr1::bind(&DirectoryListingFrame::handleDirsContextMenu, this, _1));
 	}
 	
 	{
-		WidgetFiles::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
-		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		files->setFont(WinUtil::font);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
 		addWidget(files);
 		paned->setSecond(files);
 
@@ -149,16 +141,16 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParen
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
-		files->setSortColumn(COLUMN_FILENAME);
+		files->setSort(COLUMN_FILENAME);
 		
 		files->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::updateStatus, this));
 		files->onDblClicked(std::tr1::bind(&DirectoryListingFrame::handleDoubleClickFiles, this));
 		files->onKeyDown(std::tr1::bind(&DirectoryListingFrame::handleKeyDownFiles, this, _1));
+		files->onContextMenu(std::tr1::bind(&DirectoryListingFrame::handleFilesContextMenu, this, _1));
 	}
 	
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = TSTRING(FIND);
 		find = createButton(cs);
@@ -178,16 +170,14 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParen
 	}
 	
 	initStatus();
-	///@todo get real resizer width
-	statusSizes[STATUS_DUMMY] = 16;
 	
 	// This will set the widths correctly
 	setStatus(STATUS_FILE_LIST_DIFF, TSTRING(FILE_LIST_DIFF));
+
 	setStatus(STATUS_MATCH_QUEUE, TSTRING(MATCH_QUEUE));
 	setStatus(STATUS_FIND, TSTRING(FIND));
 	setStatus(STATUS_NEXT, TSTRING(NEXT));
 
-	onRaw(std::tr1::bind(&DirectoryListingFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
@@ -214,7 +204,7 @@ void DirectoryListingFrame::loadFile(const tstring& name, const tstring& dir) {
 		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
 	}
 
-	initStatus();
+	initStatusText();
 }
 
 void DirectoryListingFrame::loadXML(const string& txt) {
@@ -224,14 +214,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
 	}
 
-	initStatus();
-}
-
-
-void DirectoryListingFrame::initStatusText() {
-	setStatus(STATUS_TOTAL_FILES, Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true))));
-	setStatus(STATUS_TOTAL_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true))));
-	setStatus(STATUS_SPEED, Text::toT(STRING(SPEED) + ": " + Util::formatBytes(speed) + "/s"));
+	initStatusText();
 }
 
 void DirectoryListingFrame::layout() {
@@ -281,7 +264,7 @@ void DirectoryListingFrame::handleListDiff() {
 			dirList.loadFile(Text::fromT(file));
 			dl->getRoot()->filterList(dirList);
 			refreshTree(Util::emptyStringT);
-			initStatus();
+			initStatusText();
 			updateStatus();
 		} catch(const Exception&) {
 			/// @todo report to user?
@@ -291,7 +274,6 @@ void DirectoryListingFrame::handleListDiff() {
 
 void DirectoryListingFrame::refreshTree(const tstring& root) {
 	HoldRedraw hold(dirs);
-	
 	HTREEITEM ht = findItem(treeRoot, root);
 	if(ht == NULL) {
 		ht = treeRoot;
@@ -303,12 +285,12 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 	while((next = dirs->getChild(ht)) != NULL) {
 		dirs->erase(next);
 	}
-
 	updateTree(d, ht);
 	
 	dirs->select(NULL);
 	selectItem(root);
 
+	dcdebug("selected");
 	dirs->expand(treeRoot);
 }
 
@@ -372,7 +354,6 @@ void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
 
 void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_TO));
-	
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 	size_t i = 0;
 	for(; i < spl.size(); ++i) {
@@ -406,19 +387,17 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 	}
 }
 
-LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	
+bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 	WidgetMenuPtr contextMenu;
-	if(reinterpret_cast<HWND>(wParam) == files->handle() && files->hasSelection()) {
-		if(pt.x == -1 && pt.y == -1) {
+	if(files->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = files->getContextMenuPos();
 		}
 		
 		if(files->getSelectedCount() == 1) {
-			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe())) {
+			ItemInfo* ii = files->getSelectedData();
+			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe()) && ii->type == ItemInfo::FILE) {
 				string path;
-				ItemInfo* ii = files->getSelectedData();
 				try {
 					path = ShareManager::getInstance()->toReal(Util::toAdcFile(dl->getPath(ii->file) + ii->file->getName()));
 				} catch(const ShareException&) {
@@ -429,38 +408,36 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 					shellMenu.ShowContextMenu(menu, this, pt);
-					return TRUE;
+					return true;
 				}
 			}
-			ItemInfo* ii = files->getSelectedData();
 			
 			contextMenu = makeSingleMenu(ii);
 		} else {
 			contextMenu = makeMultiMenu();
 		}
 		usingDirMenu = false;
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
-	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle()) {
-		if(dirs->getSelection() == NULL) {
-			return FALSE;
-		}
-
-		if(pt.x == -1 && pt.y == -1) {
-			pt = dirs->getContextMenuPos();
-		} else {
-			dirs->select(pt);
-		}
-
-		contextMenu = makeDirMenu();
-		usingDirMenu = true;
-		
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-
-		return TRUE;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
+	return false;
+}
 
-	return FALSE;
+bool DirectoryListingFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
+		pt = dirs->getContextMenuPos();
+	} else {
+		dirs->select(pt);
+	}
+	
+	if(dirs->getSelection()) {
+		WidgetMenuPtr contextMenu = makeDirMenu();
+		usingDirMenu = true;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return true;
+	}
+	return false;
 }
 
 void DirectoryListingFrame::downloadFiles(const string& aTarget, bool view /* = false */) {
@@ -547,7 +524,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 					}
 				}
 			} catch(const Exception& e) {
-				setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
+				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		} else {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
@@ -591,7 +568,7 @@ void DirectoryListingFrame::handleDownloadTarget(unsigned id) {
 	try {
 		dl->download(ii->file, target, false, WinUtil::isShift());
 	} catch(const Exception& e) {
-		setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
+		setStatus(STATUS_STATUS, Text::toT(e.getError()));
 	}
 }
 
@@ -672,6 +649,12 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 	}
 }
 
+void DirectoryListingFrame::initStatusText() {
+	setStatus(STATUS_TOTAL_FILES, Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true))));
+	setStatus(STATUS_TOTAL_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true))));
+	setStatus(STATUS_SPEED, Text::toT(STRING(SPEED) + ": " + Util::formatBytes(speed) + "/s"));
+}
+
 void DirectoryListingFrame::updateStatus() {
 	if(!searching && !updating) {
 		int cnt = files->getSelectedCount();
@@ -683,17 +666,19 @@ void DirectoryListingFrame::updateStatus() {
 			total = files->forEachSelectedT(ItemInfo::TotalSize()).total;
 		}
 
-		tstring tmp = Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
-		setStatus(STATUS_SELECTED_FILES, tmp.c_str());
+		setStatus(STATUS_SELECTED_FILES, Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt)));
 
-		tmp = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
-		setStatus(STATUS_SELECTED_SIZE, tmp.c_str());
+		setStatus(STATUS_SELECTED_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total)));
 	}
 }
 
 void DirectoryListingFrame::handleSelectionChanged() {
+	ItemInfo* ii = dirs->getSelectedData();
+	if(!ii) {
+		return;
+	}
 	
-	DirectoryListing::Directory* d = dirs->getSelectedData()->dir;
+	DirectoryListing::Directory* d = ii->dir;
 	if(d == 0) {
 		return;
 	}
@@ -720,24 +705,21 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 	updateStatus();
 
 	if(!d->getComplete()) {
+		dcdebug("Directory incomplete\n");
 		if(dl->getUser()->isOnline()) {
 			try {
 				QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-				setStatus(STATUS_STATUS, CTSTRING(DOWNLOADING_LIST));
+				setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_LIST));
 			} catch(const QueueException& e) {
-				setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
+				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		} else {
-			setStatus(STATUS_STATUS, CTSTRING(USER_OFFLINE));
+			setStatus(STATUS_STATUS, TSTRING(USER_OFFLINE));
 		}
 	}
 }
 
 void DirectoryListingFrame::clearList() {
-	int j = files->size();
-	for(int i = 0; i < j; i++) {
-		delete files->getData(i);
-	}
 	files->clear();
 }
 
@@ -980,11 +962,17 @@ LRESULT DirectoryListingFrame::handleXButtonUp(WPARAM wParam, LPARAM lParam) {
 bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 	if(c == VK_BACK) {
 		up();
-	} else if(c == VK_LEFT && WinUtil::isAlt()) {
+		return true;
+	}
+	if(c == VK_LEFT && WinUtil::isAlt()) {
 		back();
-	} else if(c == VK_RIGHT && WinUtil::isAlt()) {
+		return true;
+	}
+	if(c == VK_RIGHT && WinUtil::isAlt()) {
 		forward();
-	} else if(c == VK_RETURN) {
+		return true;
+	}
+	if(c == VK_RETURN) {
 		if(files->getSelectedCount() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			if(ii->type == ItemInfo::DIRECTORY) {
@@ -1002,6 +990,7 @@ bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 		} else {
 			downloadFiles(SETTING(DOWNLOAD_DIRECTORY));
 		}
+		return true;
 	}
-	return true;
+	return false;
 }

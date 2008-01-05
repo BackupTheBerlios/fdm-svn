@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_USER_COMMAND_H
-#define DCPLUSPLUS_CLIENT_USER_COMMAND_H
+#ifndef DCPLUSPLUS_DCPP_USER_COMMAND_H
+#define DCPLUSPLUS_DCPP_USER_COMMAND_H
 
 #include "Util.h"
 #include "Flags.h"
@@ -32,7 +32,8 @@ public:
 		TYPE_SEPARATOR,
 		TYPE_RAW,
 		TYPE_RAW_ONCE,
-		TYPE_CLEAR = 255
+		TYPE_REMOVE,
+		TYPE_CLEAR = 255		// In a momentary lapse of reason, 255 was chosen in the nmdc version of usercommand for clearing them all
 	};
 
 	enum {
@@ -74,4 +75,4 @@ public:
 
 } // namespace dcpp
 
-#endif // !defined(DCPLUSPLUS_CLIENT_USER_COMMAND_H)
+#endif // !defined(DCPLUSPLUS_DCPP_USER_COMMAND_H)

@@ -37,7 +37,7 @@ protected:
 	friend class StaticFrame<ADLSearchFrame>;
 	friend class MDIChildFrame<ADLSearchFrame>;
 
-	ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent);
+	ADLSearchFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~ADLSearchFrame();
 
 	void layout();
@@ -59,14 +59,13 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetDataGridPtr items;
+	WidgetListViewPtr items;
 	WidgetButtonPtr add;
 	WidgetButtonPtr properties;
 	WidgetButtonPtr up;
 	WidgetButtonPtr down;
 	WidgetButtonPtr remove;
 	WidgetButtonPtr help;
-	WidgetMenuPtr contextMenu;
 
 	void handleAdd();
 	void handleProperties();
@@ -77,7 +76,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	LRESULT handleContextMenu(WPARAM /*wParam*/, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate sc);
 
 	void addEntry(ADLSearch& search, int index = -1);
 };

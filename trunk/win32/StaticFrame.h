@@ -27,7 +27,14 @@
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
-	StaticFrame(SmartWin::WidgetMDIParent* mdiClient) : 
+
+	StaticFrame(SmartWin::WidgetTabView* mdiClient, const tstring& title) : 
+		MDIChildFrame<T>(mdiClient, title, SmartWin::IconPtr(new SmartWin::Icon(T::ICON_RESOURCE))) 
+	{ 
+	}
+
+	/** @deprecated */
+	StaticFrame(SmartWin::WidgetTabView* mdiClient) : 
 		MDIChildFrame<T>(mdiClient, TSTRING_I(T::TITLE_RESOURCE), SmartWin::IconPtr(new SmartWin::Icon(T::ICON_RESOURCE))) 
 	{ 
 	}
@@ -36,10 +43,10 @@ public:
 		frame = 0; 
 	}
 
-	static void openWindow(SmartWin::WidgetMDIParent* mdiClient) {
+	static void openWindow(SmartWin::WidgetTabView* mdiClient) {
 		if(frame) {
-			HWND active = mdiClient->getActive();
-			if(active != frame->handle()) {
+			SmartWin::Widget* active = mdiClient->getActive();
+			if(active != frame) {
 				frame->activate();
 			} else if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
 				mdiClient->next();

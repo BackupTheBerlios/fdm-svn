@@ -112,6 +112,7 @@ void BufferedSocket::connect(const string& aAddress, uint16_t aPort, bool secure
 		sock = secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket;
 
 		sock->create();
+		sock->bind(0, SETTING(BIND_ADDRESS));
 		if(SETTING(SOCKET_IN_BUFFER) >= 1024)
 			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
 		if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
@@ -266,14 +267,14 @@ void BufferedSocket::threadRead() throw(SocketException) {
 
 void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(sock);
-	if(!sock)
+	if(!sock || disconnecting)
 		return;
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize = max(sockSize, (size_t)64*1024);
 
-	vector<uint8_t> readBuf(bufSize);
-	vector<uint8_t> writeBuf(bufSize);
+	ByteVector readBuf(bufSize);
+	ByteVector writeBuf(bufSize);
 
 	size_t readPos = 0;
 

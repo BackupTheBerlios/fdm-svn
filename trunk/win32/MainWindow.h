@@ -25,16 +25,15 @@
 #include <dcpp/LogManager.h>
 #include <dcpp/HttpConnection.h>
 
-#include "TransferView.h"
 #include "WidgetFactory.h"
 #include "AspectStatus.h"
 #include "AspectSpeaker.h"
-#include "MDITab.h"
 
 class UPnP;
+class TransferView;
 
 class MainWindow : 
-	public WidgetFactory<SmartWin::WidgetMDIFrame>, 
+	public WidgetFactory<SmartWin::WidgetWindow>, 
 	public AspectSpeaker<MainWindow>,
 	private HttpConnectionListener, 
 	private QueueManagerListener, 
@@ -54,6 +53,11 @@ public:
 		STATUS_DUMMY,
 		STATUS_LAST
 	};
+
+	/// @deprecated
+	WidgetTabView* getMDIParent() { return tabs; }
+
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 
 	MainWindow();
 	
@@ -101,7 +105,7 @@ private:
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
 	WidgetToolbarPtr toolbar;
-	MDITab* tabs;
+	WidgetTabViewPtr tabs;
 	
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -121,8 +125,6 @@ private:
 	SmartWin::Application::FilterIter filterIter;
 	SmartWin::AcceleratorPtr accel;
 
-	static MainWindow* instance;
-	
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
 	tstring lastLines;
@@ -151,16 +153,13 @@ private:
 	void handleOpenDownloadsDir();
 	void handleLink(unsigned id);
 	void handleAbout();
-	void handleMDIReorder(unsigned id);
 	void handleMenuHelp(unsigned id);
 	void handleHashProgress();
 	void handleCloseWindows(unsigned id);
-	void handleMinimizeAll();
-	void handleRestoreAll();
 	void handleSize();
+	void handleActivate(bool active);
 	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 	LRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
-	bool handleTabResize(const SmartWin::WidgetSizedEventResult& sz);
 	LRESULT handleTrayIcon(WPARAM wParam, LPARAM lParam);
 	
 	// Other events
@@ -170,6 +169,8 @@ private:
 	LRESULT trayMessage(WPARAM wParam, LPARAM lParam);
 	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
 	LRESULT handleWhereAreYou(WPARAM wParam, LPARAM lParam);
+
+	void handleTabsTitleChanged(const SmartUtil::tstring& title);
 	
 	void layout();
 	bool eachSecond();
@@ -180,7 +181,6 @@ private:
 	void startUPnP();
 	void stopUPnP();
 	void saveWindowSettings();
-	void resizeMDIClient();
 	void parseCommandLine(const tstring& cmdLine);
 	bool filter(MSG& msg);
 	
@@ -199,46 +199,6 @@ private:
 	// QueueManagerListener
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw();
 	virtual void on(PartialList, const UserPtr&, const string& text) throw();
-
-#ifdef PORT_ME
-
-	virtual BOOL PreTranslateMessage(MSG* pMsg)
-	{
-		if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
-			ctrlLastLines.RelayEvent(pMsg);
-
-		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
-			return TRUE;
-
-		HWND hWnd = MDIGetActive();
-		if(hWnd != NULL)
-			return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);
-
-		return FALSE;
-	}
-
-	BEGIN_MSG_MAP(MainFrame)
-		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
-	END_MSG_MAP()
-
-	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	LRESULT onTrayQuit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		PostMessage(WM_CLOSE);
-		return 0;
-	}
-
-	LRESULT onTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ShowWindow(SW_SHOW);
-		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
-		return 0;
-	}
-
-#endif
 
 };
 

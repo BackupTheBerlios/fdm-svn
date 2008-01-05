@@ -23,16 +23,14 @@
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
 
-NotepadFrame::NotepadFrame(SmartWin::WidgetMDIParent* mdiParent) : 
+NotepadFrame::NotepadFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent),
 	pad(0) 
 {
 	{
-		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
 		pad = createTextBox(cs);
-		pad->setFont(WinUtil::font);
 		addWidget(pad);
 	}
 	

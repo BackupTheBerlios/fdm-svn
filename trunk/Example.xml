@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.699" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.6995" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -353,7 +353,6 @@
 		<String Name="RemoveFromAll">Remove user from queue</String>
 		<String Name="RemoveSource">Remove source</String>
 		<String Name="RenamedTo"> renamed to </String>
-		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>
 		<String Name="S">s</String>
 		<String Name="Search">Search</String>
@@ -378,7 +377,6 @@
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvanced">Advanced</String>
 		<String Name="SettingsAdvanced3">Advanced\Experts only</String>
-		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAllowUntrustedClients">Allow TLS connections to clients without trusted certificate</String>
 		<String Name="SettingsAllowUntrustedHubs">Allow TLS connections to hubs without trusted certificate</String>
@@ -405,7 +403,7 @@
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
 		<String Name="SettingsAutoRefreshTime">Auto refresh time</String>
 		<String Name="SettingsBindAddress">Bind address</String>
-		<String Name="SettingsBoldOptions">Tab bolding on content change</String>
+		<String Name="SettingsBoldOptions">Tab highlight on content change</String>
 		<String Name="SettingsCertificates">Advanced\Security Certificates</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
@@ -491,7 +489,6 @@
 		<String Name="SettingsQueue">Downloads\Queue</String>
 		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
-		<String Name="SettingsRollback">Rollback</String>
 		<String Name="SettingsSearchHistory">Search history</String>
 		<String Name="SettingsSelectTextFace">Select &amp;text style</String>
 		<String Name="SettingsSelectWindowColor">Select &amp;window color</String>
@@ -502,7 +499,7 @@
 		<String Name="SettingsSharedDirectories">Shared directories</String>
 		<String Name="SettingsShowJoins">Show joins / parts in chat by default</String>
 		<String Name="SettingsShowProgressBars">Show progress bars for transfers</String>
-		<String Name="SettingsShowShellMenu">Show shell menu in finished transfers</String>
+		<String Name="SettingsShowShellMenu">Show shell menu where possible</String>
 		<String Name="SettingsSkipZeroByte">Skip zero-byte files</String>
 		<String Name="SettingsSmallSendBuffer">Use small send buffer (enable if uploads slow downloads a lot)</String>
 		<String Name="SettingsSocks5">SOCKS5</String>

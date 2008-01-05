@@ -44,7 +44,7 @@ protected:
 	friend class MDIChildFrame<WaitingUsersFrame>;
 
 	// Constructor
-	WaitingUsersFrame(SmartWin::WidgetMDIParent* mdiParent);
+	WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~WaitingUsersFrame() { }
 
 	bool preClosing();
@@ -56,9 +56,9 @@ protected:
 	void onGetList();
 	void onCopyFilename();
 	void onRemove();
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	bool handleChar(int c);
 	void onPrivateMessage();
 	void onGrantSlot();
 	void onAddToFavorites();

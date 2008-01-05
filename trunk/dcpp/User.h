@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_USER_H
-#define DCPLUSPLUS_CLIENT_USER_H
+#ifndef DCPLUSPLUS_DCPP_USER_H
+#define DCPLUSPLUS_DCPP_USER_H
 
 #include "Util.h"
 #include "Pointer.h"
@@ -39,9 +39,11 @@ public:
 		PASSIVE_BIT,
 		NMDC_BIT,
 		BOT_BIT,
-		TTH_GET_BIT,
 		TLS_BIT,
-		OLD_CLIENT_BIT
+		OLD_CLIENT_BIT,
+		NO_ADC_1_0_PROTOCOL_BIT,
+		NO_ADC_0_10_PROTOCOL_BIT,
+		NO_ADCS_0_10_PROTOCOL_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -51,9 +53,11 @@ public:
 		PASSIVE = 1<<PASSIVE_BIT,
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
-		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
 		TLS = 1<<TLS_BIT,				//< Client supports TLS
-		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
+		OLD_CLIENT = 1<<OLD_CLIENT_BIT,  //< Can't download - old client
+		NO_ADC_1_0_PROTOCOL = 1<<NO_ADC_1_0_PROTOCOL_BIT,	//< Doesn't support "ADC/1.0" (dc++ <=0.703)
+		NO_ADC_0_10_PROTOCOL = 1<<NO_ADC_0_10_PROTOCOL_BIT,	//< Doesn't support "ADC/0.10"
+		NO_ADCS_0_10_PROTOCOL = 1<< NO_ADCS_0_10_PROTOCOL_BIT	//< Doesn't support "ADCS/0.10"
 	};
 
 	struct Hash {
@@ -70,7 +74,6 @@ public:
 	bool isOnline() const { return isSet(ONLINE); }
 	bool isNMDC() const { return isSet(NMDC); }
 
-	GETSET(string, firstNick, FirstNick);
 private:
 	User(const User&);
 	User& operator=(const User&);
@@ -81,7 +84,7 @@ private:
 /** One of possibly many identities of a user, mainly for UI purposes */
 class Identity : public Flags {
 public:
-	enum {
+	enum IdentityFlagBits {
 		GOT_INF_BIT,
 		NMDC_PASSIVE_BIT
 	};
@@ -89,7 +92,15 @@ public:
 		GOT_INF = 1 << GOT_INF_BIT,
 		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
-
+	enum ClientType {
+		CT_BOT = 1,
+		CT_REGGED = 2,
+		CT_OP = 4,
+		CT_SU = 8,
+		CT_OWNER = 16,
+		CT_HUB = 32
+	};
+	
 	Identity() : sid(0) { }
 	Identity(const UserPtr& ptr, uint32_t aSID) : user(ptr), sid(aSID) { }
 	Identity(const Identity& rhs) : Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
@@ -112,24 +123,26 @@ public:
 	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
 	string getTag() const;
 	bool supports(const string& name) const;
-	bool isHub() const { return !get("HU").empty(); }
-	bool isOp() const { return !get("OP").empty(); }
-	bool isRegistered() const { return !get("RG").empty(); }
+	bool isHub() const { return isClientType(CT_HUB) || !get("HU").empty(); }
+	bool isOp() const { return isClientType(CT_OP) || isClientType(CT_SU) || isClientType(CT_OWNER) || !get("OP").empty(); }
+	bool isRegistered() const { return isClientType(CT_REGGED) || !get("RG").empty(); }
 	bool isHidden() const { return !get("HI").empty(); }
-	bool isBot() const { return !get("BO").empty(); }
+	bool isBot() const { return isClientType(CT_BOT) || !get("BO").empty(); }
 	bool isAway() const { return !get("AW").empty(); }
 	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 	string get(const char* name) const;
 	void set(const char* name, const string& val);
 	string getSIDString() const { return string((const char*)&sid, 4); }
+	
+	bool isClientType(ClientType ct) const;
 
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	UserPtr& getUser() { return user; }
 	GETSET(UserPtr, user, User);
 	GETSET(uint32_t, sid, SID);
 private:
-	typedef map<short, string> InfMap;
+	typedef std::tr1::unordered_map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 	InfMap info;
 	/** @todo there are probably more threading issues here ...*/

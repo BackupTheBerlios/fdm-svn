@@ -25,11 +25,6 @@
 #include <dcpp/MerkleTree.h>
 
 #ifdef PORT_ME
-#include "../client/Util.h"
-#include "../client/SettingsManager.h"
-#include "../client/User.h"
-#include "../client/MerkleTree.h"
-
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
 typedef DWORD HLSCOLOR;
@@ -43,10 +38,9 @@ COLORREF HLS2RGB (HLSCOLOR hls);
 
 COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
 
-class FlatTabCtrl;
-class UserCommand;
-
 #endif
+
+class MainWindow;
 
 class WinUtil {
 public:
@@ -64,13 +58,22 @@ public:
 	static int dirIconIndex;
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
-	static SmartWin::Widget* mainWindow;
-	static SmartWin::WidgetMDIParent* mdiParent;
+	static MainWindow* mainWindow;
+	//static SmartWin::WidgetTabView* mdiParent;
 	static DWORD helpCookie;
 	
 	typedef unordered_map<string, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
+	
+	struct Seeds {
+		static const SmartWin::WidgetButton::Seed button;
+		static const SmartWin::WidgetComboBox::Seed comboBoxStatic;
+		static const SmartWin::WidgetComboBox::Seed comboBoxEdit;
+		static const SmartWin::WidgetListView::Seed listView;
+		static const SmartWin::WidgetTextBox::Seed textBox;
+		static const SmartWin::WidgetTreeView::Seed treeView;
+	};
 	
 	static void init();
 	static void uninit();
@@ -105,6 +108,16 @@ public:
 	static std::string toString(const std::vector<int>& tokens);
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	
+	template<typename T>
+	static TStringList getStrings(const T& t) {
+		const size_t n = sizeof(t) / sizeof(t[0]);
+		TStringList ret(n);
+		for(size_t i = 0; i < n; ++i) {
+			ret[i] = T_(t[i]);
+		}
+		return ret;
+	}
+
 	static int getIconIndex(const tstring& aFileName);
 	static int getDirIconIndex() { return dirIconIndex; }
 	static int getDirMaskedIndex() { return dirMaskedIndex; }
@@ -167,17 +180,6 @@ public:
 	}
 
 #ifdef PORT_ME
-	static CImageList userImages;
-
-	static int fontHeight;
-	static HFONT boldFont;
-	static HFONT systemFont;
-	static HFONT monoFont;
-	static HWND mainWnd;
-	static HWND mdiClient;
-	static FlatTabCtrl* tabCtrl;
-
-
 	static int getTextWidth(const tstring& str, HWND hWnd) {
 		HDC dc = ::GetDC(hWnd);
 		int sz = getTextWidth(str, dc);
@@ -190,28 +192,9 @@ public:
 		return sz.cx;
 	}
 
-
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 
 	static double toBytes(TCHAR* aSize);
-
-	//returns the position where the context menu should be
-	//opened if it was invoked from the keyboard.
-	//aPt is relative to the screen not the control.
-	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
-
-	template<class T> static HWND hiddenCreateEx(T& p) throw() {
-		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
-		::LockWindowUpdate(mdiClient);
-		HWND ret = p.CreateEx(mdiClient);
-		if(active && ::IsWindow(active))
-			::SendMessage(mdiClient, WM_MDIACTIVATE, (WPARAM)active, 0);
-		::LockWindowUpdate(0);
-		return ret;
-	}
-	template<class T> static HWND hiddenCreateEx(T* p) throw() {
-		return hiddenCreateEx(*p);
-	}
 
 #endif
 };

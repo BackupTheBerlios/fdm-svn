@@ -43,7 +43,7 @@ void QueueFrame::QueueItemInfo::remove() {
 	QueueManager::getInstance()->remove(getTarget()); 
 }
 
-QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
+QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	dirs(0),
 	files(0),
@@ -58,25 +58,18 @@ QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	paned = createVPaned();
 	paned->setRelativePos(0.3);
 	{
-		WidgetTreeView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
 		addWidget(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
 		dirs->onSelectionChanged(std::tr1::bind(&QueueFrame::updateFiles, this));
 		dirs->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownDirs, this, _1));
+		dirs->onContextMenu(std::tr1::bind(&QueueFrame::handleDirsContextMenu, this, _1));
 		paned->setFirst(dirs);
 	}
 	
 	{
-		WidgetFiles::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
-		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		files->setFont(WinUtil::font);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
 		addWidget(files);
 
 		files->setSmallImageList(WinUtil::fileImages);
@@ -84,10 +77,11 @@ QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
-		files->setSortColumn(COLUMN_TARGET);
+		files->setSort(COLUMN_TARGET);
 		
 		files->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownFiles, this, _1));
 		files->onSelectionChanged(std::tr1::bind(&QueueFrame::updateStatus, this));
+		files->onContextMenu(std::tr1::bind(&QueueFrame::handleFilesContextMenu, this, _1));
 
 		paned->setSecond(files);
 	}
@@ -97,21 +91,17 @@ QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		cs.caption = _T("+/-");
 		showTree = createCheckBox(cs);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
+		showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 	}
 	
 	initStatus();
 	statusSizes[STATUS_SHOW_TREE] = 16;
-	///@todo get real resizer width
-	statusSizes[STATUS_DUMMY] = 16;
-	
-	showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
 
 	onSpeaker(std::tr1::bind(&QueueFrame::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&QueueFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	
 	updateStatus();	
 	layout();
@@ -176,7 +166,7 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
             QueueItemInfo* ii = getItemInfo(ui->target);
 
 			ii->setPriority(ui->priority);
-			ii->setStatus(ui->status);
+			ii->setRunning(ui->running);
 			ii->setDownloadedBytes(ui->downloadedBytes);
 			ii->setSources(ui->sources);
 			ii->setBadSources(ui->badSources);
@@ -416,7 +406,7 @@ void QueueFrame::QueueItemInfo::update() {
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
 		if(colMask & MASK_STATUS) {
-			if(getStatus() == QueueItem::STATUS_WAITING) {
+			if(!getRunning()) {
 
 				TCHAR buf[64];
 				if(online > 0) {
@@ -442,7 +432,7 @@ void QueueFrame::QueueItemInfo::update() {
 						display->columns[COLUMN_STATUS] = buf;
 					}
 				}
-			} else if(getStatus() == QueueItem::STATUS_RUNNING) {
+			} else {
 				display->columns[COLUMN_STATUS] = TSTRING(RUNNING);
 			}
 		}
@@ -1090,10 +1080,9 @@ unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startI
 	return id - startId;
 }
 
-HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	if (reinterpret_cast<HWND>(wParam) == files->handle() && files->getSelectedCount() > 0) {
-		if(pt.x == -1 || pt.y == -1) {
+bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(files->getSelectedCount() > 0) {
+		if(pt.x() == -1 || pt.y() == -1) {
 			pt = files->getContextMenuPos();
 		}
 
@@ -1106,25 +1095,27 @@ HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		} else {
 			contextMenu = makeMultiMenu();
 		}
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
-	} else if (reinterpret_cast<HWND>(wParam) == dirs->handle()) {
-		if(pt.x == -1 && pt.y == -1) {
-			pt = dirs->getContextMenuPos();
-		} else {
-			dirs->select(pt);
-		}
-		
-		if(dirs->getSelection() == NULL) {
-			return FALSE;
-		}
+		return true;
+	}
+	return false;
+}
+
+bool QueueFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
+		pt = dirs->getContextMenuPos();
+	} else {
+		dirs->select(pt);
+	}
+	
+	if(dirs->getSelection()) {
 		usingDirMenu = true;
 		WidgetMenuPtr contextMenu = makeDirMenu();
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }

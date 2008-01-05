@@ -2,27 +2,18 @@
 
 namespace SmartWin {
 
-const WidgetTreeView::Seed & WidgetTreeView::getDefaultSeed()
+WidgetTreeView::Seed::Seed() :
+	Widget::Seed(WC_TREEVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP),
+	font(new Font(DefaultGuiFont))
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = WC_TREEVIEW;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetTreeView::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
+	ControlType::create(cs);
 
-	setFont( cs.font );
+	if(cs.font)
+		setFont( cs.font );
 }
 
 HTREEITEM WidgetTreeView::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )
@@ -145,16 +136,33 @@ void WidgetTreeView::setDataImpl(HTREEITEM item, LPARAM lParam) {
 	TreeView_SetItem(this->handle(), &tvitem);
 }
 
-Point WidgetTreeView::getContextMenuPos() {
+ScreenCoordinate WidgetTreeView::getContextMenuPos() {
 	HTREEITEM item = getSelection();
 	POINT pt = { 0 };
-	if(item != NULL) {
+	if(item) {
 		RECT trc = this->getItemRect(item);
 		pt.x = trc.left;
 		pt.y = trc.top + ((trc.bottom - trc.top) / 2);
 	} 
-	this->clientToScreen(pt);
-	return pt;
+	return ClientCoordinate(pt, this);
+}
+
+void WidgetTreeView::select(const ScreenCoordinate& pt) {
+	HTREEITEM ht = this->hitTest(pt);
+	if(ht != NULL && ht != this->getSelection()) {
+		this->select(ht);
+	}
+}
+
+/// Returns true if fired, else false
+bool WidgetTreeView::tryFire( const MSG & msg, LRESULT & retVal ) {
+	bool handled = PolicyType::tryFire(msg, retVal);
+	if(!handled && msg.message == WM_RBUTTONDOWN) {
+		// Tree view control does strange things to rbuttondown, preventing wm_contextmenu from reaching it
+		retVal = ::DefWindowProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+		return true;
+	}
+	return handled;
 }
 
 }

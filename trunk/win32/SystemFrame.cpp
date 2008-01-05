@@ -22,17 +22,15 @@
 #include "HoldRedraw.h"
 #include "WinUtil.h"
 
-SystemFrame::SystemFrame(SmartWin::WidgetMDIParent* mdiParent) : 
+SystemFrame::SystemFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent),
 	log(0) 
 {
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		log = createTextBox(cs);
 		addWidget(log);
-		log->setFont(WinUtil::font);
 	}
 
 	initStatus();

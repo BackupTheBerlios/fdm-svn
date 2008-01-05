@@ -59,22 +59,19 @@ UserPtr DirectoryListing::getUserFromFilename(const string& fileName) {
 	// Find CID
 	string::size_type i = name.rfind('.');
 	if(i == string::npos) {
-		return NULL;
+		return UserPtr();
 	}
 
 	size_t n = name.length() - (i + 1);
 	// CID's always 39 chars long...
 	if(n != 39)
-		return NULL;
+		return UserPtr();
 
 	CID cid(name.substr(i + 1));
 	if(cid.isZero())
-		return NULL;
+		return UserPtr();
 
-	UserPtr p = ClientManager::getInstance()->getUser(cid);
-	if(p->getFirstNick().empty())
-		p->setFirstNick(name.substr(0, i));
-	return p;
+	return ClientManager::getInstance()->getUser(cid);
 }
 
 void DirectoryListing::loadFile(const string& name) throw(Exception) {
@@ -103,7 +100,8 @@ void DirectoryListing::loadFile(const string& name) throw(Exception) {
 	} else if(Util::stricmp(ext, ".xml") == 0) {
 		int64_t sz = dcpp::File::getSize(name);
 		if(sz == -1 || sz >= static_cast<int64_t>(txt.max_size()))
-			throw(FileException(CSTRING(FILE_NOT_AVAILABLE)));
+			throw FileException(STRING(FILE_NOT_AVAILABLE));
+		
 		txt.resize((size_t) sz);
 		size_t n = txt.length();
 		dcpp::File(name, dcpp::File::READ, dcpp::File::OPEN).read(&txt[0], n);

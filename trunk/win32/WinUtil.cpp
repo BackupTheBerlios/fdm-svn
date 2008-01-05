@@ -20,8 +20,8 @@
 #include "stdafx.h"
 
 #include "WinUtil.h"
+
 #include "resource.h"
-#include "LineDlg.h"
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ShareManager.h>
@@ -35,8 +35,11 @@
 #include <dcpp/File.h>
 #include <dcpp/UserCommand.h>
 
+#include "LineDlg.h"
+#include "MagnetDlg.h"
 #include "HubFrame.h"
 #include "SearchFrame.h"
+#include "MainWindow.h"
 
 tstring WinUtil::tth;
 SmartWin::BrushPtr WinUtil::bgBrush;
@@ -50,12 +53,18 @@ int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
 TStringList WinUtil::lastDirs;
-SmartWin::Widget* WinUtil::mainWindow = 0;
-SmartWin::WidgetMDIParent* WinUtil::mdiParent = 0;
+MainWindow* WinUtil::mainWindow = 0;
 bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
+
+const SmartWin::WidgetButton::Seed WinUtil::Seeds::button;
+const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
+const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
+const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
+const SmartWin::WidgetTextBox::Seed WinUtil::Seeds::textBox;
+const SmartWin::WidgetTreeView::Seed WinUtil::Seeds::treeView;
 
 void WinUtil::init() {
 
@@ -109,6 +118,30 @@ void WinUtil::init() {
 		registerMagnetHandler();
 		urlMagnetRegistered = true;
 	}
+	
+	// Const so that noone else will change them after they've been initialized
+	SmartWin::WidgetButton::Seed& xbutton = const_cast<SmartWin::WidgetButton::Seed&>(Seeds::button);
+	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
+	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
+	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);
+	SmartWin::WidgetTextBox::Seed& xtextBox = const_cast<SmartWin::WidgetTextBox::Seed&>(Seeds::textBox);
+	SmartWin::WidgetTreeView::Seed& xtreeView =  const_cast<SmartWin::WidgetTreeView::Seed&>(Seeds::treeView);
+
+	xcomboBoxStatic.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+	xcomboBoxEdit.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
+	
+	xlistView.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+	xlistView.exStyle = WS_EX_CLIENTEDGE;
+	xlistView.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
+	xlistView.font = font;
+	
+	xtextBox.exStyle = WS_EX_CLIENTEDGE;
+	xtextBox.font = font;
+
+	xtreeView.style |= TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
+	xtreeView.exStyle = WS_EX_CLIENTEDGE;
+	xtreeView.font = font;
+	
 
 	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 }
@@ -219,7 +252,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
-			SearchFrame::openWindow(mdiParent, param);
+			SearchFrame::openWindow(mainWindow->getMDIParent(), param);
 		} else {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		}
@@ -308,11 +341,18 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		}
 		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		SmartWin::Icon tmp(fi.hIcon);
-		fileImages->add(tmp);
+		if(!fi.hIcon) {
+			return 2;
+		}
+		try {
+			SmartWin::Icon tmp(fi.hIcon);
+			fileImages->add(tmp);
 
-		fileIndexes[x] = fileImageCount++;
-		return fileImageCount - 1;
+			fileIndexes[x] = fileImageCount++;
+			return fileImageCount - 1;
+		} catch(const SmartWin::xCeption&) {
+			return 2;
+		}
 	} else {
 		return 2;
 	}
@@ -333,7 +373,7 @@ void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
 }
 
 void WinUtil::searchHash(const TTHValue& aHash) {
-	SearchFrame::openWindow(mdiParent, Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
+	SearchFrame::openWindow(mainWindow->getMDIParent(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 }
 
 tstring WinUtil::escapeMenu(tstring str) {
@@ -498,7 +538,7 @@ void WinUtil::setClipboard(const tstring& str) {
 #ifdef UNICODE
 	SetClipboardData(CF_UNICODETEXT, hglbCopy);
 #else
-	SetClipboardData(CF_TEXT hglbCopy);
+	SetClipboardData(CF_TEXT, hglbCopy);
 #endif
 
 	CloseClipboard();
@@ -653,7 +693,7 @@ void WinUtil::registerDchubHandler() {
 			return;
 		}
 
-		TCHAR* tmp = _T("URL:Direct Connect Protocol");
+		TCHAR tmp[] = _T("URL:Direct Connect Protocol");
 		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		::RegCloseKey(hk);
@@ -692,7 +732,7 @@ void WinUtil::registerDchubHandler() {
 			 return;
 		 }
 
-		 TCHAR* tmp = _T("URL:Direct Connect Protocol");
+		 TCHAR tmp[] = _T("URL:Direct Connect Protocol");
 		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		 ::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		 ::RegCloseKey(hk);
@@ -901,7 +941,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-		HubFrame::openWindow(mdiParent, server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getMDIParent(), server + ":" + Util::toString(port));
 	}
 	if(!file.empty()) {
 		if(file[0] == '/') // Remove any '/' in from of the file
@@ -922,7 +962,7 @@ void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
-		HubFrame::openWindow(mdiParent, "adc://" + server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getMDIParent(), "adc://" + server + ":" + Util::toString(port));
 	}
 }
 
@@ -983,15 +1023,10 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 			//	};
 			//} else {
 			// use aOverride to force the display of the dialog.  used for auto-updating
-#ifdef PORT_ME
-			MagnetDlg dlg(fhash, fname);
-				dlg.DoModal(mainWnd);
-#endif
+				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-#ifdef PORT_ME
-			MessageBox(mainWnd, CTSTRING(MAGNET_DLG_TEXT_BAD), CTSTRING(MAGNET_DLG_TITLE), MB_OK | MB_ICONEXCLAMATION);
-#endif
+			SmartWin::WidgetMessageBox(mainWindow).show(TSTRING(MAGNET_DLG_TEXT_BAD), TSTRING(MAGNET_DLG_TITLE), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }
@@ -1013,18 +1048,5 @@ double WinUtil::toBytes(TCHAR* aSize) {
 	} else {
 		return bytes;
 	}
-}
-
-void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
-	CRect trc;
-	HTREEITEM ht = aTree.GetSelectedItem();
-	if(ht) {
-		aTree.GetItemRect(ht, &trc, TRUE);
-		aPt.x = trc.left;
-		aPt.y = trc.top + (trc.Height() / 2);
-	} else {
-		aPt.x = aPt.y = 0;
-	}
-	aTree.ClientToScreen(&aPt);
 }
 #endif

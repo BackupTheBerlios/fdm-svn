@@ -1,4 +1,3 @@
-// $Revision: 1.32 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -31,17 +30,13 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
 #include "../Dispatchers.h"
-#include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../resources/ImageList.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -62,40 +57,16 @@ class WidgetCreator;
   * to view the log of URL's you have been to etc...   
   */
 class WidgetToolbar :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
-	public AspectEnabled< WidgetToolbar >,
+	public AspectControl< WidgetToolbar >,
 	public AspectFocus< WidgetToolbar >,
-	public AspectFont< WidgetToolbar >,
-	public AspectRaw< WidgetToolbar >,
-	private AspectSizable< WidgetToolbar >,
-	public AspectVisible< WidgetToolbar >
+	public AspectFont< WidgetToolbar >
 {
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 	typedef SmartWin::AspectSizable< WidgetToolbar > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
 	friend class SmartWin::AspectSizable<WidgetToolbar>;
 public:
-	// Including the stuff we need from AspectSizable to make it accessible.
-	// Note here that since we DON'T want the setBounds functions we must inherit
-	// privately from AspectSizable and include the stuff we WAN'T to expose from
-	// AspectSizable in a public block of the class.
-	using AspectSizable::getBounds;
-	using AspectSizable::getSize;
-	using AspectSizable::getPosition;
-	using AspectSizable::getClientAreaSize;
-	using AspectSizable::getTextSize;
-	using AspectSizable::bringToFront;
-	using AspectSizable::onSized;
-	using AspectSizable::onMoved;
-
-	/// Class type
-	typedef WidgetToolbar ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
@@ -104,24 +75,12 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetToolbar::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
-
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	// TODO: Outfactor into Aspect, also WidgetStatusBar...
 	/// Refreshes the toolbar, must be called after main window has been resized
@@ -199,11 +158,11 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetToolbar( SmartWin::Widget * parent );
+	explicit WidgetToolbar( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -212,8 +171,6 @@ protected:
 
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 private:
-	std::map< unsigned int, SmartUtil::tstring > itsToolTips;
-
 	// Keep references
 	ImageListPtr itsNormalImageList;
 	ImageListPtr itsHotImageList;
@@ -225,11 +182,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetToolbar::Seed::Seed()
-{
-	* this = WidgetToolbar::getDefaultSeed();
-}
 
 inline void WidgetToolbar::refresh()
 {
@@ -335,10 +287,8 @@ inline bool WidgetToolbar::getButtonChecked( unsigned int id )
 }
 
 inline WidgetToolbar::WidgetToolbar( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
 // end namespace SmartWin

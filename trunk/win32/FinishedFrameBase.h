@@ -27,6 +27,7 @@
 
 #include <dcpp/File.h>
 #include <dcpp/FinishedManager.h>
+#include <dcpp/TimerManager.h>
 
 template<class T, bool in_UL>
 class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {
@@ -36,7 +37,6 @@ public:
 		STATUS_COUNT,
 		STATUS_BYTES,
 		STATUS_SPEED,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
@@ -47,14 +47,14 @@ protected:
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase(SmartWin::WidgetMDIParent* mdiParent) :
+	FinishedFrameBase(SmartWin::WidgetTabView* mdiParent) :
 		BaseType(mdiParent),
 		items(0),
 		totalBytes(0),
 		totalTime(0)
 	{
 		{
-			typename MDIChildType::WidgetDataGrid::Seed cs;
+			typename MDIChildType::WidgetListView::Seed cs;
 			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
@@ -64,33 +64,25 @@ protected:
 			items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
-			items->setSortColumn(COLUMN_DONE);
+			items->setSort(COLUMN_DONE);
 			
 			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);
 
 			items->onDblClicked(std::tr1::bind(&ThisType::handleDoubleClick, this));
 			items->onKeyDown(std::tr1::bind(&ThisType::handleKeyDown, this, _1));
+			items->onContextMenu(std::tr1::bind(&ThisType::handleContextMenu, this, _1));
 		}
 
 		this->initStatus();
 
-		this->statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
-
 		layout();
 
 		onSpeaker(std::tr1::bind(&ThisType::handleSpeaker, this, _1, _2));
-		onRaw(std::tr1::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 		FinishedManager::getInstance()->addListener(this);
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
-
-#if 1
-		// for testing purposes; adds 2 dummy lines into the list
-		addEntry(new FinishedItem("C:\\folder\\file.txt", "nicks", "hubs", 1024, 1024, 1000, GET_TIME() - 1000, false));
-		addEntry(new FinishedItem("C:\\folder\\file2.txt", "nicks2", "hubs2", 2048, 2048, 1000, GET_TIME(), false));
-#endif
 	}
 
 	virtual ~FinishedFrameBase() { }
@@ -181,7 +173,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListView<T, ItemInfo> WidgetItems;
+	typedef TypedListView<ItemInfo> WidgetItems;
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
 
@@ -215,11 +207,9 @@ private:
 		return false;
 	}
 
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam) {
-		if(reinterpret_cast<HWND>(wParam) == items->handle() && items->hasSelection()) {
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-			if(pt.x == -1 && pt.y == -1) {
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt) {
+		if(items->hasSelection()) {
+			if(pt.x() == -1 && pt.y() == -1) {
 				pt = items->getContextMenuPos();
 			}
 
@@ -241,7 +231,7 @@ private:
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
 					if(idCommand != 0)
 						this->postMessage(WM_COMMAND, idCommand);
-					return TRUE;
+					return true;
 				}
 			}
 
@@ -253,10 +243,10 @@ private:
 			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
 			contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
 			contextMenu->setDefaultItem(IDC_OPEN_FILE);
-			contextMenu->trackPopupMenu(static_cast<T*>(this), pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-			return TRUE;
+			contextMenu->trackPopupMenu(static_cast<T*>(this), pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 
 	void handleViewAsText() {
@@ -277,7 +267,6 @@ private:
 		int i;
 		while((i = items->getNext(-1, LVNI_SELECTED)) != -1) {
 			FinishedManager::getInstance()->remove(items->getData(i)->entry, in_UL);
-			delete items->getData(i);
 			items->erase(i);
 		}
 	}
@@ -309,10 +298,6 @@ private:
 	}
 
 	void clearList() {
-		unsigned n = items->size();
-		for(unsigned i = 0; i < n; ++i)
-			delete items->getData(i);
-
 		items->clear();
 	}
 

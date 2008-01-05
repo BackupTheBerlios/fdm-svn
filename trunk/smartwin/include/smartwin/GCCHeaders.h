@@ -1,4 +1,3 @@
-// $Revision: 1.6 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -32,14 +31,14 @@
 #ifdef __GNUC__
 
 	// Need to tell gcc which version of Windows we're targeting!
-#ifndef _WIN_IE
-	#define _WIN_IE 0x0501
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0501
 #endif
 #ifndef _WIN32_IE
 	#define _WIN32_IE 0x0501
 #endif
 #ifndef WINVER
-	#define WINVER 0x500
+	#define WINVER 0x501
 #endif
 	// Removing windows.h max and min macro
 	#undef NOMINMAX
@@ -57,6 +56,7 @@
 	#include <winuser.h>
 	#include <windowsx.h>
 	#include <shellapi.h>
+	#include <shlwapi.h>
 	#include <commctrl.h>
 	#include <commdlg.h>
 	#include <assert.h>
@@ -134,6 +134,19 @@
 			#define GetWindowLongPtr  GetWindowLong
 		#endif // !_WIN64
 	#endif // !GetWindowLongPtr
+
+	// these should be defined in CommCtrl.h, but the one in MinGW doesn't define them... (2007-11-06)
+	#if (_WIN32_WINNT >= 0x0501)
+	#ifndef HDF_SORTUP
+	#define HDF_SORTUP              0x0400
+	#endif
+	#ifndef HDF_SORTDOWN
+	#define HDF_SORTDOWN            0x0200
+	#endif
+	#ifndef LVS_EX_DOUBLEBUFFER
+	#define LVS_EX_DOUBLEBUFFER     0x00010000
+	#endif
+	#endif
 
 	#ifdef max
 	#undef max

@@ -43,7 +43,6 @@ public:
 		STATUS_PARTIAL_BYTES,
 		STATUS_TOTAL_COUNT,
 		STATUS_TOTAL_BYTES,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
@@ -117,7 +116,7 @@ private:
 		QueueItemInfo(const QueueItem& aQI) : Flags(aQI), target(aQI.getTarget()),
 			path(Util::getFilePath(aQI.getTarget())),
 			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
-			added(aQI.getAdded()), priority(aQI.getPriority()), status(aQI.getStatus()), tth(aQI.getTTH()), 
+			added(aQI.getAdded()), priority(aQI.getPriority()), running(aQI.isRunning()), tth(aQI.getTTH()), 
 			sources(aQI.getSources()), badSources(aQI.getBadSources()), updateMask((uint32_t)-1), display(0)
 		{
 		}
@@ -169,7 +168,7 @@ private:
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(time_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
-		GETSET(QueueItem::Status, status, Status);
+		GETSET(bool, running, Running);
 		GETSET(TTHValue, tth, TTH);
 		GETSET(QueueItem::SourceList, sources, Sources);
 		GETSET(QueueItem::SourceList, badSources, BadSources);
@@ -190,13 +189,13 @@ private:
 
 	struct UpdateTask : public FastAlloc<UpdateTask>, public Task {
 		UpdateTask(const QueueItem& source) : target(source.getTarget()), priority(source.getPriority()),
-			status(source.getStatus()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
+			running(source.isRunning()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
 		{
 		}
 
 		string target;
 		QueueItem::Priority priority;
-		QueueItem::Status status;
+		bool running;
 		int64_t downloadedBytes;
 
 		QueueItem::SourceList sources;
@@ -205,11 +204,11 @@ private:
 
 	TaskQueue tasks;
 
-	typedef TypedTreeView<QueueFrame, DirItemInfo> WidgetDirs;
+	typedef TypedTreeView<DirItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	
-	typedef TypedListView<QueueFrame, QueueItemInfo> WidgetFiles;
+	typedef TypedListView<QueueItemInfo, false> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;
@@ -233,7 +232,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	QueueFrame(SmartWin::WidgetMDIParent* mdiParent);
+	QueueFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~QueueFrame();
 	
 	void updateStatus();
@@ -300,8 +299,8 @@ private:
 	void handleReadd(const UserPtr& user);
 	bool handleKeyDownFiles(int c);
 	bool handleKeyDownDirs(int c);
-	
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
 	
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }

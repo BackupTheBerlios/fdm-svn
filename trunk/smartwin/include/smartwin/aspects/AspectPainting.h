@@ -1,4 +1,3 @@
-// $Revision: 1.15 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -45,7 +44,7 @@ template< class WidgetType >
 class AspectPainting
 {
 	struct Dispatcher {
-		typedef std::tr1::function<void (Canvas&)> F;
+		typedef std::tr1::function<void (PaintCanvas&)> F;
 		
 		Dispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 

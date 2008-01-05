@@ -1,4 +1,3 @@
-// $Revision: 1.12 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -58,7 +57,7 @@ public:
 	/// Creates a Dialog Window
 	/** This version creates a window from the given Dialog Resource Id.
 	  */
-	virtual void createDialog( unsigned resourceId );
+	void createDialog( unsigned resourceId );
 
 protected:
 	// Protected since this Widget we HAVE to inherit from

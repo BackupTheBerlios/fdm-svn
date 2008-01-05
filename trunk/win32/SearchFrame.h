@@ -41,11 +41,10 @@ public:
 		STATUS_STATUS,
 		STATUS_COUNT,
 		STATUS_FILTERED,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 	static void closeAll();
 
 private:
@@ -172,13 +171,13 @@ private:
 	bool onlyFree;
 
 	WidgetStaticPtr hubsLabel;
-	typedef TypedListView<SearchFrame, HubInfo> WidgetHubs;
+	typedef TypedListView<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
 	WidgetButtonPtr doSearch;
 
-	typedef TypedListView<SearchFrame, SearchInfo> WidgetResults;
+	typedef TypedListView<SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;
 	WidgetResultsPtr results;
 
@@ -201,8 +200,10 @@ private:
 	CriticalSection cs;
 
 	StringMap ucLineParams;
+	
+	std::string token;
 
-	SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
+	SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
 
 	void handlePurgeClicked();
@@ -211,7 +212,7 @@ private:
 	LRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	void handleDownload();
 	void handleDownloadFavoriteDirs(unsigned id);
 	void handleDownloadTo();
@@ -226,7 +227,7 @@ private:
 	void handleCopyMagnet();
 	void handleRemove();
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	bool handleChar(int c);
+	bool handleSearchKeyDown(int c);
 	
 	void handleGetList();
 	void handleBrowseList();

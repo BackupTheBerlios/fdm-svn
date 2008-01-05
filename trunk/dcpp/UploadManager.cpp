@@ -60,6 +60,8 @@ UploadManager::~UploadManager() throw() {
 }
 
 bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes, bool listRecursive) {
+	dcdebug("Preparing %s %s " I64_FMT " " I64_FMT " %d\n", aType.c_str(), aFile.c_str(), aStartPos, aBytes, listRecursive);
+	
 	if(aFile.empty() || aStartPos < 0 || aBytes < -1 || aBytes == 0) {
 		aSource.fileNotAvail("Invalid request");
 		return false;
@@ -67,17 +69,16 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	InputStream* is = 0;
 	int64_t start = 0;
-	int64_t bytesLeft = 0;
 	int64_t size = 0;
 
 	bool userlist = (aFile == Transfer::USER_LIST_NAME_BZ || aFile == Transfer::USER_LIST_NAME);
 	bool free = userlist;
-	bool leaves = false;
-	bool partList = false;
 
 	string sourceFile;
+	Transfer::Type type;
+	
 	try {
-		if(aType == Transfer::TYPE_FILE) {
+		if(aType == Transfer::names[Transfer::TYPE_FILE]) {
 			sourceFile = ShareManager::getInstance()->toReal(aFile);
 
 			if(aFile == Transfer::USER_LIST_NAME) {
@@ -89,15 +90,15 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				string().swap(bz2);
 				is = new MemoryInputStream(xml);
 				start = 0;
-				bytesLeft = size = xml.size();
+				size = xml.size();
 			} else {
 				File* f = new File(sourceFile, File::READ, File::OPEN);
 
 				start = aStartPos;
-				size = f->getSize();
-				bytesLeft = (aBytes == -1) ? size : aBytes;
+				int64_t sz = f->getSize();
+				size = (aBytes == -1) ? sz - start : aBytes;
 
-				if(size < (start + bytesLeft)) {
+				if((start + size) > sz) {
 					aSource.fileNotAvail();
 					delete f;
 					return false;
@@ -106,13 +107,13 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				free = free || (size <= (int64_t)(SETTING(SET_MINISLOT_SIZE) * 1024) );
 
 				f->setPos(start);
-
 				is = f;
-				if((start + bytesLeft) < size) {
-					is = new LimitedInputStream<true>(is, aBytes);
+				if((start + size) < sz) {
+					is = new LimitedInputStream<true>(is, size);
 				}
 			}
-		} else if(aType == Transfer::TYPE_TTHL) {
+			type = userlist ? Transfer::TYPE_FULL_LIST : Transfer::TYPE_FILE;
+		} else if(aType == Transfer::names[Transfer::TYPE_TREE]) {
 			sourceFile = ShareManager::getInstance()->toReal(aFile);
 			MemoryInputStream* mis = ShareManager::getInstance()->getTree(aFile);
 			if(!mis) {
@@ -121,25 +122,23 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 			}
 
 			start = 0;
-			bytesLeft = size = mis->getSize();
+			size = mis->getSize();
 			is = mis;
-			leaves = true;
 			free = true;
-		} else if(aType == Transfer::TYPE_LIST) {
+			type = Transfer::TYPE_TREE;
+		} else if(aType == Transfer::names[Transfer::TYPE_PARTIAL_LIST]) {
 			// Partial file list
 			MemoryInputStream* mis = ShareManager::getInstance()->generatePartialList(aFile, listRecursive);
 			if(mis == NULL) {
 				aSource.fileNotAvail();
 				return false;
 			}
-			// Some old dc++ clients err here...
-			aBytes = -1;
+
 			start = 0;
-			bytesLeft = size = mis->getSize();
-	
+			size = mis->getSize();
 			is = mis;
 			free = true;
-			partList = true;
+			type = Transfer::TYPE_PARTIAL_LIST;
 		} else {
 			aSource.fileNotAvail("Unknown file type");
 			return false;
@@ -187,22 +186,11 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 		setLastGrant(GET_TICK());
 	}
 
-	Upload* u = new Upload(aSource);
+	Upload* u = new Upload(aSource, sourceFile, TTHValue());
 	u->setStream(is);
-	if(aBytes == -1)
-		u->setSize(size);
-	else
-		u->setSize(start + bytesLeft);
+	u->setSegment(Segment(start, size));
 
-	u->setStartPos(start);
-	u->setSourceFile(sourceFile);
-
-	if(userlist)
-		u->setFlag(Upload::FLAG_USER_LIST);
-	if(leaves)
-		u->setFlag(Upload::FLAG_TTH_LEAVES);
-	if(partList)
-		u->setFlag(Upload::FLAG_PARTIAL_LIST);
+	u->setType(type);
 
 	uploads.push_back(u);
 
@@ -232,7 +220,7 @@ int64_t UploadManager::getRunningAverage() {
 	int64_t avg = 0;
 	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
 		Upload* u = *i;
-		avg += (int)u->getRunningAverage();
+		avg += u->getAverageSpeed();
 	}
 	return avg;
 }
@@ -270,7 +258,7 @@ void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, con
 		return;
 	}
 
-	if(prepareFile(*aSource, Transfer::TYPE_FILE, Util::toAdcFile(aFile), aResume, -1)) {
+	if(prepareFile(*aSource, Transfer::names[Transfer::TYPE_FILE], Util::toAdcFile(aFile), aResume, -1)) {
 		aSource->setState(UserConnection::STATE_SEND);
 		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
 	}
@@ -292,10 +280,15 @@ void UploadManager::on(UserConnectionListener::Send, UserConnection* aSource) th
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
-	int64_t aBytes = Util::toInt64(c.getParam(3));
-	int64_t aStartPos = Util::toInt64(c.getParam(2));
-	const string& fname = c.getParam(1);
+	if(aSource->getState() != UserConnection::STATE_GET) {
+		dcdebug("UM::onGET Bad state, ignoring\n");
+		return;
+	}
+
 	const string& type = c.getParam(0);
+	const string& fname = c.getParam(1);
+	int64_t aStartPos = Util::toInt64(c.getParam(2));
+	int64_t aBytes = Util::toInt64(c.getParam(3));
 
 	if(prepareFile(*aSource, type, fname, aStartPos, aBytes, c.hasFlag("RE", 4))) {
 		Upload* u = aSource->getUpload();
@@ -303,8 +296,8 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 
 		AdcCommand cmd(AdcCommand::CMD_SND);
 		cmd.addParam(type).addParam(fname)
-			.addParam(Util::toString(u->getPos()))
-			.addParam(Util::toString(u->getSize() - u->getPos()));
+			.addParam(Util::toString(u->getStartPos()))
+			.addParam(Util::toString(u->getSize()));
 
 		if(c.hasFlag("ZL", 4)) {
 			u->setStream(new FilteredInputStream<ZFilter, true>(u->getStream()));
@@ -334,7 +327,7 @@ void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, 
 	if(u) {
 		fire(UploadManagerListener::Failed(), u, aError);
 
-		dcdebug("UM::onFailed: Removing upload\n");
+		dcdebug("UM::onFailed (%s): Removing upload\n", aError.c_str());
 		removeUpload(u);
 	}
 
@@ -348,7 +341,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 
 	aSource->setState(UserConnection::STATE_GET);
 
-	if(BOOLSETTING(LOG_UPLOADS) && !u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
+	if(BOOLSETTING(LOG_UPLOADS) && u->getType() != Transfer::TYPE_TREE && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || u->getType() != Transfer::TYPE_FULL_LIST)) {
 		StringMap params;
 		u->getParams(*aSource, params);
 		LOG(LogManager::UPLOAD, params);
@@ -461,10 +454,16 @@ void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() {
-	conn->listLen("42");
+	conn->error("GetListLength not supported");
+	conn->disconnect(false);
 }
 
 void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
+	if(aSource->getState() != UserConnection::STATE_GET) {
+		dcdebug("UM::onSend Bad state, ignoring\n");
+		return;
+	}
+	
 	if(c.getParameters().size() < 2) {
 		aSource->send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Missing parameters"));
 		return;
@@ -473,7 +472,7 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 	const string& type = c.getParam(0);
 	const string& ident = c.getParam(1);
 
-	if(type == Transfer::TYPE_FILE) {
+	if(type == Transfer::names[Transfer::TYPE_FILE]) {
 		try {
 			aSource->send(ShareManager::getInstance()->getFileInfo(ident));
 		} catch(const ShareException&) {
@@ -490,7 +489,10 @@ void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 	UploadList ticks;
 
 	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
-		ticks.push_back(*i);
+		if((*i)->getPos() > 0) {
+			ticks.push_back(*i);
+			(*i)->tick();
+		}
 	}
 
 	if(ticks.size() > 0)

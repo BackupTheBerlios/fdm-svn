@@ -45,12 +45,11 @@ public:
 		STATUS_MATCH_QUEUE,
 		STATUS_FIND,
 		STATUS_NEXT,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
 	static void closeAll();
 
 protected:
@@ -129,10 +128,10 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedTreeView<DirectoryListingFrame, ItemInfo> WidgetDirs;
+	typedef TypedTreeView<ItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
-	typedef TypedListView<DirectoryListingFrame, ItemInfo> WidgetFiles;
+	typedef TypedListView<ItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	
 	WidgetFilesPtr files;
@@ -172,7 +171,7 @@ private:
 
 	static UserMap lists;
 	
-	DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed);
+	DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
 	WidgetMenuPtr makeSingleMenu(ItemInfo* ii);
@@ -208,7 +207,8 @@ private:
 	void download(ItemInfo* ii, const string& aDir, bool view = false);
 	void downloadFiles(const string& aTarget, bool view = false);
 	
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
 	LRESULT handleXButtonUp(WPARAM wParam, LPARAM lParam);
 	
 	void changeDir(DirectoryListing::Directory* d);

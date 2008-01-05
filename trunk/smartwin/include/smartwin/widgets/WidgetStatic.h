@@ -1,4 +1,3 @@
-// $Revision: 1.31 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,22 +28,17 @@
 #ifndef WidgetStatic_h
 #define WidgetStatic_h
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Widget.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
 #include "../resources/Bitmap.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -67,79 +61,55 @@ class WidgetCreator;
   * It can load a bitmap.
   */
 class WidgetStatic :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectBackgroundColor< WidgetStatic >,
 	public AspectBorder< WidgetStatic >,
 	public AspectClickable< WidgetStatic >,
+	public AspectControl<WidgetStatic>,
 	public AspectDblClickable< WidgetStatic >,
-	public AspectEnabled< WidgetStatic >,
 	public AspectFocus< WidgetStatic >,
 	public AspectFont< WidgetStatic >,
-	public AspectMouseClicks< WidgetStatic >,
 	public AspectPainting< WidgetStatic >,
-	public AspectRaw< WidgetStatic >,
-	public AspectSizable< WidgetStatic >,
-	public AspectText< WidgetStatic >,
-	public AspectVisible< WidgetStatic >
+	public AspectText< WidgetStatic >
 {
 	friend class WidgetCreator< WidgetStatic >;
 public:
-	/// Class type
-	typedef WidgetStatic ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetStatic::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
 	// Contract needed by AspectClickable Aspect class
-	static const Message& getClickMessage();
+	Message getClickMessage();
 
 	// Contract needed by AspectBackgroundColor Aspect class
 	static const Message & getBackgroundColorMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static const Message& getDblClickMessage();
+	Message getDblClickMessage();
 
 	/// Actually creates the Static Control
 	/** You should call WidgetFactory::createStatic if you instantiate class
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	/// Assigns a Bitmap (BMP) to the static control
 	/** Use the Bitmap class and the BitmapPtr to load a Bitmap and call this
 	  * function to assign that Bitmap to your WidgetStatic
 	  */
-	void setBitmap( BitmapPtr bitmap );
+	void setBitmap( const BitmapPtr& bitmap );
 
 protected:
 	// Constructor Taking pointer to parent
@@ -160,45 +130,36 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetStatic::Seed::Seed()
+inline Message WidgetStatic::getClickMessage()
 {
-	* this = WidgetStatic::getDefaultSeed();
-}
-
-inline const Message & WidgetStatic::getClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, STN_CLICKED );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_CLICKED) );
 }
 
 inline const Message & WidgetStatic::getBackgroundColorMessage()
 {
-	static Message retVal = Message( WM_CTLCOLORSTATIC );
+	static const Message retVal( WM_CTLCOLORSTATIC );
 	return retVal;
 }
 
-inline const Message & WidgetStatic::getDblClickMessage()
+inline Message WidgetStatic::getDblClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, STN_DBLCLK );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_DBLCLK) );
 }
 
-inline WidgetStatic::WidgetStatic( SmartWin::Widget * parent )
-	: PolicyType( parent )
+inline WidgetStatic::WidgetStatic( Widget * parent )
+	: ControlType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Static without a parent..." ) );
 }
 
 inline void WidgetStatic::setBitmap( HBITMAP bitmap )
 {
 	this->addRemoveStyle( SS_BITMAP, true );
-	::SendMessage( this->handle(), STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, ( LPARAM ) bitmap );
+	this->sendMessage(STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, ( LPARAM ) bitmap );
 }
 
-inline void WidgetStatic::setBitmap( BitmapPtr bitmap )
+inline void WidgetStatic::setBitmap( const BitmapPtr& bitmap )
 {
-	this->setBitmap( bitmap->getBitmap() );
+	this->setBitmap( bitmap->handle() );
 	itsBitmap = bitmap;
 }
 

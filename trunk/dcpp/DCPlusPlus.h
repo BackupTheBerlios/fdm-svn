@@ -16,11 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(DC_PLUS_PLUS_H)
-#define DC_PLUS_PLUS_H
+#ifndef DCPP_DCPLUSPLUS_H
+#define DCPP_DCPLUSPLUS_H
 
 #ifdef _WIN32
+#ifndef snprintf
 #define snprintf _snprintf
+#endif
 #endif
 
 #ifdef _DEBUG
@@ -97,7 +99,9 @@ typedef pair<wstring, wstring> WStringPair;
 typedef vector<WStringPair> WStringPairList;
 typedef WStringPairList::iterator WStringPairIter;
 
-#if defined(_MSC_VER)
+typedef vector<uint8_t> ByteVector;
+
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #define _LL(x) x##ll
 #define _ULL(x) x##ull
 #define I64_FMT "%I64d"
@@ -163,6 +167,13 @@ typedef StringMapIter TStringMapIter;
 
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
+
+#ifdef BUILDING_DCPP
+#define PACKAGE "dcpp"
+#define LOCALEDIR Util::getLocalePath().c_str()
+#define _(String) dgettext(PACKAGE, String)
+#define F_(String) boost::format(dgettext(PACKAGE, String))
+#endif
 
 } // namespace dcpp
 

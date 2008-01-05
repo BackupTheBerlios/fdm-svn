@@ -87,6 +87,9 @@ public:
 	int matchListing(const DirectoryListing& dl) throw();
 
 	bool getTTH(const string& name, TTHValue& tth) throw();
+	
+	int64_t getSize(const string& target) throw();
+	int64_t getPos(const string& target) throw();
 
 	/** Move the target location of a queued item. Running items are silently ignored */
 	void move(const string& aSource, const string& aTarget) throw();
@@ -103,7 +106,8 @@ public:
 
 	Download* getDownload(UserConnection& aSource, bool supportsTrees) throw();
 	void putDownload(Download* aDownload, bool finished) throw();
-
+	void setFile(Download* download);
+	
 	/** @return The highest priority download the user has, PAUSED may also mean no downloads */
 	QueueItem::Priority hasDownload(const UserPtr& aUser) throw();
 
@@ -115,8 +119,26 @@ public:
 	GETSET(uint64_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 private:
+	enum { MOVER_LIMIT = 10*1024*1024 };
+	class FileMover : public Thread {
+	public:
+		FileMover() : active(false) { }
+		virtual ~FileMover() { join(); }
 
-	typedef unordered_map<CID, string, CID::Hash> PfsQueue;
+		void moveFile(const string& source, const string& target);
+		virtual int run();
+	private:
+		typedef pair<string, string> FilePair;
+		typedef vector<FilePair> FileList;
+		typedef FileList::iterator FileIter;
+
+		bool active;
+
+		FileList files;
+		CriticalSection cs;
+	} mover;
+
+	typedef unordered_map<CID, string> PfsQueue;
 	typedef PfsQueue::iterator PfsIter;
 
 	/** All queue items by target */
@@ -128,9 +150,9 @@ private:
 				delete i->second;
 		}
 		void add(QueueItem* qi);
-		QueueItem* add(const string& aTarget, int64_t aSize,
-			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
-			time_t aAdded, const TTHValue& root) throw(QueueException, FileException);
+		QueueItem* add(const string& aTarget, int64_t aSize, int aFlags, QueueItem::Priority p, 
+			const string& aTempTarget, time_t aAdded, const TTHValue& root) 
+			throw(QueueException, FileException);
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
@@ -140,13 +162,7 @@ private:
 		size_t getSize() { return queue.size(); }
 		QueueItem::StringMap& getQueue() { return queue; }
 		void move(QueueItem* qi, const string& aTarget);
-		void remove(QueueItem* qi) {
-			if(lastInsert != queue.end() && Util::stricmp(*lastInsert->first, qi->getTarget()) == 0)
-				lastInsert = queue.end();
-			queue.erase(const_cast<string*>(&qi->getTarget()));
-			delete qi;
-		}
-
+		void remove(QueueItem* qi);
 	private:
 		QueueItem::StringMap queue;
 		/** A hint where to insert an item... */
@@ -160,11 +176,12 @@ private:
 		void add(QueueItem* qi, const UserPtr& aUser);
 		QueueItem* getNext(const UserPtr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
 		QueueItem* getRunning(const UserPtr& aUser);
-		void setRunning(QueueItem* qi, const UserPtr& aUser);
-		void setWaiting(QueueItem* qi);
+		void addDownload(QueueItem* qi, Download* d);
+		void removeDownload(QueueItem* qi, const UserPtr& d);
 		QueueItem::UserListMap& getList(int p) { return userQueue[p]; }
-		void remove(QueueItem* qi);
-		void remove(QueueItem* qi, const UserPtr& aUser);
+		void remove(QueueItem* qi, bool removeRunning = true);
+		void remove(QueueItem* qi, const UserPtr& aUser, bool removeRunning = true);
+		void setPriority(QueueItem* qi, QueueItem::Priority p);
 
 		QueueItem::UserMap& getRunning() { return running; }
 		bool isRunning(const UserPtr& aUser) const {
@@ -209,6 +226,7 @@ private:
 	void processList(const string& name, UserPtr& user, int flags);
 
 	void load(const SimpleXML& aXml);
+	void moveFile(const string& source, const string& target);
 
 	void setDirty() {
 		if(!dirty) {

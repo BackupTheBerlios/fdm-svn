@@ -1,4 +1,3 @@
-// $Revision: 1.15 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -29,6 +28,7 @@
 #ifndef AspectBackgroundColor_h
 #define AspectBackgroundColor_h
 
+#include "../resources/Brush.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin
@@ -38,7 +38,7 @@ namespace SmartWin
 /// Aspect class used by Widgets that have the possibility of handling the
 /// erase background property
 /** \ingroup AspectClasses
-  * E.g. the WidgetWindow has a background Aspect to it, therefore WidgetDataGrid
+  * E.g. the WidgetWindow has a background Aspect to it, therefore WidgetListView
   * realizes the AspectEnabled through inheritance.
   */
 template< class WidgetType >
@@ -53,7 +53,7 @@ class AspectBackgroundColor
 			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( msg.wParam ) );
 
 			BrushPtr retBrush = f(canvas);
-			ret = retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
+			ret = retBrush ? reinterpret_cast< HRESULT >( retBrush->handle() ) : 0;
 			return true;
 		}
 

@@ -2,27 +2,17 @@
 
 namespace SmartWin {
 
-const WidgetTextBox::Seed & WidgetTextBox::getDefaultSeed()
+WidgetTextBox::Seed::Seed() : 
+	Widget::Seed(WC_EDIT, WS_CHILD | WS_VISIBLE | WS_TABSTOP, WS_EX_CLIENTEDGE),
+	font(new Font(DefaultGuiFont))
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = _T("Edit");
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_WANTRETURN;
-		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
-void WidgetTextBox::create( const WidgetTextBox::Seed & cs )
+void WidgetTextBox::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	setFont( cs.font );
+	ControlType::create(cs);
+	if(cs.font)
+		setFont( cs.font );
 }
 
 SmartUtil::tstring WidgetTextBox::getLine(int line) {
@@ -34,7 +24,7 @@ SmartUtil::tstring WidgetTextBox::getLine(int line) {
 	return tmp;
 }
 
-SmartUtil::tstring WidgetTextBox::textUnderCursor(const SmartWin::Point& p) {
+SmartUtil::tstring WidgetTextBox::textUnderCursor(const ScreenCoordinate& p) {
 	int i = charFromPos(p);
 	int line = lineFromPos(p);
 	int c = i - lineIndex(line);
@@ -62,12 +52,10 @@ SmartUtil::tstring WidgetTextBoxBase::getSelection() const
 	return retVal;
 }
 
-Point WidgetTextBox::getContextMenuPos() {
+ScreenCoordinate WidgetTextBox::getContextMenuPos() {
 	RECT rc;
 	::GetClientRect(this->handle(), &rc);
-	POINT pt = { rc.right/2, rc.bottom/2};
-	this->clientToScreen(pt);
-	return pt;
+	return ClientCoordinate (Point(rc.right/2, rc.bottom/2), this);
 }
 
 }

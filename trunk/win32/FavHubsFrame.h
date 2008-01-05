@@ -31,7 +31,6 @@ class FavHubsFrame :
 public:
 	enum Status {
 		STATUS_STATUS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	
@@ -43,7 +42,7 @@ protected:
 	friend class StaticFrame<FavHubsFrame>;
 	friend class MDIChildFrame<FavHubsFrame>;
 	
-	FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent);
+	FavHubsFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~FavHubsFrame();
 
 	void layout();
@@ -66,7 +65,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetDataGridPtr hubs;
+	WidgetListViewPtr hubs;
 	WidgetButtonPtr connect;
 	WidgetButtonPtr add;
 	WidgetButtonPtr properties;
@@ -85,7 +84,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	LRESULT handleContextMenu(WPARAM /*wParam*/, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 
 	void addEntry(const FavoriteHubEntryPtr entry, int index = -1);
 	void openSelected();

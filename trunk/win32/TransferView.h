@@ -25,8 +25,6 @@
 #include <dcpp/TaskQueue.h>
 #include <dcpp/forward.h>
 #include <dcpp/Util.h>
-#include <dcpp/Download.h>
-#include <dcpp/Upload.h>
 
 #include "AspectSpeaker.h"
 #include "TypedListView.h"
@@ -45,7 +43,7 @@ class TransferView :
 	public AspectUserCommand<TransferView>
 {
 public:
-	TransferView(SmartWin::Widget*, SmartWin::WidgetMDIParent* parent);
+	TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi);
 
 	void prepareClose();
 
@@ -73,6 +71,7 @@ private:
 		COLUMN_IP,
 		COLUMN_RATIO,
 		COLUMN_CID,
+		COLUMN_CIPHER,
 		COLUMN_LAST
 	};
 
@@ -132,6 +131,7 @@ private:
 			MASK_IP = 1 << 8,
 			MASK_STATUS_STRING = 1 << 9,
 			MASK_COUNTRY = 1 << 10,
+			MASK_CIPHER = 1 << 11
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
@@ -164,22 +164,24 @@ private:
 		tstring path;
 		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
 		tstring IP;
+		void setCipher(const tstring& aCipher) { cipher = aCipher; updateMask |= MASK_CIPHER; }
+		tstring cipher;
 	};
 
 	static int columnIndexes[];
 	static int columnSizes[];
 
-	typedef TypedListView<TransferView, ItemInfo> WidgetTransfers;
+	typedef TypedListView<ItemInfo> WidgetTransfers;
 	typedef WidgetTransfers* WidgetTransfersPtr;
 	WidgetTransfersPtr transfers;
-	SmartWin::WidgetMDIParent* mdi;
+	SmartWin::WidgetTabView* mdi;
 	SmartWin::ImageListPtr arrows;
 
 	TaskQueue tasks;
 	StringMap ucLineParams;
 
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce();
@@ -203,14 +205,14 @@ private:
 	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw();
 
-	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw() { onTransferComplete(aDownload, false);}
+	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw();
 	virtual void on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw();
 	virtual void on(DownloadManagerListener::Starting, Download* aDownload) throw();
 	virtual void on(DownloadManagerListener::Tick, const DownloadList& aDownload) throw();
 
 	virtual void on(UploadManagerListener::Starting, Upload* aUpload) throw();
 	virtual void on(UploadManagerListener::Tick, const UploadList& aUpload) throw();
-	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw() { onTransferComplete(aUpload, true); }
+	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw();
 
 	void onTransferComplete(Transfer* aTransfer, bool isUpload);
 

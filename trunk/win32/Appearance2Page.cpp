@@ -53,41 +53,40 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
-	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
+
 	fg = SETTING(TEXT_COLOR);
 	bg = SETTING(BACKGROUND_COLOR);
-	bgbrush = ::CreateSolidBrush(bg);
-	fontObj = ::CreateFontIndirect(&font);
 	upBar = SETTING(UPLOAD_BAR_COLOR);
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 
-	example = subclassStatic(IDC_COLOREXAMPLE);
-	example->onRaw(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1, _2), WM_CTLCOLORSTATIC);
+	bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
 
-	WidgetButtonPtr button = subclassButton(IDC_SELWINCOLOR);
+	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), logFont);
+	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
+
+	example = attachStatic(IDC_COLOREXAMPLE);
+	example->onBackgroundColor(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1));
+
+	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
-	button = subclassButton(IDC_SELTEXT);
+	button = attachButton(IDC_SELTEXT);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleTextClicked, this));
 
-	button = subclassButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
+	button = attachButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleULClicked, this));
 
-	button = subclassButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
+	button = attachButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleDLClicked, this));
 
-	button = subclassButton(IDC_BROWSE);
+	button = attachButton(IDC_BROWSE);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
 }
 
-Appearance2Page::~Appearance2Page()
-{
-	::DeleteObject(bgbrush);
-	::DeleteObject(fontObj);
+Appearance2Page::~Appearance2Page() {
 }
 
-void Appearance2Page::write()
-{
+void Appearance2Page::write() {
 	PropPage::write(handle(), items, 0,0);
 
 	SettingsManager* settings = SettingsManager::getInstance();
@@ -96,38 +95,33 @@ void Appearance2Page::write()
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
 	settings->set(SettingsManager::UPLOAD_BAR_COLOR, (int)upBar);
 	settings->set(SettingsManager::DOWNLOAD_BAR_COLOR, (int)downBar);
-
-	tstring f = WinUtil::encodeFont(font);
-	settings->set(SettingsManager::TEXT_FONT, Text::fromT(f));
+	settings->set(SettingsManager::TEXT_FONT, Text::fromT(WinUtil::encodeFont(logFont)));
 }
 
-HRESULT Appearance2Page::handleExampleColor(WPARAM wParam, LPARAM lParam) {
-	HDC hDC((HDC)wParam);
-	::SetBkMode(hDC, TRANSPARENT);
-	::SetTextColor(hDC, fg);
-	::SelectObject(hDC, fontObj);
-	return (LRESULT)bgbrush;
+SmartWin::BrushPtr Appearance2Page::handleExampleColor(SmartWin::Canvas& canvas) {
+	canvas.setBkColor(bg);
+	canvas.setTextColor(fg);
+	canvas.selectFont(font);
+	return bgBrush;
 }
 
 void Appearance2Page::handleBackgroundClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(bg),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk()) {
-		::DeleteObject(bgbrush);
 		bg = colorParams.getColor();
-		bgbrush = CreateSolidBrush(bg);
+		bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
 		example->invalidateWidget();
 	}
 }
 
 void Appearance2Page::handleTextClicked() {
-	LOGFONT font_ = font;
+	LOGFONT logFont_ = logFont;
 	DWORD fg_ = fg;
-	if(createChooseFont().showDialog(CF_EFFECTS | CF_SCREENFONTS, &font_, fg_)) {
-		font = font_;
+	if(createChooseFont().showDialog(CF_EFFECTS | CF_SCREENFONTS, &logFont_, fg_)) {
+		logFont = logFont_;
 		fg = fg_;
-		::DeleteObject(fontObj);
-		fontObj = ::CreateFontIndirect(&font);
+		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 		example->invalidateWidget();
 	}
 }

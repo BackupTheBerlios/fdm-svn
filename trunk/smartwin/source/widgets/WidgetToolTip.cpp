@@ -2,19 +2,9 @@
 
 namespace SmartWin {
 
-const WidgetToolTip::Seed & WidgetToolTip::getDefaultSeed()
+WidgetToolTip::Seed::Seed() : 
+	Widget::Seed(TOOLTIPS_CLASS, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, WS_EX_TRANSPARENT)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = TOOLTIPS_CLASS;
-		d_DefaultValues.exStyle = WS_EX_TRANSPARENT;
-		d_DefaultValues.style = WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetToolTip::create( const Seed & cs )
@@ -22,6 +12,11 @@ void WidgetToolTip::create( const Seed & cs )
 	xAssert((cs.style & WS_POPUP) == WS_POPUP, _T("Widget must have WS_POPUP style"));
 
 	PolicyType::create(cs);
+}
+
+void WidgetToolTip::relayEvent(const MSG& msg) {
+	if(msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST)
+		sendMessage(TTM_RELAYEVENT, 0, reinterpret_cast<LPARAM>(&msg));
 }
 
 void WidgetToolTip::setTool(Widget* widget, const Dispatcher::F& f) {

@@ -1,4 +1,3 @@
-// $Revision: 1.20 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -34,8 +33,6 @@
 #include "CommandLine.h"
 #include "BasicTypes.h"
 #include "ApplicationPlatform.h"
-#include "resources/Bitmap.h"
-#include "Font.h"
 #include "xCeption.h"
 #include <vector>
 #include <memory>

@@ -33,7 +33,6 @@ public:
 		STATUS_AVG_PER_SECOND,
 		STATUS_HITS,
 		STATUS_HIT_RATIO,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
@@ -45,7 +44,7 @@ protected:
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 
-	SpyFrame(SmartWin::WidgetMDIParent* mdiParent);
+	SpyFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~SpyFrame();
 
 	void layout();
@@ -71,7 +70,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetDataGridPtr searches;
+	WidgetListViewPtr searches;
 
 	WidgetCheckBoxPtr ignoreTTH;
 	bool bIgnoreTTH;
@@ -85,7 +84,7 @@ private:
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	void handleColumnClick(int column);
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 
 	void handleSearch();
 

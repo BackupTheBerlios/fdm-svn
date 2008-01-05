@@ -1,4 +1,3 @@
-// $Revision: 1.23 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -34,7 +33,6 @@
 #include "widgets/WidgetRichTextBox.h"
 #include "widgets/WidgetChooseFont.h"
 #include "widgets/WidgetMenuExtended.h"
-#include "widgets/WidgetSplitter.h"
 #include "widgets/WidgetToolbar.h"
 #include "widgets/WidgetCoolbar.h"
 #include "WidgetCreator.h"
@@ -69,18 +67,6 @@ public:
 	/// ChooseFont class and object type.
 	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
 
-	/// Splitter class type.
-	typedef WidgetSplitter< SplitterThinPaint > WidgetSplitterThin;
-
-	/// Splitter object type.
-	typedef typename WidgetSplitterThin::ObjectType WidgetSplitterThinPtr;
-
-	/// CoolSplitter class type.
-	typedef WidgetSplitter< SplitterCoolPaint > WidgetSplitterCool;
-
-	/// CoolSplitter object type.
-	typedef typename WidgetSplitterCool::ObjectType WidgetSplitterCoolPtr;
-
 	/// Toolbar class type.
 	typedef SmartWin::WidgetToolbar WidgetToolbar;
 
@@ -113,7 +99,7 @@ public:
 	/// Creates a Rich Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetRichTextBoxPtr createRichTextBox( const typename WidgetRichTextBox::Seed & cs = WidgetRichTextBox::getDefaultSeed() )
+	WidgetRichTextBoxPtr createRichTextBox( const typename WidgetRichTextBox::Seed & cs = WidgetRichTextBox::Seed() )
 	{
 		return WidgetCreator< WidgetRichTextBox >::create( this, cs );
 	}
@@ -121,12 +107,12 @@ public:
 	/// \ingroup SubclassDialog
 	/// Subclasses a Rich Edit Control from the given resource id.
 	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and subclass the controls
+	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetRichTextBoxPtr subclassRichTextBox( unsigned id )
+	WidgetRichTextBoxPtr attachRichTextBox( unsigned id )
 	{
-		return WidgetCreator< WidgetRichTextBox >::subclass( this, id );
+		return WidgetCreator< WidgetRichTextBox >::attach( this, id );
 	}
 
 #ifdef PORT_ME
@@ -140,41 +126,11 @@ public:
 		return WidgetCreator< WidgetMenuExtended >::create( this );
 	}
 #endif
-	/// Creates a Splitter and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	WidgetSplitterThinPtr createSplitterThin( const typename WidgetSplitterCool::Seed & cs = WidgetSplitterThin::getDefaultSeed() )
-	{
-		return WidgetCreator< WidgetSplitterThin >::create( this, cs );
-	}
-
-	/// Creates a Cool Splitter and returns a pointer to it.
-	/** DON'T delete the returned pointer!!!
-	  */
-	WidgetSplitterCoolPtr createSplitterCool( const typename WidgetSplitterCool::Seed & cs = WidgetSplitterCool::getDefaultSeed() )
-	{
-		return WidgetCreator< WidgetSplitterCool >::create( this, cs );
-	}
-
-	/// Generic Splitter Creation Method
-	/** Creates a splitter with the given Painter Aspect. <br>
-	  * Useful if you wish to be able to easily change the splitter type without
-	  * doing massive recoding of application logic. <br>
-	  * See WidgetSplitter Solution for an Example.
-	  */
-	template< class SplitterType >
-	typename WidgetSplitter<SplitterType >::ObjectType createSplitter(
-			 const typename WidgetSplitter< SplitterType >::Seed & cs )// =
-				   // Commented out since GCC chokes on default parameters to template functions inside template template classes...!!
-				   //WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterType >::getDefaultSeed() )
-	{
-		return WidgetCreator< WidgetSplitter< SplitterType > >::create( this, cs );
-	}
 
 	/// Creates a Tool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetToolbarPtr createToolbar( const typename WidgetToolbar::Seed & cs = WidgetToolbar::getDefaultSeed() )
+	WidgetToolbarPtr createToolbar( const typename WidgetToolbar::Seed & cs = WidgetToolbar::Seed() )
 	{
 		return WidgetCreator< WidgetToolbar >::create( this, cs );
 	}
@@ -182,7 +138,7 @@ public:
 	/// Creates a Cool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetCoolbarPtr createCoolbar( const typename WidgetCoolbar::Seed & cs = WidgetCoolbar::getDefaultSeed() )
+	WidgetCoolbarPtr createCoolbar( const typename WidgetCoolbar::Seed & cs = WidgetCoolbar::Seed() )
 	{
 		return WidgetCreator< WidgetCoolbar >::create( this, cs );
 	}

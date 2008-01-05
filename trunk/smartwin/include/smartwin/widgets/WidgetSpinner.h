@@ -1,4 +1,3 @@
-// $Revision: 1.18 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -30,18 +29,11 @@
 #define WidgetSpinner_h
 
 #include "../Widget.h"
-#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -63,57 +55,31 @@ class WidgetCreator;
   * other for softer.
   */
 class WidgetSpinner :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectBorder< WidgetSpinner >,
-	public AspectEnabled< WidgetSpinner >,
+	public AspectControl<WidgetSpinner>,
 	public AspectFocus< WidgetSpinner >,
-	public AspectKeyboard< WidgetSpinner >,
-	public AspectMouseClicks< WidgetSpinner >,
 	public AspectPainting< WidgetSpinner >,
-	public AspectRaw< WidgetSpinner >,
-	public AspectScrollable< WidgetSpinner >,
-	public AspectSizable< WidgetSpinner >,
-	public AspectVisible< WidgetSpinner >
+	public AspectScrollable< WidgetSpinner >
 {
 	friend class WidgetCreator< WidgetSpinner >;
 public:
-	/// Class type
-	typedef WidgetSpinner ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
-		// A spinner has no caption. Hide it.
-		using SmartWin::Seed::caption;
 	public:
-		typedef WidgetSpinner::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
-		int minValue, maxValue;
+		int minValue;
+		
+		int maxValue;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Sets the range of the Spinner
 	/** The range is the unique values of the control, use this function to set the
@@ -149,11 +115,11 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetSpinner( SmartWin::Widget * parent );
+	explicit WidgetSpinner( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -164,11 +130,6 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetSpinner::Seed::Seed()
-{
-	* this = WidgetSpinner::getDefaultSeed();
-}
 
 inline void WidgetSpinner::setRange( int minimum, int maximum )
 {
@@ -206,10 +167,8 @@ inline int WidgetSpinner::setValue( int v )
 }
 
 inline WidgetSpinner::WidgetSpinner( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Spinner without a parent..." ) );
 }
 
 // end namespace SmartWin

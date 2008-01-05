@@ -1,4 +1,3 @@
-// $Revision: 1.12 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -31,7 +30,6 @@
 
 #include "../../SmartUtil.h"
 #include "../Widget.h"
-#include "../WindowsHeaders.h"
 
 namespace SmartWin
 {

@@ -41,12 +41,21 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_USERS;
 	static const unsigned ICON_RESOURCE = IDR_USERS;
 
-private:
+protected:
 	typedef StaticFrame<UsersFrame> BaseType;
 	friend class StaticFrame<UsersFrame>;
 	friend class MDIChildFrame<UsersFrame>;
 	friend class AspectUserInfo<UsersFrame>;
-	
+
+	UsersFrame(SmartWin::WidgetTabView* mdiParent);
+	virtual ~UsersFrame();
+
+	void layout();
+
+	bool preClosing();
+	void postClosing();
+
+private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NICK = COLUMN_FIRST,
@@ -84,37 +93,32 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedListView<UsersFrame, UserInfo> WidgetUsers;
+	typedef TypedListView<UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
-
-	bool startup;
 
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	UsersFrame(SmartWin::WidgetMDIParent* mdiParent);
-	virtual ~UsersFrame() { }
-
-	void layout();
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	bool preClosing();
-	void postClosing();
+	bool startup;
 
 	void addUser(const FavoriteUser& aUser);
 	void updateUser(const UserPtr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	void handleProperties();
 	void handleRemove();
-	void handleProperties(); 
-	
+	bool handleKeyDown(int c);
+	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+
 	WidgetUsersPtr getUserList() { return users; }
 
 	// FavoriteManagerListener
-	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
-	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
-	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, reinterpret_cast<LPARAM>(new UserInfoBase(aUser))); }
+	virtual void on(UserAdded, const FavoriteUser& aUser) throw();
+	virtual void on(UserRemoved, const FavoriteUser& aUser) throw();
+	virtual void on(StatusChanged, const UserPtr& aUser) throw();
 };
 
 #endif // !defined(USERS_FRAME_H)

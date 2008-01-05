@@ -27,37 +27,33 @@
 
 namespace dcpp {
 
-const string Transfer::TYPE_FILE = "file";
-const string Transfer::TYPE_LIST = "list";
-const string Transfer::TYPE_TTHL = "tthl";
+const string Transfer::names[] = {
+	"file", "file", "list", "tthl"
+};
 
 const string Transfer::USER_LIST_NAME = "files.xml";
 const string Transfer::USER_LIST_NAME_BZ = "files.xml.bz2";
 
-Transfer::Transfer(UserConnection& conn) : start(0), lastTick(GET_TICK()), runningAverage(0),
-last(0), actual(0), pos(0), startPos(0), size(-1), userConnection(conn) { }
+Transfer::Transfer(UserConnection& conn, const string& path_, const TTHValue& tth_) : segment(0, -1), type(TYPE_FILE), start(0),
+	path(path_), tth(tth_), actual(0), pos(0), userConnection(conn) { }
 
-void Transfer::updateRunningAverage() {
-	uint64_t tick = GET_TICK();
-	// Update 4 times/sec at most
-	if(tick > (lastTick + 250)) {
-		uint32_t diff = tick - lastTick;
-		int64_t tot = getTotal();
-		if( ((tick - getStart()) < AVG_PERIOD) ) {
-			runningAverage = getAverageSpeed();
-		} else {
-			int64_t bdiff = tot - last;
-			int64_t avg = bdiff * (int64_t)1000 / diff;
-			if(diff > AVG_PERIOD) {
-				runningAverage = avg;
-			} else {
-				// Weighted average...
-				runningAverage = ((avg * diff) + (runningAverage*(AVG_PERIOD-diff)))/AVG_PERIOD;
-			}
-		}
-		last = tot;
+void Transfer::tick() {
+	Lock l(cs);
+	while(samples.size() >= SAMPLES) {
+		samples.pop_front();
 	}
-	lastTick = tick;
+	samples.push_back(std::make_pair(GET_TICK(), pos));
+}
+
+double Transfer::getAverageSpeed() const {
+	Lock l(cs);
+	if(samples.size() < 2) {
+		return 0;
+	}
+	uint64_t ticks = samples.back().first - samples.front().first;
+	int64_t bytes = samples.back().second - samples.front().second;
+	
+	return ticks > 0 ? (static_cast<double>(bytes) / ticks) * 1000.0 : 0;
 }
 
 void Transfer::getParams(const UserConnection& aSource, StringMap& params) {
@@ -73,8 +69,8 @@ void Transfer::getParams(const UserConnection& aSource, StringMap& params) {
 	params["hubURL"] = Util::toString(hubs);
 	params["fileSI"] = Util::toString(getSize());
 	params["fileSIshort"] = Util::formatBytes(getSize());
-	params["fileSIchunk"] = Util::toString(getTotal());
-	params["fileSIchunkshort"] = Util::formatBytes(getTotal());
+//	params["fileSIchunk"] = Util::toString(getTotal());
+//	params["fileSIchunkshort"] = Util::formatBytes(getTotal());
 	params["fileSIactual"] = Util::toString(getActual());
 	params["fileSIactualshort"] = Util::formatBytes(getActual());
 	params["speed"] = Util::formatBytes(getAverageSpeed()) + "/s";

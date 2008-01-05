@@ -1,4 +1,3 @@
-// $Revision: 1.12 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -29,19 +28,20 @@
 #ifndef Widget_h
 #define Widget_h
 
+#include "Atom.h"
 #include "BasicTypes.h"
+#include "Message.h"
 
 #include <boost/noncopyable.hpp>
 #include <memory>
-#include <vector>
 #include <functional>
 #include <map>
-#include "Atom.h"
-#include "Message.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+
+using namespace std::tr1::placeholders;
 
 class Application;
 class Widget;
@@ -63,6 +63,45 @@ class Widget
 	: public boost::noncopyable
 {
 public:
+	/** Most Widgets can override the creational parameters which sets the style and the
+	  * initial position of the Widget, those Widgets will take an object of this type to
+	  * their creational function(s).
+	  */
+	struct Seed {
+		LPCTSTR className;
+
+		/// Initial caption
+		/** Windows with a title bar will use this string in the title bar. Controls with
+		  * caption (e.g. static control, edit control) will use it in the control. <br>
+		  * It is feed directly to CreateWindowEx, this means that it follows its
+		  * conventions. In particular, the string "#num" has a special meaning.
+		  */
+		SmartUtil::tstring caption;
+
+		/// The style of the object (starts with WS_ or BS_ etc...)
+		/** WARNING: The creation of most of the controls require WS_CHILD to be set.
+		  * This is done, by default, in the appropriate controls. If you override the
+		  * default style, then be sure that WS_CHILD is set (if needed).
+		  */
+		DWORD style;
+
+		/// The Extended Style of the object (starts often with WS_EX_ etc)
+		DWORD exStyle;
+
+		/// The initial position / size of the Widget
+		Rectangle location;
+
+		HMENU menuHandle;
+
+		/// Constructor initializing all member variables to default values
+		Seed(LPCTSTR className_, DWORD style_ = WS_VISIBLE, DWORD exStyle_ = 0, 
+			const SmartUtil::tstring& caption_ = SmartUtil::tstring(), 
+			const Rectangle& location_ = letTheSystemDecide, HMENU menuHandle_ = NULL)
+			: className(className_), caption(caption_), style( style_ ), exStyle( exStyle_ ), location( location_ ), menuHandle( menuHandle_ )
+		{}
+
+	};
+	
 	/// Returns the HWND to the Widget
 	/** Returns the HWND to the inner window of the Widget. <br>
 	  * If you need to do directly manipulation of the window use this function to
@@ -70,16 +109,6 @@ public:
 	  */
 	HWND handle() const	{ return itsHandle; }
 
-	/// Returns the control id of the Widget
-	/** This one only makes sense for control items, e.g. WidgetButton,
-	  * WidgetComboBox etc. <br>
-	  * Every control in a Widget has got its own control ID, mark that for a
-	  * WidgetWindow this will always be ZERO
-	  */
-	HMENU getCtrlId() const { return NULL; }
-
-	// TODO These need to be moved to an appropriate location so that they're only
-	// available when the handle is a HWND...
 	/// Send a message to the Widget
 	/** If you need to be able to send a message to a Widget then use this function
 	  * as it will unroll into <br>
@@ -93,7 +122,6 @@ public:
 		return ::PostMessage(handle(), msg, wParam, lParam);
 	}
 
-	// TODO: Change all references to typedefed WidgetPtr...??
 	/// Returns the parent Widget of the Widget
 	/** Most Widgets have got a parent, this function will retrieve a pointer to the
 	  * Widgets parent, if the Widget doesn't have a parent it will return a null
@@ -111,14 +139,6 @@ public:
 	  */
 	void invalidateWidget();
 
-	/// Subclasses the dialog item with the given dialog item id
-	/** Subclasses a dialog item, the id is the dialog item id from the resource
-	  * editor. <br>
-	  * Should normally not be called directly but rather called from e.g. one of the
-	  * creational functions found in the WidgetFactory class.
-	  */
-	virtual void subclass( unsigned id );
-
 	/// Use this function to add or remove windows styles.
 	/** The first parameter is the type of style you wish to add/remove. <br>
 	  * The second argument is a boolean indicating if you wish to add or remove the
@@ -135,9 +155,6 @@ public:
 	  */
 	void addRemoveExStyle( DWORD addStyle, bool add );
 
-	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
-	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }
-	
 	void setProp() { ::SetProp(handle(), propAtom, reinterpret_cast<HANDLE>(this) ); }
 	
 	typedef std::tr1::function<bool(const MSG& msg, LRESULT& ret)> CallbackType;
@@ -161,26 +178,23 @@ public:
 	void setHandle(HWND hWnd) { itsHandle = hWnd; }
 
 protected:
-	std::vector < Widget * > itsChildren; // Derived widgets might need access to the children
-
-	Widget( Widget * parent, HWND hWnd = NULL, bool doReg = true );
+	Widget( Widget * parent, HWND hWnd = NULL );
 
 	virtual ~Widget();
 
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
-	virtual void create( const SmartWin::Seed & );
+	void create( const Seed & cs );
 
 	virtual void attach(HWND wnd);
-	
-	// Kills the "this" Widget
-	void killMe();
 
-	// Kills all children to the this Widget
-	void killChildren();
-
-	// Erases the "this" widget from its parent's list of children.
-	void eraseMeFromParentsChildren();
+	/// Subclasses the dialog item with the given dialog item id
+	/** Subclasses a dialog item, the id is the dialog item id from the resource
+	  * editor. <br>
+	  * Should normally not be called directly but rather called from e.g. one of the
+	  * creational functions found in the WidgetFactory class.
+	  */
+	virtual void attach( unsigned id );
 
 private:
 	friend class Application;

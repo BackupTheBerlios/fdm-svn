@@ -25,6 +25,7 @@
 #include "HoldRedraw.h"
 #include "HubListsDlg.h"
 
+#include <dcpp/FavoriteManager.h>
 #include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 
@@ -90,7 +91,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 	}
 }
 
-PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
+PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	hubs(0),
 	configure(0),
@@ -104,27 +105,49 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	users(0)
 {
 	{
-		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_SINGLESEL;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
-		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);		
-		hubs->setFont(WinUtil::font);
 		addWidget(hubs);
 		
 		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
-		hubs->setSortColumn(COLUMN_USERS);
+		hubs->setSort(COLUMN_USERS, false);
 		
 		hubs->onDblClicked(std::tr1::bind(&PublicHubsFrame::openSelected, this));
 		hubs->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleKeyDown, this, _1));
+		hubs->onContextMenu(std::tr1::bind(&PublicHubsFrame::handleContextMenu, this, _1));
 	}
-	
+
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON | BS_PUSHBUTTON;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
+		filter = createTextBox(cs);
+		addWidget(filter);
+		filter->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleFilterKeyDown, this, _1));
+	}
+
+	{
+		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		addWidget(filterSel);
+
+		//populate the filter list with the column names
+		for(int j=0; j<COLUMN_LAST; j++) {
+			filterSel->addValue(TSTRING_I(columnNames[j]));
+		}
+		filterSel->addValue(TSTRING(ANY));
+		filterSel->setSelectedIndex(COLUMN_LAST);
+		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
+
+		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		addWidget(pubLists);
+		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
+	}
+
+	{
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = TSTRING(CONFIGURE);
 		configure = createButton(cs);
@@ -147,41 +170,14 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		cs.caption = TSTRING(FILTER);
 		filterDesc = createButton(cs);
 		filterDesc->setFont(WinUtil::font);
-
 	}
 
-	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.caption.clear();
-		pubLists = createComboBox(cs);
-		pubLists->setFont(WinUtil::font);
-		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
-		
-		filterSel = createComboBox(cs);
-		filterSel->setFont(WinUtil::font);
-
-		//populate the filter list with the column names
-		for(int j=0; j<COLUMN_LAST; j++) {
-			filterSel->addValue(CTSTRING_I(columnNames[j]));
-		}
-		filterSel->addValue(CTSTRING(ANY));
-		filterSel->setSelectedIndex(COLUMN_LAST);
-	}
-	{
-		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
-		filter = createTextBox(cs);
-		filter->setFont(WinUtil::font);
-		filter->onChar(std::tr1::bind(&PublicHubsFrame::handleFilterChar, this, _1));
-	}
-	
 	initStatus();
 
-	statusSizes[STATUS_DUMMY] = 16;
-
 	FavoriteManager::getInstance()->addListener(this);
-	
+
+	entries	 = FavoriteManager::getInstance()->getPublicHubs();
+
 	// populate with values from the settings
 	updateDropDown();
 	updateList();
@@ -189,9 +185,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	layout();
 	
 	onSpeaker(std::tr1::bind(&PublicHubsFrame::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&PublicHubsFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	
-	entries	 = FavoriteManager::getInstance()->getPublicHubs();
 	if(FavoriteManager::getInstance()->isDownloading()) {
 		setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_HUB_LIST));
 	} else if(entries.empty()) {
@@ -290,7 +284,6 @@ void PublicHubsFrame::updateDropDown() {
 }
 
 void PublicHubsFrame::updateList() {
-	hubs->forEachSelectedT(DeleteFunction());
 	hubs->clear();
 	users = 0;
 	visibleHubs = 0;
@@ -304,7 +297,7 @@ void PublicHubsFrame::updateList() {
 
 	bool doSizeCompare = parseFilter(mode, size);
 
-	for(HubEntry::List::const_iterator i = entries.begin(); i != entries.end(); ++i) {
+	for(HubEntryList::const_iterator i = entries.begin(); i != entries.end(); ++i) {
 		if(matchFilter(*i, sel, doSizeCompare, mode, size)) {
 			hubs->insert(hubs->size(), new HubInfo(&(*i)));
 			visibleHubs++;
@@ -317,7 +310,7 @@ void PublicHubsFrame::updateList() {
 	updateStatus();
 }
 
-HRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+LRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if((wParam == FINISHED) || (wParam == LOADED_FROM_CACHE)) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
 		entries = FavoriteManager::getInstance()->getPublicHubs();
@@ -446,11 +439,9 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	return insert;
 }
 
-HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	if(reinterpret_cast<HWND>(wParam) == hubs->handle() && hubs->hasSelection()) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(hubs->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = hubs->getContextMenuPos();
 		}
 
@@ -459,10 +450,10 @@ HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
 		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 		menu->setDefaultItem(IDC_CONNECT);
-		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void PublicHubsFrame::handleRefresh() {
@@ -534,7 +525,7 @@ void PublicHubsFrame::handleListSelChanged() {
 	updateList();
 }
 
-bool PublicHubsFrame::handleFilterChar(int c) {
+bool PublicHubsFrame::handleFilterKeyDown(int c) {
 	if(c == VK_RETURN) {
 		filterString = Text::fromT(filter->getText());
 		updateList();

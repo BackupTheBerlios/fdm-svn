@@ -48,11 +48,10 @@ public:
 		STATUS_USERS,
 		STATUS_SHARED,
 		STATUS_SHOW_USERS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const string& url);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const string& url);
 	static void closeDisconnected();
 	static void resortUsers();
 	
@@ -150,7 +149,7 @@ private:
 	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showUsers;
 	
-	typedef TypedListView<HubFrame, UserInfo> WidgetUsers;
+	typedef TypedListView<UserInfo, false> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 	
@@ -192,7 +191,7 @@ private:
 	typedef FrameList::iterator FrameIter;
 	static FrameList frames;
 
-	HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url);
+	HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url);
 	virtual ~HubFrame();
 	
 	void layout();
@@ -230,22 +229,24 @@ private:
 	
 	void runUserCommand(const UserCommand& uc);
 
+	LRESULT handleMessageGetDlgCode();
 	bool handleMessageChar(int c);
 	bool handleMessageKeyDown(int c);
 	bool handleUsersKeyDown(int c);
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleChatContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleUsersContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleShowUsersClicked();
 	void handleCopyNick();
 	void handleDoubleClickUsers();
-	bool handleTabContextMenu(const SmartWin::Point& pt);
+	bool handleTabContextMenu(const SmartWin::ScreenCoordinate& pt);
 	void handleCopyHub();
 	void handleAddAsFavorite();
 	void handleReconnect();
 	void handleFollow();
 	void handleChatLButton();
 	
-	void updateFilter(const tstring& newText);
+	bool handleFilterKey(int c);
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 

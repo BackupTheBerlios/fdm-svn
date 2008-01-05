@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -66,7 +65,7 @@ public:
 	  */
 	void onSelectionChanged(const typename Dispatcher::F& f) {
 		static_cast<WidgetType*>(this)->setCallback(
-			WidgetType::getSelectionChangedMessage(), Dispatcher(f)
+			static_cast<WidgetType*>(this)->getSelectionChangedMessage(), Dispatcher(f)
 		);
 	}
 

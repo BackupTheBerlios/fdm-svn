@@ -1,12 +1,11 @@
-#ifndef DCPLUSPLUS_CLIENT_DOWNLOAD_H_
-#define DCPLUSPLUS_CLIENT_DOWNLOAD_H_
+#ifndef DCPLUSPLUS_DCPP_DOWNLOAD_H_
+#define DCPLUSPLUS_DCPP_DOWNLOAD_H_
 
 #include "forward.h"
 #include "Transfer.h"
 #include "MerkleTree.h"
-#include "ZUtils.h"
-#include "FilteredFile.h"
 #include "Flags.h"
+#include "Streams.h"
 
 namespace dcpp {
 
@@ -19,20 +18,18 @@ public:
 	static const string ANTI_FRAG_EXT;
 
 	enum {
-		FLAG_USER_LIST = 0x01,
-		FLAG_RESUME = 0x02,
-		FLAG_ZDOWNLOAD = 0x04,
-		FLAG_CALC_CRC32 = 0x08,
-		FLAG_CRC32_OK = 0x10,
-		FLAG_ANTI_FRAG = 0x20,
-		FLAG_TREE_DOWNLOAD = 0x40,
-		FLAG_TREE_TRIED = 0x100,
-		FLAG_PARTIAL_LIST = 0x200,
-		FLAG_TTH_CHECK = 0x400
+		FLAG_RESUME =  1 << 0,
+		FLAG_ZDOWNLOAD = 1 << 1,
+		FLAG_CALC_CRC32 = 1 << 2,
+		FLAG_CRC32_OK = 1 << 3,
+		FLAG_ANTI_FRAG = 1 << 4,
+		FLAG_TREE_TRIED = 1 << 5,
+		FLAG_TTH_CHECK = 1 << 6,
+		FLAG_XML_BZ_LIST = 1 << 7
 	};
 
-	Download(UserConnection& conn) throw();
-	Download(UserConnection& conn, QueueItem& qi) throw();
+	Download(UserConnection& conn, const string& pfsDir) throw();
+	Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) throw();
 
 	virtual void getParams(const UserConnection& aSource, StringMap& params);
 
@@ -40,12 +37,12 @@ public:
 
 	/** @return Target filename without path. */
 	string getTargetFileName() {
-		return Util::getFileName(getTarget());
+		return Util::getFileName(getPath());
 	}
 
 	/** @internal */
 	string getDownloadTarget() {
-		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
+		const string& tgt = (getTempTarget().empty() ? getPath() : getTempTarget());
 		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;
 	}
 
@@ -54,15 +51,10 @@ public:
 	string& getPFS() { return pfs; }
 	/** @internal */
 	AdcCommand getCommand(bool zlib);
-
-	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
-	GETSET(string, source, Source);
-	GETSET(string, target, Target);
+	
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
-	GETSET(CrcOS*, crcCalc, CrcCalc);
 	GETSET(bool, treeValid, TreeValid);
-
 private:
 	Download(const Download&);
 	Download& operator=(const Download&);

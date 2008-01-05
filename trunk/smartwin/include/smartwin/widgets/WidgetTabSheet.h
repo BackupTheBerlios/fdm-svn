@@ -1,4 +1,3 @@
-// $Revision: 1.31 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,21 +28,16 @@
 #ifndef WidgetTabSheet_h
 #define WidgetTabSheet_h
 
+#include "../Widget.h"
 #include "../resources/ImageList.h"
 #include "../BasicTypes.h"
-#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -69,20 +63,14 @@ class WidgetCreator;
   * has.
   */
 class WidgetTabSheet :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspects
 	public AspectBorder< WidgetTabSheet >,
-	public AspectEnabled< WidgetTabSheet >,
+	public AspectControl<WidgetTabSheet>,
 	public AspectFocus< WidgetTabSheet >,
 	public AspectFont< WidgetTabSheet >,
-	public AspectMouseClicks< WidgetTabSheet >,
 	public AspectPainting< WidgetTabSheet >,
-	public AspectRaw< WidgetTabSheet >,
 	public AspectSelection< WidgetTabSheet >,
-	public AspectSizable< WidgetTabSheet >,
-	public AspectText< WidgetTabSheet >,
-	public AspectVisible< WidgetTabSheet >
+	public AspectText< WidgetTabSheet >
 {
 	struct ChangingDispatcher
 	{
@@ -119,12 +107,6 @@ class WidgetTabSheet :
 	friend class WidgetCreator< WidgetTabSheet >;
 
 public:
-	/// Class type
-	typedef WidgetTabSheet ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
@@ -133,27 +115,17 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetTabSheet::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
 		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
 	// AspectSelection expectation implementation
-	static Message & getSelectionChangedMessage();
+	static const Message & getSelectionChangedMessage();
 
 	// Commented in AspectSelection
 	int getSelectedIndex() const;
@@ -193,7 +165,9 @@ public:
 	  */
 	// the negative values are already covered by throwing an exception
 	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0, int image = -1 );
-	
+
+	int getImage(unsigned idx) const;
+
 	LPARAM getData(unsigned idx);
 	
 	void setData(unsigned idx, LPARAM data);
@@ -203,7 +177,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	/// Set tab buttons at bottom of control
 	/** If passed true to this function tabs will appear at the bottom of the control
@@ -273,17 +247,17 @@ public:
 		TabCtrl_DeleteItem(this->handle(), i);
 	}
 	
-	int hitTest(const SmartWin::Point& pt);
+	int hitTest(const ScreenCoordinate& pt);
 	
-/// Get the area not used by the tabs
-/** This function should be used after adding the pages, so that the area not used by
-  * the tabs can be calculated accurately. It returns coordinates respect to the
-  * TabControl, this is, you have to adjust for the position of the control itself.   
-  */
-SmartWin::Rectangle getUsableArea() const;
+	/// Get the area not used by the tabs
+	/** This function should be used after adding the pages, so that the area not used by
+	  * the tabs can be calculated accurately. It returns coordinates respect to the
+	  * TabControl, this is, you have to adjust for the position of the control itself.   
+	  */
+	SmartWin::Rectangle getUsableArea() const;
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetTabSheet( SmartWin::Widget * parent );
+	explicit WidgetTabSheet( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -299,17 +273,11 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetTabSheet::Seed::Seed()
+inline const Message & WidgetTabSheet::getSelectionChangedMessage()
 {
-	* this = WidgetTabSheet::getDefaultSeed();
-}
-
-inline Message & WidgetTabSheet::getSelectionChangedMessage()
-{
-	static Message retVal = Message( WM_NOTIFY, TCN_SELCHANGE );
+	static const Message retVal( WM_NOTIFY, TCN_SELCHANGE );
 	return retVal;
 }
-
 
 inline int WidgetTabSheet::getSelectedIndex() const
 {
@@ -331,12 +299,22 @@ inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
 	return buffer;
 }
 
+inline int WidgetTabSheet::getImage(unsigned idx) const
+{
+	TCITEM item = { TCIF_IMAGE };
+	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
+	{
+		throw xCeption( _T( "Couldn't get image of item." ) );
+	}
+	return item.iImage;
+}
+
 inline LPARAM WidgetTabSheet::getData(unsigned idx)
 {
 	TCITEM item = { TCIF_PARAM };
 	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
 	{
-		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
+		throw xCeption( _T( "Couldn't get data of item." ) );
 	}
 	return item.lParam;
 }
@@ -361,10 +339,8 @@ inline void WidgetTabSheet::setData( unsigned index, LPARAM lParam )
 }
 
 inline WidgetTabSheet::WidgetTabSheet( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a ComboBox without a parent...
-	xAssert( parent, _T( "Cant have a WidgetTabSheet without a parent..." ) );
 }
 
 inline void WidgetTabSheet::setTabsAtBottom( bool value )
@@ -422,9 +398,8 @@ inline void WidgetTabSheet::setHighlight(int item, bool highlight) {
 	TabCtrl_HighlightItem(handle(), item, highlight);
 }
 
-inline int WidgetTabSheet::hitTest(const Point& pt) {
-	TCHITTESTINFO tci = { {pt.x, pt.y} };
-	screenToClient(tci.pt);
+inline int WidgetTabSheet::hitTest(const ScreenCoordinate& pt) {
+	TCHITTESTINFO tci = { ClientCoordinate(pt, this).getPoint() };
 	
 	return TabCtrl_HitTest(handle(), &tci);
 }

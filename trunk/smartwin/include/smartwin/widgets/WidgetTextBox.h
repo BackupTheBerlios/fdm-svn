@@ -1,4 +1,3 @@
-// $Revision: 1.38 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,21 +28,14 @@
 #ifndef WidgetTextBox_h
 #define WidgetTextBox_h
 
-#include "../../SmartUtil.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Widget.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
 #include "../aspects/AspectUpdate.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -72,34 +64,25 @@ class WidgetCreator;
   * < ul > < li >WidgetRichTextBox< /li > < /ul >
   */
 class WidgetTextBoxBase :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspect classes
 	public AspectBackgroundColor< WidgetTextBoxBase >,
 	public AspectBorder< WidgetTextBoxBase >,
-	public AspectEnabled< WidgetTextBoxBase >,
+	public AspectControl< WidgetTextBoxBase >,
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
-	public AspectKeyboard< WidgetTextBoxBase >,
-	public AspectMouseClicks< WidgetTextBoxBase >,
-	public AspectRaw< WidgetTextBoxBase >,
-	public AspectSizable< WidgetTextBoxBase >,
 	public AspectText< WidgetTextBoxBase >,
-	public AspectUpdate< WidgetTextBoxBase >,
-	public AspectVisible< WidgetTextBoxBase >
+	public AspectUpdate< WidgetTextBoxBase >
 {
 	friend class WidgetCreator< WidgetTextBoxBase >;
 
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	// Contract needed by AspectUpdate Aspect class
-	static inline Message & getUpdateMessage();
+	Message getUpdateMessage();
 
 	// Contract needed by AspectBackgroundColor Aspect class
-	Message & getBackgroundColorMessage();
+	const Message & getBackgroundColorMessage();
 
 	/// Sets the current selection of the Edit Control
 	/** Start means the offset of where the current selection shall start, if it is
@@ -222,25 +205,15 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetTextBox::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
+	
 	/// Adds (or removes) the numbers property
 	/** If you pass false you remove this ability <br>
 	  * If you pass true or call function without arguments you force the control to
@@ -271,11 +244,11 @@ public:
 	  */
 	void setLowerCase( bool value = true );
 
-	Point getContextMenuPos();
+	ScreenCoordinate getContextMenuPos();
 	
-	int charFromPos(const SmartWin::Point& pt);
+	int charFromPos(const ScreenCoordinate& pt);
 	
-	int lineFromPos(const SmartWin::Point& pt);
+	int lineFromPos(const ScreenCoordinate& pt);
 	
 	int lineIndex(int line);
 	
@@ -283,20 +256,20 @@ public:
 	
 	SmartUtil::tstring getLine(int line);
 
-	SmartUtil::tstring textUnderCursor(const Point& p);
+	SmartUtil::tstring textUnderCursor(const ScreenCoordinate& p);
 	
 	/// Actually creates the TextBox
 	/** You should call WidgetFactory::createTextBox if you instantiate class
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	friend class WidgetCreator< WidgetTextBox >;
 
 	// Constructor Taking pointer to parent
-	explicit WidgetTextBox( SmartWin::Widget * parent );
+	explicit WidgetTextBox( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -309,17 +282,16 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message & WidgetTextBoxBase::getUpdateMessage()
+inline Message WidgetTextBoxBase::getUpdateMessage()
 {
-	static Message retVal = Message( WM_COMMAND, EN_UPDATE );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_UPDATE) );
 }
 
-inline Message & WidgetTextBoxBase::getBackgroundColorMessage()
+inline const Message & WidgetTextBoxBase::getBackgroundColorMessage()
 {
 	// TODO What if readonly status changes?
-	static Message rw = Message( WM_CTLCOLOREDIT );
-	static Message ro = Message( WM_CTLCOLORSTATIC );
+	static const Message rw = Message( WM_CTLCOLOREDIT );
+	static const Message ro = Message( WM_CTLCOLORSTATIC );
 	
 	return this->isReadOnly() ? ro : rw;
 }
@@ -395,7 +367,7 @@ inline DWORD WidgetTextBoxBase::getTextLimit() const {
 
 inline void WidgetTextBoxBase::onTextChanged( const Dispatcher::F& f ) {
 	this->setCallback(
-		Message( WM_COMMAND, EN_CHANGE ), Dispatcher(f)
+		Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_CHANGE) ), Dispatcher(f)
 	);
 }
 
@@ -415,20 +387,16 @@ inline bool WidgetTextBoxBase::getModify( ) {
 	return this->sendMessage( EM_GETMODIFY ) > 0;
 }
 
-inline WidgetTextBox::Seed::Seed() {
-	* this = WidgetTextBox::getDefaultSeed();
-}
-
-inline WidgetTextBoxBase::WidgetTextBoxBase( SmartWin::Widget * parent )
-	: PolicyType( parent )
-{
-}
-
-inline WidgetTextBox::WidgetTextBox( SmartWin::Widget * parent )
-	: WidgetTextBoxBase( parent )
+inline WidgetTextBoxBase::WidgetTextBoxBase( Widget * parent )
+	: ControlType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
+}
+
+inline WidgetTextBox::WidgetTextBox( Widget * parent )
+	: WidgetTextBoxBase( parent )
+{
 }
 
 inline void WidgetTextBox::setPassword( bool value, TCHAR pwdChar ) {
@@ -447,13 +415,15 @@ inline void WidgetTextBox::setUpperCase( bool value ) {
 	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
 }
 
-inline int WidgetTextBox::charFromPos(const SmartWin::Point& pt) {		
-	LPARAM lp = MAKELPARAM(pt.x, pt.y);
+inline int WidgetTextBox::charFromPos(const ScreenCoordinate& pt) {	
+	ClientCoordinate cc(pt, this);
+	LPARAM lp = MAKELPARAM(cc.x(), cc.y());
 	return LOWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
 }
 
-inline int WidgetTextBox::lineFromPos(const SmartWin::Point& pt) {
-	LPARAM lp = MAKELPARAM(pt.x, pt.y);
+inline int WidgetTextBox::lineFromPos(const ScreenCoordinate& pt) {
+	ClientCoordinate cc(pt, this);
+	LPARAM lp = MAKELPARAM(cc.x(), cc.y());
 	return HIWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
 }
 

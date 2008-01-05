@@ -1,4 +1,3 @@
-// $Revision: 1.46 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -871,7 +870,7 @@ public:
 	/// Actually creates the menu
 	/** Creates the menu, the menu will be created initially empty!
 	  */
-	virtual void create( bool isPopup = false );
+	void create( bool isPopup = false );
 
 	/// Actually creates the menu
 	/** Copies the menu if copy is true, otherwise just hooks it
@@ -1236,7 +1235,7 @@ void WidgetMenuExtendedPlatformImplementation< EventHandlerClass, SmartWinDeskto
 		return;
 
 	if ( copy )
-		create(); // create empty menu
+		void create(); // create empty menu
 	else
 		init( source ); // init with the source
 

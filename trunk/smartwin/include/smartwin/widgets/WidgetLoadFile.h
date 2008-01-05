@@ -1,4 +1,3 @@
-// $Revision: 1.15 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -29,9 +28,9 @@
 #ifndef WidgetLoadFile_h
 #define WidgetLoadFile_h
 
+#include "../WindowsHeaders.h"
 #include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
-#include "../WindowsHeaders.h"
 #include "../aspects/AspectFileFilter.h"
 #include <vector>
 

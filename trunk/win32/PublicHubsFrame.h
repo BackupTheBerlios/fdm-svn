@@ -23,7 +23,8 @@
 
 #include "TypedListView.h"
 
-#include <dcpp/FavoriteManager.h>
+#include <dcpp/HubEntry.h>
+#include <dcpp/FavoriteManagerListener.h>
 #include "resource.h"
 
 class PublicHubsFrame : 
@@ -35,7 +36,6 @@ public:
 		STATUS_STATUS,
 		STATUS_HUBS,
 		STATUS_USERS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
@@ -46,7 +46,7 @@ private:
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
 
-	PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent);
+	PublicHubsFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~PublicHubsFrame();
 
 	enum {
@@ -94,7 +94,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListView<PublicHubsFrame, HubInfo> WidgetHubs;
+	typedef TypedListView<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
@@ -111,7 +111,7 @@ private:
 	
 	string filterString;
 
-	HubEntry::List entries;
+	HubEntryList entries;
 	
 	static int columnIndexes[];
 	static int columnSizes[];
@@ -121,16 +121,16 @@ private:
 	void layout();
 	bool preClosing();
 	void postClosing();
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleConfigure();
 	void handleRefresh();
 	void handleConnect();
 	void handleAdd();
 	void handleCopyHub();
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	bool handleKeyDown(int c);
 	void handleListSelChanged();
-	bool handleFilterChar(int c);
+	bool handleFilterKeyDown(int c);
 	
 	bool checkNick();
 	void updateStatus();

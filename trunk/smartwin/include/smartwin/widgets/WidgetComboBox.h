@@ -1,4 +1,3 @@
-// $Revision: 1.25 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,23 +28,17 @@
 #ifndef WidgetComboBox_h
 #define WidgetComboBox_h
 
-#include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectBackgroundColor.h"
+#include "../Widget.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
 #include "WidgetTextBox.h"
 
 namespace SmartWin
@@ -65,34 +58,20 @@ class WidgetCreator;
   * value at a time from a list of values.
   */
 class WidgetComboBox :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspects
 	public AspectBackgroundColor< WidgetComboBox >,
 	public AspectBorder< WidgetComboBox >,
 	public AspectClickable< WidgetComboBox >,
+	public AspectControl<WidgetComboBox>,
 	public AspectDblClickable< WidgetComboBox >,
-	public AspectEnabled< WidgetComboBox >,
 	public AspectFocus< WidgetComboBox >,
 	public AspectFont< WidgetComboBox >,
-	public AspectKeyboard< WidgetComboBox >,
-	public AspectMouseClicks< WidgetComboBox >,
 	public AspectPainting< WidgetComboBox >,
-	public AspectRaw< WidgetComboBox >,
 	public AspectSelection< WidgetComboBox >,
-	public AspectSizable< WidgetComboBox >,
-	public AspectText< WidgetComboBox >,
-	public AspectVisible< WidgetComboBox >
+	public AspectText< WidgetComboBox >
 {
 	friend class WidgetCreator< WidgetComboBox >;
 public:
-	/// Class type
-	typedef WidgetComboBox ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -100,38 +79,29 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetComboBox::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Use extended ui
 		bool extended;
-		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
 
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		/// Fills with default parameters
+		Seed();
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
+	// Aspect expectation implementation
+	Message getSelectionChangedMessage();
 
 	// Aspect expectation implementation
-	static Message & getSelectionChangedMessage();
+	Message getClickMessage();
 
 	// Aspect expectation implementation
-	static Message & getClickMessage();
+	Message getDblClickMessage();
 
 	// Aspect expectation implementation
-	static Message & getDblClickMessage();
-
-	// Aspect expectation implementation
-	static Message & getBackgroundColorMessage();
+	static const Message & getBackgroundColorMessage();
 
 	// Commented in AspectSelection
 	int getSelectedIndex() const;
@@ -179,7 +149,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	static bool isValidSelectionChanged( LPARAM lPar )
 	{ return true;
@@ -190,7 +160,7 @@ public:
 	
 protected:
 	/// Constructor Taking pointer to parent
-	explicit WidgetComboBox( SmartWin::Widget * parent );
+	explicit WidgetComboBox( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -205,32 +175,24 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetComboBox::Seed::Seed()
+inline Message WidgetComboBox::getSelectionChangedMessage()
 {
-	* this = WidgetComboBox::getDefaultSeed();
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_SELENDOK) );
 }
 
-inline Message & WidgetComboBox::getSelectionChangedMessage()
+inline Message WidgetComboBox::getClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, CBN_SELENDOK );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DROPDOWN) );
 }
 
-inline Message & WidgetComboBox::getClickMessage()
+inline Message WidgetComboBox::getDblClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, CBN_DROPDOWN );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DBLCLK) );
 }
 
-inline Message & WidgetComboBox::getDblClickMessage()
+inline const Message & WidgetComboBox::getBackgroundColorMessage()
 {
-	static Message retVal = Message( WM_COMMAND, CBN_DBLCLK );
-	return retVal;
-}
-
-inline Message & WidgetComboBox::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORLISTBOX );
+	static const Message retVal( WM_CTLCOLORLISTBOX );
 	return retVal;
 }
 
@@ -287,7 +249,6 @@ inline int WidgetComboBox::insertValue( int pos, const SmartUtil::tstring & val 
 	return newIdx;
 }
 
-
 inline int WidgetComboBox::getCount()
 {
 	return ComboBox_GetCount( handle() ); // Number of items present.
@@ -304,11 +265,9 @@ inline SmartUtil::tstring WidgetComboBox::getValue( int index )
 	return retVal;
 }
 
-inline WidgetComboBox::WidgetComboBox( SmartWin::Widget * parent )
-	: PolicyType( parent ), textBox(0)
+inline WidgetComboBox::WidgetComboBox( Widget * parent )
+	: ControlType( parent ), textBox(0)
 {
-	// Can't have a ComboBox without a parent...
-	xAssert( parent, _T( "Cant have a WidgetComboBox without a parent..." ) );
 }
 
 // end namespace SmartWin

@@ -102,12 +102,7 @@ StringList ClientManager::getNicks(const CID& cid) const {
 	}
 	if(nicks.empty()) {
 		// Offline perhaps?
-		UserMap::const_iterator i = users.find(cid);
-		if(i != users.end() && !i->second->getFirstNick().empty()) {
-			nicks.insert(i->second->getFirstNick());
-		} else {
-			nicks.insert('{' + cid.toBase32() + '}');
-		}
+		nicks.insert('{' + cid.toBase32() + '}');
 	}
 	return StringList(nicks.begin(), nicks.end());
 }
@@ -200,14 +195,11 @@ UserPtr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw
 
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
-		if(ui->second->getFirstNick().empty())
-			ui->second->setFirstNick(aNick);
 		ui->second->setFlag(User::NMDC);
 		return ui->second;
 	}
 
 	UserPtr p(new User(cid));
-	p->setFirstNick(aNick);
 	p->setFlag(User::NMDC);
 	users.insert(make_pair(cid, p));
 
@@ -417,8 +409,6 @@ void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& fro
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
-	updateCachedIp(); // no point in doing a resolve for every single hub we're searching on
-
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		if((*i)->isConnected()) {
 			(*i)->search(aSizeMode, aSize, aFileType, aString, aToken);
@@ -429,8 +419,6 @@ void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const st
 void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
-	updateCachedIp(); // no point in doing a resolve for every single hub we're searching on
-
 	for(StringIter it = who.begin(); it != who.end(); ++it) {
 		string& client = *it;
 		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
@@ -440,10 +428,6 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 			}
 		}
 	}
-}
-
-void ClientManager::on(Load, SimpleXML&) throw() {
-	users.insert(make_pair(getMe()->getCID(), getMe()));
 }
 
 void ClientManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw() {
@@ -469,7 +453,7 @@ UserPtr& ClientManager::getMe() {
 		Lock l(cs);
 		if(!me) {
 			me = new User(getMyCID());
-			me->setFirstNick(SETTING(NICK));
+			users.insert(make_pair(me->getCID(), me));
 		}
 	}
 	return me;
@@ -493,33 +477,16 @@ void ClientManager::on(Failed, Client* client, const string&) throw() {
 
 void ClientManager::on(HubUserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
- 		if(aType == UserCommand::TYPE_CLEAR) {
+		if(aType == UserCommand::TYPE_REMOVE) {
+			int cmd = FavoriteManager::getInstance()->findUserCommand(name, client->getHubUrl());
+			if(cmd != -1)
+				FavoriteManager::getInstance()->removeUserCommand(cmd);
+		} else if(aType == UserCommand::TYPE_CLEAR) {
  			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getHubUrl());
  		} else {
  			FavoriteManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getHubUrl());
  		}
 	}
-}
-
-void ClientManager::updateCachedIp() {
-	// Best case - the server detected it
-	if((!BOOLSETTING(NO_IP_OVERRIDE) || SETTING(EXTERNAL_IP).empty())) {
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if(!(*i)->getMyIdentity().getIp().empty()) {
-				cachedIp = (*i)->getMyIdentity().getIp();
-				return;
-			}
-		}
-	}
-
-	if(!SETTING(EXTERNAL_IP).empty()) {
-		cachedIp = Socket::resolve(SETTING(EXTERNAL_IP));
-		return;
-	}
-
-	//if we've come this far just use the first client to get the ip.
-	if(clients.size() > 0)
-		cachedIp = (*clients.begin())->getLocalIp();
 }
 
 } // namespace dcpp

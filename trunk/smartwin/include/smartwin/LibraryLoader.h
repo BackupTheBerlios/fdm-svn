@@ -1,4 +1,3 @@
-// $Revision: 1.9 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -112,6 +111,9 @@ public:
 	  * unload library until LAST object with same argument is being destroyed!
 	  */
 	~LibraryLoader();
+
+	#define PACK_COMCTL_VERSION(major,minor) MAKELONG(minor,major)
+	static DWORD getCommonControlsVersion();
 
 private:
 	LibraryLoader( const LibraryLoader & ); // DENY COPY

@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -39,7 +38,7 @@ namespace SmartWin
 /// background property
 /** \ingroup AspectClasses
   * E.g. the WidgetWindow have a AspectEraseBackground Aspect to it therefore
-  * WidgetDataGrid realize the AspectEraseBackground through  inheritance. When the
+  * WidgetListView realize the AspectEraseBackground through  inheritance. When the
   * Widget needs to erase its background this event will be called with a Canvas
   * object which can be used for  manipulating the colors etc the system uses to
   * erase the background of the Widget with.
@@ -76,9 +75,19 @@ public:
 		);
 	}
 
+	void noEraseBackground() {
+		static_cast<WidgetType*>(this)->setCallback(
+			Message( WM_ERASEBKGND ), &AspectEraseBackground<WidgetType>::noEraseDispatcher
+		);
+	}
 protected:
 	virtual ~AspectEraseBackground()
 	{}
+	
+	static bool noEraseDispatcher(const MSG& msg, LRESULT& ret) {
+		ret = 1;
+		return true;
+	}
 };
 
 // end namespace SmartWin

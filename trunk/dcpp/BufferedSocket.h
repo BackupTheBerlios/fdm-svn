@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_BUFFERED_SOCKET_H
-#define DCPLUSPLUS_CLIENT_BUFFERED_SOCKET_H
+#ifndef DCPLUSPLUS_DCPP_BUFFERED_SOCKET_H
+#define DCPLUSPLUS_DCPP_BUFFERED_SOCKET_H
 
 #include "forward.h"
 #include "BufferedSocketListener.h"
@@ -75,7 +75,8 @@ public:
 
 	bool isSecure() const { return sock && sock->isSecure(); }
 	bool isTrusted() const { return sock && sock->isTrusted(); }
-
+	std::string getCipherName() const { return sock ? sock->getCipherName() : Util::emptyString; }
+	
 	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
 	/** Send the file f over this socket. */
@@ -129,9 +130,9 @@ private:
 	size_t rollback;
 	bool failed;
 	string line;
-	vector<uint8_t> inbuf;
-	vector<uint8_t> writeBuf;
-	vector<uint8_t> sendBuf;
+	ByteVector inbuf;
+	ByteVector writeBuf;
+	ByteVector sendBuf;
 
 	Socket* sock;
 	bool disconnecting;

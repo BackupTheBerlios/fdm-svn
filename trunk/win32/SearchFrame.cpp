@@ -61,7 +61,7 @@ int SearchFrame::SearchInfo::compareItems(SearchInfo* a, SearchInfo* b, int col)
 }
 
 
-void SearchFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+void SearchFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame(mdiParent, str, size, mode, type);
 	frames.insert(pChild);
 }
@@ -71,7 +71,7 @@ void SearchFrame::closeAll() {
 		(*i)->close(true);
 }
 
-SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
+SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	BaseType(mdiParent, TSTRING(SEARCH), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
 	searchLabel(0),
 	searchBox(0),
@@ -120,23 +120,18 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		searchBox = createComboBox(cs);
-		searchBox->setFont(WinUtil::font);
+		searchBox = createComboBox(WinUtil::Seeds::comboBoxEdit);
 		addWidget(searchBox);
 		
 		for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
 			searchBox->insertValue(0, *i);
 		}
-		
-		searchBox->getTextBox()->onChar(std::tr1::bind(&SearchFrame::handleChar, this, _1));
+		searchBox->getTextBox()->onKeyDown(std::tr1::bind(&SearchFrame::handleSearchKeyDown, this, _1));
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		cs.style |= BS_DEFPUSHBUTTON;
 		cs.caption = TSTRING(SEARCH);
 		doSearch = createButton(cs);
 
@@ -144,11 +139,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		mode = createComboBox(cs);
-		mode->setFont(WinUtil::font);
+		mode = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(mode);
 
 		mode->addValue(TSTRING(NORMAL));
@@ -157,20 +148,14 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL | ES_NUMBER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		size = createTextBox(cs);
-		size->setFont(WinUtil::font);
 		addWidget(size);
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		sizeMode = createComboBox(cs);
-		sizeMode->setFont(WinUtil::font);
+		sizeMode = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(sizeMode);
 
 		sizeMode->addValue(TSTRING(B));
@@ -181,11 +166,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		fileType = createComboBox(cs);
-		fileType->setFont(WinUtil::font);
+		fileType = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(fileType);
 
 		fileType->addValue(TSTRING(ANY));
@@ -200,9 +181,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetCheckBox::Seed cs;
-		cs.style |= WS_TABSTOP;
-		cs.caption = TSTRING(ONLY_FREE_SLOTS);
+		WidgetCheckBox::Seed cs(TSTRING(ONLY_FREE_SLOTS));
 		slots = createCheckBox(cs);
 		slots->setChecked(onlyFree);
 
@@ -210,11 +189,10 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_NOCOLUMNHEADER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_NOCOLUMNHEADER;
+		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
-		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 		addWidget(hubs);
 
 		TStringList dummy;
@@ -224,14 +202,15 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
 
 		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+
+		hubs->insert(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
+		hubs->setChecked(0, false);
+
+
 	}
 
 	{
-		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		results = SmartWin::WidgetCreator<WidgetResults>::create(this, cs);
-		results->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::listView);
 		addWidget(results);
 
 		results->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -243,12 +222,11 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 
 		results->onDblClicked(std::tr1::bind(&SearchFrame::handleDoubleClick, this));
 		results->onKeyDown(std::tr1::bind(&SearchFrame::handleKeyDown, this, _1));
-		results->onRaw(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+		results->onContextMenu(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1));
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		cs.caption = TSTRING(PURGE);
 		purge = createButton(cs);
 
@@ -257,9 +235,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 
 
 	{
-		WidgetCheckBox::Seed cs;
-		cs.style |= WS_TABSTOP;
-		cs.caption = _T("+/-");
+		WidgetCheckBox::Seed cs(_T("+/-"));
 		showUI = createCheckBox(cs);
 		showUI->setChecked(bShowUI);
 
@@ -269,14 +245,10 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	initStatus();
 	
 	statusSizes[STATUS_SHOW_UI] = 16; ///@todo get real checkbox width
-	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
 
 	layout();
 
 	onSpeaker(std::tr1::bind(&SearchFrame::handleSpeaker, this, _1, _2));
-
-	hubs->insert(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
-	hubs->setChecked(0, false);
 
 	ClientManager* clientMgr = ClientManager::getInstance();
 	clientMgr->lock();
@@ -314,8 +286,6 @@ SearchFrame::~SearchFrame() {
 }
 
 void SearchFrame::layout() {
-	const int border = 2;
-
 	SmartWin::Rectangle r(getClientAreaSize()); 
 	
 	layoutStatus(r);
@@ -432,11 +402,6 @@ bool SearchFrame::preClosing() {
 }
 
 void SearchFrame::postClosing() {
-	results->forEachT(DeleteFunction());
-	results->clear();
-	hubs->forEachT(DeleteFunction());
-	hubs->clear();
-
 	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_ORDER, WinUtil::toString(results->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_WIDTHS, WinUtil::toString(results->getColumnWidths()));
 }
@@ -653,19 +618,17 @@ bool SearchFrame::handleKeyDown(int c) {
 	return false;
 }
 
-LRESULT SearchFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	if(results->getSelectedCount() > 0) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = results->getContextMenuPos();
 		}
 
 		WidgetMenuPtr contextMenu = makeMenu();
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void SearchFrame::handleDownload() {
@@ -786,7 +749,6 @@ void SearchFrame::handleCopyMagnet() {
 void SearchFrame::handleRemove() {
 	int i = -1;
 	while((i = results->getNext(-1, LVNI_SELECTED)) != -1) {
-		delete results->getData(i);
 		results->erase(i);
 	}
 }
@@ -874,6 +836,12 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		if(currentSearch.empty()) {
 			return;
 		}
+		
+		if(!aResult->getToken().empty() && token != aResult->getToken()) {
+			droppedResults++;
+			speak(SPEAK_FILTER_RESULT);
+			return;
+		}
 
 		if(isHash) {
 			if(aResult->getType() != SearchResult::TYPE_FILE || TTHValue(Text::fromT(currentSearch[0])) != aResult->getTTH()) {
@@ -924,7 +892,6 @@ void SearchFrame::onHubChanged(HubInfo* info) {
 	if (nItem == n)
 		return;
 
-	delete hubs->getData(nItem);
 	hubs->setData(nItem, info);
 	hubs->update(nItem);
 
@@ -944,7 +911,6 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 	if (nItem == n)
 		return;
 
-	delete hubs->getData(nItem);
 	hubs->erase(nItem);
 	hubs->setColumnWidth(0, LVSCW_AUTOSIZE);
 }
@@ -992,7 +958,6 @@ void SearchFrame::runSearch() {
 
 	int64_t llsize = (int64_t)lsize;
 
-	results->forEachT(DeleteFunction());
 	results->clear();
 
 	{
@@ -1011,6 +976,7 @@ void SearchFrame::runSearch() {
 		}
 
 		s = s.substr(0, max(s.size(), static_cast<tstring::size_type>(1)) - 1);
+		token = Util::toString(Util::rand());
 	}
 
 
@@ -1045,7 +1011,7 @@ void SearchFrame::runSearch() {
 
 	if(SearchManager::getInstance()->okToSearch()) {
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize,
-			(SearchManager::TypeModes)ftype, mode, "manual");
+			(SearchManager::TypeModes)ftype, mode, token);
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
 			searchBox->setText(Util::emptyStringT);
 	} else {
@@ -1120,7 +1086,7 @@ void SearchFrame::runUserCommand(const UserCommand& uc) {
 	}
 }
 
-bool SearchFrame::handleChar(int c) {
+bool SearchFrame::handleSearchKeyDown(int c) {
 	if(c == VK_RETURN && !(WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt())) {
 		runSearch();
 		return true;

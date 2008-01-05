@@ -26,6 +26,7 @@
 #include "ClientManager.h"
 #include "LogManager.h"
 #include "HashManager.h"
+#include "DownloadManager.h"
 
 #include "SimpleXML.h"
 #include "StringTokenizer.h"
@@ -35,6 +36,7 @@
 #include "Transfer.h"
 #include "UserConnection.h"
 #include "Download.h"
+#include "HashBloom.h"
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -177,7 +179,7 @@ MemoryInputStream* ShareManager::getTree(const string& virtualFile) const {
 		}
 	}
 
-	vector<uint8_t> buf = tree.getLeafData();
+	ByteVector buf = tree.getLeafData();
 	return new MemoryInputStream(&buf[0], buf.size());
 }
 
@@ -551,6 +553,10 @@ public:
 			return ((dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || (cFileName[0] == L'.'));
 		}
 
+		bool isLink() {
+			return false;
+		}
+
 		int64_t getSize() {
 			return (int64_t)nFileSizeLow | ((int64_t)nFileSizeHigh)<<32;
 		}
@@ -620,6 +626,12 @@ public:
 			if (!ent) return false;
 			return ent->d_name[0] == '.';
 		}
+		bool isLink() {
+			struct stat inode;
+			if (!ent) return false;
+			if (lstat((base + PATH_SEPARATOR + ent->d_name).c_str(), &inode) == -1) return false;
+			return S_ISLNK(inode.st_mode);
+		}
 		int64_t getSize() {
 			struct stat inode;
 			if (!ent) return false;
@@ -668,12 +680,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 		if(name == "." || name == "..")
 			continue;
-		if(name.find('$') != string::npos) {
-			LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_FILE) + name + " (" + STRING(SIZE) + ": " + Util::toString(File::getSize(name)) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
+		if(!BOOLSETTING(SHARE_HIDDEN) && i->isHidden())
 			continue;
-		}
-		if(!BOOLSETTING(SHARE_HIDDEN) && i->isHidden() )
-			continue;
+		if(!BOOLSETTING(FOLLOW_LINKS) && i->isLink())
+ 			continue;
 
 		if(i->isDirectory()) {
 			string newName = aName + name + PATH_SEPARATOR;
@@ -820,6 +830,18 @@ int ShareManager::run() {
 	}
 	refreshing = 0;
 	return 0;
+}
+
+void ShareManager::getBloom(ByteVector& v, size_t k, size_t m) const {
+	dcdebug("Creating bloom filter, k=%u, m=%u\n", k, m);
+	Lock l(cs);
+	
+	HashBloom bloom;
+	bloom.reset(k, m);
+	for(HashFileMap::const_iterator i = tthIndex.begin(); i != tthIndex.end(); ++i) {
+		bloom.add(i->first);
+	}
+	bloom.copy_to(v);
 }
 
 void ShareManager::generateXmlList() {
@@ -1343,7 +1365,7 @@ void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 	if(BOOLSETTING(ADD_FINISHED_INSTANTLY)) {
 		// Check if finished download is supposed to be shared
 		Lock l(cs);
-		const string& n = d->getTarget();
+		const string& n = d->getPath();
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); i++) {
 			if(Util::strnicmp(i->first, n, i->first.size()) == 0 && n[i->first.size()] == PATH_SEPARATOR) {
 				string s = n.substr(i->first.size()+1);

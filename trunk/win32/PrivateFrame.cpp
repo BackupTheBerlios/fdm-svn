@@ -36,7 +36,7 @@
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
-void PrivateFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
+void PrivateFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
 	PrivateFrame* pf = 0;
 	FrameIter i = frames.find(replyTo_);
 	if(i == frames.end()) {
@@ -50,7 +50,7 @@ void PrivateFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPt
 	
 }
 
-void PrivateFrame::gotMessage(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
+void PrivateFrame::gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = 0;
 	const UserPtr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 
@@ -92,36 +92,30 @@ void PrivateFrame::closeAllOffline() {
 	}
 }
 
-PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_, bool activate) : 
+PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
 	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_PRIVATE)), activate),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)
 {
 	{
-		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = createTextBox(cs);
-		message->setFont(WinUtil::font);
-		addWidget(message);
+		addWidget(message, true);
 		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&PrivateFrame::handleChar, this, _1));
 	}
 	
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
-		chat->setFont(WinUtil::font);
 		addWidget(chat);
 	}
 	
 	initStatus();
-
-	statusSizes[STATUS_DUMMY] = 16;
 
 	updateTitle();
 	layout();
@@ -151,8 +145,8 @@ void PrivateFrame::addChat(const tstring& aLine) {
 	}
 	line += aLine;
 
-	int limit = chat->getTextLimit();
-	if(chat->length() + static_cast<int>(line.size()) > limit) {
+	size_t limit = chat->getTextLimit();
+	if(chat->length() + line.size() > limit) {
 		HoldRedraw hold(chat);
 		chat->setSelection(0, chat->lineIndex(chat->lineFromChar(limit / 10)));
 		chat->replaceSelection(_T(""));
@@ -342,8 +336,14 @@ HRESULT PrivateFrame::handleSpeaker(WPARAM, LPARAM) {
 bool PrivateFrame::handleKeyDown(int c) {	
 	if(c == VK_RETURN && enter()) {
 		return true;
+	} else if(c == VK_PRIOR) { // page up
+		chat->sendMessage(WM_VSCROLL, SB_PAGEUP);
+		return true;
+	} else if(c == VK_NEXT) { // page down
+		chat->sendMessage(WM_VSCROLL, SB_PAGEDOWN);
+		return true;
 	}
-	
+
 	return false;
 }
 
@@ -360,7 +360,7 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 		speak(USER_UPDATED);
 }
 
-bool PrivateFrame::handleTabContextMenu(const SmartWin::Point& pt) {
+bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 	
 	menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&PrivateFrame::handleGetList, this));
@@ -373,7 +373,7 @@ bool PrivateFrame::handleTabContextMenu(const SmartWin::Point& pt) {
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&PrivateFrame::close, this, true));
 
-	menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return TRUE;
 }
 
