@@ -20,7 +20,6 @@ ECHO Preparing . . .
 cd..
 attrib +h /S /D "bleh these files need manually merging" > nul
 attrib +h /S /D build > nul
-attrib +h /S /D app > nul
 attrib +h /S /D Batch-Files > nul
 attrib +h /S /D Fdm-Client > nul
 attrib +h /S /D Fdm-Windows > nul
@@ -34,6 +33,8 @@ attrib +h License-Fdm.txt > nul
 attrib +h build_stl.bat > nul
 attrib +h natupnp.h > nul
 attrib +h Example.xml > nul
+attrib +h *.pyc > nul
+attrib +h .sconsign.dblite > nul
 attrib +h *.rar > nul
 rd /s /q ..\original-dcplusplus > nul
 
@@ -42,19 +43,10 @@ ECHO Extracting DC++ Svn's Files
 %RAR% %UNRARSVNFILES%
 
 ECHO ------------------------------------------------------------------------
-ECHO Copying Files Over
+ECHO Copying Files Over And Cleaning Up
 xcopy /q /y /e *.* ..\original-dcplusplus > nul
-
-ECHO ------------------------------------------------------------------------
-ECHO Time To View.  Look In ..\original-dcplusplus Directory.
-PAUSE
-
-ECHO ------------------------------------------------------------------------
-ECHO Cleaning Up . . .
-rd /s /q ..\original-dcplusplus > nul
 attrib -h /S /D "bleh these files need manually merging" > nul
 attrib -h /S /D build > nul
-attrib -h /S /D app > nul
 attrib -h /S /D Batch-Files > nul
 attrib -h /S /D Fdm-Client > nul
 attrib -h /S /D Fdm-Windows > nul
@@ -66,4 +58,14 @@ attrib -h License-Fdm.txt > nul
 attrib -h build_stl.bat > nul
 attrib -h natupnp.h > nul
 attrib -h Example.xml > nul
+attrib -h *.pyc > nul
+attrib -h .sconsign.dblite > nul
 attrib -h *.rar > nul
+
+ECHO ------------------------------------------------------------------------
+ECHO Time To View.  Look In ..\original-dcplusplus Directory.
+PAUSE
+
+ECHO ------------------------------------------------------------------------
+ECHO Cleaning Up . . .
+rd /s /q ..\original-dcplusplus > nul

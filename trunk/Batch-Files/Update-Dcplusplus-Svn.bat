@@ -21,7 +21,6 @@ ECHO Preparing . . .
 cd..
 attrib +h /S /D "bleh these files need manually merging" > nul
 attrib +h /S /D build > nul
-attrib +h /S /D app > nul
 attrib +h /S /D Batch-Files > nul
 attrib +h /S /D Fdm-Client > nul
 attrib +h /S /D Fdm-Windows > nul
@@ -35,6 +34,8 @@ attrib +h License-Fdm.txt > nul
 attrib +h build_stl.bat > nul
 attrib +h natupnp.h > nul
 attrib +h Example.xml > nul
+attrib +h *.pyc > nul
+attrib +h .sconsign.dblite > nul
 attrib +h *.rar > nul
 rd /s /q ..\original-dcplusplus > nul
 
@@ -78,7 +79,6 @@ ECHO Cleaning Up . . .
 rd /s /q ..\original-dcplusplus > nul
 attrib -h /S /D "bleh these files need manually merging" > nul
 attrib -h /S /D build > nul
-attrib -h /S /D app > nul
 attrib -h /S /D Batch-Files > nul
 attrib -h /S /D Fdm-Client > nul
 attrib -h /S /D Fdm-Windows > nul
@@ -90,6 +90,8 @@ attrib -h License-Fdm.txt > nul
 attrib -h build_stl.bat > nul
 attrib -h natupnp.h > nul
 attrib -h Example.xml > nul
+attrib -h *.pyc > nul
+attrib -h .sconsign.dblite > nul
 attrib -h *.rar > nul
 
 IF EXIST "C:\Shared On C\Bot Share\fdm\%DCSVN%" (
