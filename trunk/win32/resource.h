@@ -52,6 +52,7 @@
 #define IDD_USER_COMMAND			221
 #define IDD_WINDOWSPAGE				222
 #define IDD_SETTINGS				223
+#define IDD_FDM_ABOUTBOX			500
 
 // Stuff not in the resource file
 #define IDC_EXIT 					1000
@@ -122,6 +123,8 @@
 #define IDC_CLOSE_WINDOW			1072
 #define IDC_TRAY_SHOW				1073
 #define IDC_TRAY_QUIT				1074
+#define IDC_FDM_ABOUT				1500
+
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000
@@ -433,5 +436,9 @@
 #define IDC_SETTINGS_PAGES 2291
 #define IDC_SETTINGS_MIN_SEGMENT_SIZE 2292
 #define IDC_MIN_SEGMENT_SIZE 2293
+
+#define IDC_FDM_ABOUT_VERSION			5000
+#define IDC_FDM_ABOUT_THANKS			5001
+#define IDC_FDM_ABOUT_LATEST			5002
 
 #endif

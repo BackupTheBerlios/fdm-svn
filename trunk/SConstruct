@@ -170,11 +170,17 @@ env.Command('dcpp/StringDefs.cpp', 'dcpp/StringDefs.h', lambda target, source, e
 env.Depends('dcpp/StringDefs.cpp', 'dcpp/StringDefs.h')
 env.SideEffect('Example.xml', 'dcpp/StringDefs.cpp')
 
+from FdmMakedefs import fdmconvert
+env.Command('dcpp/FdmStringDefs.cpp', 'dcpp/FdmStringDefs.h', lambda target, source, env: fdmconvert())
+env.Depends('dcpp/FdmStringDefs.cpp', 'dcpp/FdmStringDefs.h')
+env.SideEffect('FdmExample.xml', 'dcpp/FdmStringDefs.cpp')
+
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
 dev.intl = dev.build('intl/')
 dev.boost = dev.build('boost/')
 dev.client = dev.build('dcpp/')
 env.Depends(dev.client, 'dcpp/StringDefs.cpp')
+env.Depends(dev.client, 'dcpp/FdmStringDefs.cpp')
 dev.smartwin = dev.build('smartwin/')
 dev.win32 = dev.build('win32/')

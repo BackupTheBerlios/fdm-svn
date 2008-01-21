@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
+/*
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FDM_UTIL_H)
-#define FDM_UTIL_H
+#define FDMAPPNAME "Fdm"
+#define FDMVERSIONSTRING "0.00"
+#define FDMVERSIONFLOAT 0.00
+#define FDMSVNVERSIONSTRING "svn$revision"
+#define FDMSVNVERSIONFLOAT $revision
 
-namespace FdmUtil
-{
-	bool toBool(int aInt);
-	string toString(bool aBool);
-
-	string addFdmDes(string aCurDes);
-
-	tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
-	string replace(const string& aString, const string& fStr, const string& rStr);
-
-	bool getSettingThrottleEnable();
-	int getSettingDownloadSpeed();
-	int getSettingUploadSpeed();
-};
-
-
-class StaticClientSettings 
-{
-};
-
-
-#endif // !defined(FDM_UTIL_H)
+/* Update the .rc file as well... */

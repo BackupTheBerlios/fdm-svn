@@ -23,6 +23,9 @@
 #include "MainWindow.h"
 #include "SplashWindow.h"
 
+#include "FdmMoreWinUtil.h"
+#include <dcpp/Fdm.h>
+
 #include <dcpp/MerkleTree.h>
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
@@ -105,6 +108,7 @@ int SmartWinMain(SmartWin::Application& app) {
 	dcdebug("StartWinMain\n");
 
 	if(!checkOtherInstances(app.getCommandLine().getParamsRaw())) {
+		if (!MoreWinUtil::allowMoreInstances())
 		return 1;
 	}
 
@@ -134,7 +138,7 @@ int SmartWinMain(SmartWin::Application& app) {
 	try {
 		SplashWindow* splash(new SplashWindow);
 		startup(&callBack, splash);
-		
+		startUpFdm();
 		bindtextdomain(PACKAGE, LOCALEDIR);
 		textdomain(PACKAGE);
 		
@@ -156,7 +160,7 @@ int SmartWinMain(SmartWin::Application& app) {
 		printf("Unknown exception");
 	}
 	WinUtil::uninit();
-	
+	shutDownFdm();
 	shutdown();
 
 	::CoUninitialize();
