@@ -7,12 +7,10 @@ Pothead
 	Added IP's to Main Chat and PM's
 	Added Autosearch.
 	Added Winamp spam (from BCDC++)
-	Added Huh spam (thanks gabberworld)
-	Added IP column to hubframe
+	Added IP column to hubframe and private messages
 	Added a few python scripts (thanks fulDC)
 	Added Bandwidth Limiting (thanks BCDC)
 	Added Coloured Text
-	Changed to fulDC's Coloured Text (thanks fulDC)
 	Ripped a few DCplusplus files, so can have own Language and Settings files.
 	Ripped a few DCplusplus files, so can have own Settings and Notepad pages.
 

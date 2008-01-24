@@ -19,6 +19,6 @@ z.close()
 os.remove("GeoIPCountryCSV.zip")
 
 print "Placing..."
-fout2 = open("app/GeoIPCountryWhois.csv", "w")
+fout2 = open("build/release-mingw/bin/GeoIPCountryWhois.csv", "w")
 fout2.write(tmp)
 fout2.close()

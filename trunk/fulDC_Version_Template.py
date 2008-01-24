@@ -50,9 +50,9 @@ if __name__ == "__main__":
 	print "Checking if update of FdmVersion.h is needed"
 	if not os.path.exists(TARGET):
 		open(TARGET,'w').write(versiontemplate)
-		print "Updates FdmVersion.h from template file"
+		print "Updated FdmVersion.h from template file"
 	elif open(TARGET,'r').read() != versiontemplate:
-		print "Updates FdmVersion.h from template file"
+		print "Updated FdmVersion.h from template file"
 		open(TARGET,'w').write(versiontemplate)
 	else:
 		print "No changes required in FdmVersion.h."
