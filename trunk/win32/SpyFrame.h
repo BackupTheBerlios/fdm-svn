@@ -36,9 +36,6 @@ public:
 		STATUS_LAST
 	};
 
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SEARCH_SPY;
-	static const unsigned ICON_RESOURCE = IDR_SPY;
-
 protected:
 	typedef StaticFrame<SpyFrame> BaseType;
 	friend class StaticFrame<SpyFrame>;
@@ -53,7 +50,7 @@ protected:
 	void postClosing();
 
 private:
-	enum { AVG_TIME = 60 };
+	static const size_t AVG_TIME = 60;
 
 	enum {
 		SPEAK_SEARCH

@@ -47,7 +47,6 @@ if __name__ == "__main__":
 	for key,value in s.data.iteritems():
 		versiontemplate = versiontemplate.replace("$%s" % key, value)
 	print "Revision %s" % (s.revision)
-	print "Checking if update of FdmVersion.h is needed"
 	if not os.path.exists(TARGET):
 		open(TARGET,'w').write(versiontemplate)
 		print "Updated FdmVersion.h from template file"

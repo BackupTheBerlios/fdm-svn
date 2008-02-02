@@ -22,7 +22,6 @@
 
 #include "CommandDlg.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/UserCommand.h>
 #include <dcpp/NmdcHub.h>
 #include <dcpp/version.h>
@@ -61,43 +60,43 @@ CommandDlg::~CommandDlg() {
 
 bool CommandDlg::handleInitDialog() {
 	// Translate
-	setText(TSTRING(USER_CMD_WINDOW));
-	::SetDlgItemText(handle(), IDC_SETTINGS_TYPE, CTSTRING(USER_CMD_TYPE));
-	::SetDlgItemText(handle(), IDC_SETTINGS_CONTEXT, CTSTRING(USER_CMD_CONTEXT));
-	::SetDlgItemText(handle(), IDC_SETTINGS_PARAMETERS, CTSTRING(USER_CMD_PARAMETERS));
-	::SetDlgItemText(handle(), IDC_SETTINGS_NAME, CTSTRING(HUB_NAME));
-	::SetDlgItemText(handle(), IDC_SETTINGS_COMMAND, CTSTRING(USER_CMD_COMMAND));
-	::SetDlgItemText(handle(), IDC_SETTINGS_HUB, CTSTRING(USER_CMD_HUB));
-	::SetDlgItemText(handle(), IDC_SETTINGS_TO, CTSTRING(USER_CMD_TO));
-	::SetDlgItemText(handle(), IDC_USER_CMD_PREVIEW, CTSTRING(USER_CMD_PREVIEW));
+	setText(T_("Create / Modify Command"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_TYPE, CT_("Command Type"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_CONTEXT, CT_("Context"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_PARAMETERS, CT_("Parameters"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_NAME, CT_("Name"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_COMMAND, CT_("Command"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_HUB, CT_("Hub IP / DNS (empty = all, 'op' = where operator)"));
+	::SetDlgItemText(handle(), IDC_SETTINGS_TO, CT_("To"));
+	::SetDlgItemText(handle(), IDC_USER_CMD_PREVIEW, CT_("Text sent to hub"));
 
 	separator = attachRadioButton(IDC_SETTINGS_SEPARATOR);
-	separator->setText(TSTRING(SEPARATOR));
+	separator->setText(T_("Separator"));
 	separator->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	raw = attachRadioButton(IDC_SETTINGS_RAW);
-	raw->setText(TSTRING(USER_CMD_RAW));
+	raw->setText(T_("Raw"));
 	raw->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	chat = attachRadioButton(IDC_SETTINGS_CHAT);
-	chat->setText(TSTRING(USER_CMD_CHAT));
+	chat->setText(T_("Chat"));
 	chat->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	PM = attachRadioButton(IDC_SETTINGS_PM);
-	PM->setText(TSTRING(USER_CMD_PM));
+	PM->setText(T_("PM"));
 	PM->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	hubMenu = attachCheckBox(IDC_SETTINGS_HUB_MENU);
-	hubMenu->setText(TSTRING(USER_CMD_HUB_MENU));
+	hubMenu->setText(T_("Hub Menu"));
 
 	userMenu = attachCheckBox(IDC_SETTINGS_USER_MENU);
-	userMenu->setText(TSTRING(USER_CMD_USER_MENU));
+	userMenu->setText(T_("User Menu"));
 
 	searchMenu = attachCheckBox(IDC_SETTINGS_SEARCH_MENU);
-	searchMenu->setText(TSTRING(USER_CMD_SEARCH_MENU));
+	searchMenu->setText(T_("Search Menu"));
 
 	fileListMenu = attachCheckBox(IDC_SETTINGS_FILELIST_MENU);
-	fileListMenu->setText(TSTRING(USER_CMD_FILELIST_MENU));
+	fileListMenu->setText(T_( "Filelist Menu"));
 
 	nameBox = attachTextBox(IDC_NAME);
 
@@ -110,12 +109,12 @@ bool CommandDlg::handleInitDialog() {
 	nick->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
 	once = attachCheckBox(IDC_SETTINGS_ONCE);
-	once->setText(TSTRING(USER_CMD_ONCE));
+	once->setText(T_("Send once per nick"));
 
 	result = attachTextBox(IDC_RESULT);
 
 	openHelp = attachCheckBox(IDC_USER_CMD_OPEN_HELP);
-	openHelp->setText(TSTRING(SETTINGS_OPEN_USER_CMD_HELP));
+	openHelp->setText(T_("Always open help file with this dialog"));
 	bool bOpenHelp = BOOLSETTING(OPEN_USER_CMD_HELP);
 	openHelp->setChecked(bOpenHelp);
 

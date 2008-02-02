@@ -27,7 +27,7 @@
 #include "WinUtil.h"
 
 PropPage::TextItem CertificatesPage::texts[] = {
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+	{ 0, 0 }
 };
 
 PropPage::Item CertificatesPage::items[] = {
@@ -38,10 +38,10 @@ PropPage::Item CertificatesPage::items[] = {
 };
 
 PropPage::ListItem CertificatesPage::listItems[] = {
-	{ SettingsManager::USE_TLS, ResourceManager::SETTINGS_USE_TLS },
-	{ SettingsManager::ALLOW_UNTRUSTED_HUBS, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_HUBS	},
-	{ SettingsManager::ALLOW_UNTRUSTED_CLIENTS, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_CLIENTS, },
-	{ 0, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_CLIENTS, },
+	{ SettingsManager::USE_TLS, N_("Use TLS when remote client supports it") },
+	{ SettingsManager::ALLOW_UNTRUSTED_HUBS, N_("Allow TLS connections to hubs without trusted certificate") },
+	{ SettingsManager::ALLOW_UNTRUSTED_CLIENTS, N_("Allow TLS connections to clients without trusted certificate") },
+	{ 0, 0 }
 };
 
 CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) {

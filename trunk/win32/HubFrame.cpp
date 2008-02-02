@@ -30,15 +30,22 @@
 #include <dcpp/Client.h>
 #include <dcpp/LogManager.h>
 #include <dcpp/User.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/ConnectionManager.h>
 #include <dcpp/SearchManager.h>
 
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
 int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };
-static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::IP_BARE, ResourceManager::EMAIL, ResourceManager::CID };
+static const char* columnNames[] = {
+	N_("Nick"),
+	N_("Shared"),
+	N_("Description"),
+	N_("Tag"),
+	N_("Connection"),
+	N_("IP"),
+	N_("E-Mail"),
+	N_("CID")
+};
 
 HubFrame::FrameList HubFrame::frames;
 
@@ -120,9 +127,9 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		addWidget(filterType);
 		
 		for(int j=0; j<COLUMN_LAST; j++) {
-			filterType->addValue(TSTRING_I(columnNames[j]));
+			filterType->addValue(T_(columnNames[j]));
 		}
-		filterType->addValue(TSTRING(ANY));
+		filterType->addValue(T_("Any"));
 		filterType->setSelectedIndex(COLUMN_LAST);
 		filterType->onSelectionChanged(std::tr1::bind(&HubFrame::updateUserList, this, (UserInfo*)0));
 	}
@@ -133,7 +140,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		paned->setSecond(users);
 		
 		users->setSmallImageList(WinUtil::userImages);
-		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		users->createColumns(WinUtil::getStrings(columnNames));
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -289,16 +296,16 @@ bool HubFrame::enter() {
 					handleFollow();
 				}
 			} else {
-				addStatus(TSTRING(SPECIFY_SERVER));
+				addStatus(T_("Specify a server to connect to"));
 			}
 		} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
 			chat->setText(_T(""));
 		} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
 			timeStamps = !timeStamps;
 			if(timeStamps) {
-				addStatus(TSTRING(TIMESTAMPS_ENABLED));
+				addStatus(T_("Timestamps enabled"));
 			} else {
-				addStatus(TSTRING(TIMESTAMPS_DISABLED));
+				addStatus(T_("Timestamps disabled"));
 			}
 		} else if( (Util::stricmp(cmd.c_str(), _T("password")) == 0) && waitingForPW ) {
 			client->setPassword(Text::fromT(param));
@@ -307,28 +314,27 @@ bool HubFrame::enter() {
 		} else if( Util::stricmp(cmd.c_str(), _T("showjoins")) == 0 ) {
 			showJoins = !showJoins;
 			if(showJoins) {
-				addStatus(TSTRING(JOIN_SHOWING_ON));
+				addStatus(T_("Join/part showing on"));
 			} else {
-				addStatus(TSTRING(JOIN_SHOWING_OFF));
+				addStatus(T_("Join/part showing off"));
 			}
 		} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
 			favShowJoins = !favShowJoins;
 			if(favShowJoins) {
-				addStatus(TSTRING(FAV_JOIN_SHOWING_ON));
+				addStatus(T_("Join/part of favorite users showing on"));
 			} else {
-				addStatus(TSTRING(FAV_JOIN_SHOWING_OFF));
+				addStatus(T_("Join/part of favorite users showing off"));
 			}
 		} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
 			this->close(true);
 		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 			showUsers->setChecked(!showUsers->getChecked());
 		} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-			addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
-			STRING(PORT) +
-			Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
-			Util::toString(SearchManager::getInstance()->getPort()) + "/" +
-				Util::toString(ConnectionManager::getInstance()->getSecurePort())
-				)));
+			addStatus(str(TF_("IP: %1%, Port: %2%/%3%/%4%") % Text::toT(client->getLocalIp())
+				% ConnectionManager::getInstance()->getPort()
+				% SearchManager::getInstance()->getPort()
+				% ConnectionManager::getInstance()->getSecurePort()
+				));
 		} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 			addAsFavorite();
 		} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
@@ -374,12 +380,12 @@ bool HubFrame::enter() {
 			if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
 				client->hubMessage(Text::fromT(s));
 			} else {
-				addStatus(TSTRING(UNKNOWN_COMMAND) + cmd);
+				addStatus(str(TF_("Unknown command: %1%") % cmd));
 			}
 		}
 		message->setText(_T(""));
 	} else if(waitingForPW) {
-		addStatus(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
+		addStatus(T_("Don't remove /password before your password"));
 		message->setText(_T("/password "));
 		message->setFocus();
 		message->setSelection(10, 10);
@@ -484,17 +490,17 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			if(updateUser(u)) {
 				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-					addStatus(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
+					addStatus(str(TF_("*** Joins: %1%") % Text::toT(u.identity.getNick())));
 				}
 			}
 		} else if(i->first == REMOVE_USER) {
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			removeUser(u.user);
 			if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-				addStatus(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
+				addStatus(str(TF_("*** Parts: %1%") % Text::toT(u.identity.getNick())));
 			}
 		} else if(i->first == CONNECTED) {
-			addStatus(TSTRING(CONNECTED));
+			addStatus(T_("Connected"));
 #ifdef PORT_ME
 			setTabColor(GREEN);
 #endif
@@ -518,7 +524,7 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 		} else if(i->first == GET_PASSWORD) {
 			if(client->getPassword().size() > 0) {
 				client->password(client->getPassword());
-				addStatus(TSTRING(STORED_PASSWORD_SENT));
+				addStatus(T_("Stored password sent..."));
 			} else {
 				if(!BOOLSETTING(PROMPT_PASSWORD)) {
 					message->setText(_T("/password "));
@@ -526,7 +532,7 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 					message->setSelection(10, 10);
 					waitingForPW = true;
 				} else {
-					LineDlg linePwd(this, TSTRING(ENTER_PASSWORD), TSTRING(ENTER_PASSWORD), Util::emptyStringT, true);
+					LineDlg linePwd(this, T_("Please enter a password"), T_("Please enter a password"), Util::emptyStringT, true);
 					if(linePwd.run() == IDOK) {
 						client->setPassword(Text::fromT(linePwd.getLine()));
 						client->password(Text::fromT(linePwd.getLine()));
@@ -544,25 +550,25 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			}
 			if(pm.hub) {
 				if(BOOLSETTING(IGNORE_HUB_PMS)) {
-					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+					addStatus(str(TF_("Ignored message: %1%") % Text::toT(pm.str)), false);
 				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(str(TF_("Private message from %1%: %2%") % getNick(pm.from) % Text::toT(pm.str)));
 				}
 			} else if(pm.bot) {
 				if(BOOLSETTING(IGNORE_BOT_PMS)) {
-					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+					addStatus(str(TF_("Ignored message: %1%") % Text::toT(pm.str)), false);
 				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(str(TF_("Private message from %1%: %2%") % getNick(pm.from) % Text::toT(pm.str)));
 				}
 			} else {
 				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo) || pm.from == client->getMyIdentity().getUser()) {
 					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(str(TF_("Private message from %1%: %2%") % getNick(pm.from) % Text::toT(pm.str)));
 				}
 			}
 		} else if(i->first == FOLLOW) {
@@ -828,7 +834,7 @@ int HubFrame::UserInfo::compareItems(const HubFrame::UserInfo* a, const HubFrame
 }
 
 void HubFrame::on(Connecting, Client*) throw() {
-	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
+	speak(ADD_STATUS_LINE, str(F_("Connecting to %1%...") % client->getHubUrl()));
 	speak(SET_WINDOW_TITLE, client->getHubUrl());
 }
 void HubFrame::on(Connected, Client*) throw() {
@@ -850,14 +856,14 @@ void HubFrame::on(ClientListener::UserRemoved, Client*, const OnlineUser& user) 
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() {
 	if(ClientManager::getInstance()->isConnected(line)) {
-		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
+		speak(ADD_STATUS_LINE, _("Redirect request received to a hub that's already connected"));
 		return;
 	}
 	redirect = line;
 	if(BOOLSETTING(AUTO_FOLLOW)) {
 		speak(FOLLOW);
 	} else {
-		speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
+		speak(ADD_STATUS_LINE, str(F_("Press the follow redirect button to connect to %1%") % line));
 	}
 }
 
@@ -908,11 +914,11 @@ void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineU
 }
 
 void HubFrame::on(NickTaken, Client*) throw() {
-	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+	speak(ADD_STATUS_LINE, _("Your nick was already taken, please change to something else!"));
 }
 
 void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
-	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
+	speak(ADD_STATUS_LINE, str(F_("Search spam detected from %1%") % line));
 }
 
 tstring HubFrame::getStatusShared() const {
@@ -938,7 +944,7 @@ tstring HubFrame::getStatusUsers() const {
 		textForUsers += Text::toT(Util::toString(users->getSelectedCount()) + "/");
 	if (showUsers->getChecked() && users->size() < userCount)
 		textForUsers += Text::toT(Util::toString(users->size()) + "/");
-	return textForUsers + Text::toT(Util::toString(userCount) + " " + STRING(HUB_USERS));
+	return textForUsers + str(TFN_("%1% user", "%1% users", userCount) % userCount);
 }
 
 
@@ -966,9 +972,9 @@ void HubFrame::addAsFavorite() {
 		aEntry.setConnect(false);
 		aEntry.setNick(client->getMyNick());
 		FavoriteManager::getInstance()->addFavorite(aEntry);
-		addStatus(TSTRING(FAVORITE_HUB_ADDED));
+		addStatus(T_("Favorite hub added"));
 	} else {
-		addStatus(TSTRING(FAVORITE_HUB_ALREADY_EXISTS));
+		addStatus(T_("Hub already exists as a favorite"));
 	}
 }
 
@@ -976,9 +982,9 @@ void HubFrame::removeFavoriteHub() {
 	FavoriteHubEntry* removeHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
 	if(removeHub) {
 		FavoriteManager::getInstance()->removeFavorite(removeHub);
-		addStatus(TSTRING(FAVORITE_HUB_REMOVED));
+		addStatus(T_("Favorite hub removed"));
 	} else {
-		addStatus(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
+		addStatus(T_("This hub is not a favorite hub"));
 	}
 }
 
@@ -1162,7 +1168,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(getParent(), menu);
 		
-		menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), std::tr1::bind(&HubFrame::handleCopyNick, this));
+		menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
 		menu->setDefaultItem(IDC_GETLIST);
 		prepareMenu(menu, UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		
@@ -1178,15 +1184,15 @@ bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
-		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&HubFrame::addAsFavorite, this));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this));
 	}
 	
-	menu->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT), std::tr1::bind(&HubFrame::handleReconnect, this));
-	menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&HubFrame::handleCopyHub, this));
+	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this));
+	menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&HubFrame::handleCopyHub, this));
 
 	prepareMenu(menu, UserCommand::CONTEXT_HUB, url);
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&HubFrame::close, this, true));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true));
 
 	inTabMenu = true;
 	
@@ -1373,7 +1379,7 @@ void HubFrame::handleReconnect() {
 void HubFrame::handleFollow() {
 	if(!redirect.empty()) {
 		if(ClientManager::getInstance()->isConnected(redirect)) {
-			addStatus(TSTRING(REDIRECT_ALREADY_CONNECTED));
+			addStatus(T_("Redirect request received to a hub that's already connected"));
 			return;
 		}
 

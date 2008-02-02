@@ -28,12 +28,12 @@
 #include "HoldRedraw.h"
 
 PropPage::TextItem UCPage::texts[] = {
-	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
-	{ IDC_MOVE_DOWN, ResourceManager::MOVE_DOWN },
-	{ IDC_ADD_MENU, ResourceManager::ADD },
-	{ IDC_CHANGE_MENU, ResourceManager::SETTINGS_CHANGE },
-	{ IDC_REMOVE_MENU, ResourceManager::REMOVE },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+	{ IDC_MOVE_UP, N_("Move &Up") },
+	{ IDC_MOVE_DOWN, N_("Move &Down") },
+	{ IDC_ADD_MENU, N_("&Add") },
+	{ IDC_CHANGE_MENU, N_("&Change") },
+	{ IDC_REMOVE_MENU, N_("&Remove") },
+	{ 0, 0 }
 };
 
 PropPage::Item UCPage::items[] = {
@@ -50,9 +50,9 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	commands->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
-	columns.push_back(TSTRING(SETTINGS_NAME));
-	columns.push_back(TSTRING(SETTINGS_COMMAND));
-	columns.push_back(TSTRING(HUB));
+	columns.push_back(T_("Name"));
+	columns.push_back(T_("Command"));
+	columns.push_back(T_("Hub"));
 	commands->createColumns(columns);
 	commands->setColumnWidth(0, 100);
 	commands->setColumnWidth(1, commands->getSize().x - 220);
@@ -120,7 +120,7 @@ void UCPage::handleChangeClicked() {
 
 		CommandDlg dlg(this, uc.getType(), uc.getCtx(), Text::toT(uc.getName()), Text::toT(uc.getCommand()), Text::toT(uc.getHub()));
 		if(dlg.run() == IDOK) {
-			commands->setText(0, i, (dlg.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : dlg.getName());
+			commands->setText(0, i, (dlg.getType() == UserCommand::TYPE_SEPARATOR) ? T_("Separator") : dlg.getName());
 			commands->setText(1, i, dlg.getCommand());
 			commands->setText(2, i, dlg.getHub());
 
@@ -178,7 +178,7 @@ void UCPage::handleRemoveClicked() {
 
 void UCPage::addEntry(const UserCommand& uc, int index) {
 	TStringList row;
-	row.push_back((uc.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : Text::toT(uc.getName()));
+	row.push_back((uc.getType() == UserCommand::TYPE_SEPARATOR) ? T_("Separator") : Text::toT(uc.getName()));
 	row.push_back(Text::toT(uc.getCommand()));
 	row.push_back(Text::toT(uc.getHub()));
 	commands->insert(row, (LPARAM)uc.getId(), index);

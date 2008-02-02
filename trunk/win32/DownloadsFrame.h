@@ -22,7 +22,6 @@
 #include <dcpp/DownloadManagerListener.h>
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/forward.h>
-#include <dcpp/ResourceManager.h>
 
 #include "TypedListView.h"
 #include "StaticFrame.h"
@@ -38,8 +37,6 @@ public:
 		STATUS_STATUS,
 		STATUS_LAST
 	};
-	static const unsigned ICON_RESOURCE = IDR_QUEUE;
-
 protected:
 	typedef StaticFrame<DownloadsFrame> BaseType;
 	friend class StaticFrame<DownloadsFrame>;
@@ -61,6 +58,7 @@ private:
 		COLUMN_STATUS,
 		COLUMN_TIMELEFT,
 		COLUMN_SPEED,
+		COLUMN_DONE,
 		COLUMN_SIZE,
 		COLUMN_LAST
 	};
@@ -82,7 +80,7 @@ private:
 
 	class DownloadInfo {
 	public:
-		DownloadInfo(const string& filename, int64_t size);
+		DownloadInfo(const string& filename, int64_t size, const TTHValue& tth);
 		
 		const tstring& getText(int col) const {
 			return columns[col];
@@ -96,6 +94,7 @@ private:
 			case COLUMN_TIMELEFT: return compare(a->timeleft(), b->timeleft());
 			case COLUMN_SPEED: return compare(a->bps, b->bps);
 			case COLUMN_SIZE: return compare(a->size, b->size);
+			case COLUMN_DONE: return compare(a->done, b->done);
 			default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 			}
 		}
@@ -109,6 +108,7 @@ private:
 		int64_t size;
 		double bps;
 		int users;
+		TTHValue tth;
 		
 		tstring columns[COLUMN_LAST];
 	};

@@ -21,7 +21,6 @@
 #include "AboutDlg.h"
 
 #include <dcpp/SimpleXML.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 #include "WinUtil.h"
 
@@ -40,9 +39,9 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, "
 "defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, "
 "bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, "
-"krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, "
+"krzysztof tyszecki, poison, mikejj, pur, bigmuscle, martin, jove, bart vullings, "
 "steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman, james ross,"
-"stanislav maslovski. "
+"stanislav maslovski, david grundberg. "
 "Keep it coming!";
 
 AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
@@ -57,13 +56,11 @@ bool AboutDlg::handleInitDialog() {
 	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2007 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 	setItemText(IDC_TTH, WinUtil::tth);
 	setItemText(IDC_THANKS, Text::toT(thanks));
-	setItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + Util::formatBytes(SETTING(TOTAL_DOWNLOAD))));
+	setItemText(IDC_TOTALS, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));
 	if(SETTING(TOTAL_DOWNLOAD) > 0) {
-		char buf[64];
-		sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
-		setItemText(IDC_RATIO, Text::toT(buf));
+		setItemText(IDC_RATIO, str(TF_("Ratio (up/down): %1$0.2f") % (((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)))));
 	}
-	setItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
+	setItemText(IDC_LATEST, T_("Downloading..."));
 
 	attachButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 

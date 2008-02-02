@@ -46,9 +46,6 @@ public:
 		STATUS_LAST
 	};
 
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::DOWNLOAD_QUEUE;
-	static const unsigned ICON_RESOURCE = IDR_QUEUE;
-	
 private:
 	typedef StaticFrame<QueueFrame> BaseType;
 	friend class StaticFrame<QueueFrame>;
@@ -286,9 +283,6 @@ private:
 	
 	void handleShowTreeClicked();
 
-	void handleSearchAlternates();
-	void handleBitziLookup();
-	void handleCopyMagnet();
 	void handleMove();
 	void handleRemove();
 	void handlePriority(unsigned id);

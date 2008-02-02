@@ -22,19 +22,22 @@
 
 #include "ADLSearchFrame.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/Client.h>
 #include "HoldRedraw.h"
 #include "ADLSProperties.h"
 
 int ADLSearchFrame::columnIndexes[] = { COLUMN_ACTIVE_SEARCH_STRING, COLUMN_SOURCE_TYPE, COLUMN_DEST_DIR, COLUMN_MIN_FILE_SIZE, COLUMN_MAX_FILE_SIZE };
 int ADLSearchFrame::columnSizes[] = { 120, 90, 90, 90, 90 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::ACTIVE_SEARCH_STRING,
-	ResourceManager::SOURCE_TYPE, ResourceManager::DESTINATION, ResourceManager::MIN_SIZE, ResourceManager::MAX_SIZE,
+static const char* columnNames[] = {
+	N_("Enabled / Search String"),
+	N_("Source Type"),
+	N_("Destination Directory"),
+	N_("Min Size"),
+	N_("Max Size")
 };
 
 ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDR_ADLSEARCH),
 	add(0),
 	properties(0),
 	up(0),
@@ -48,7 +51,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		items = createListView(cs);
 		addWidget(items);
 
-		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		items->createColumns(WinUtil::getStrings(columnNames));
 		items->setColumnOrder(WinUtil::splitTokens(SETTING(ADLSEARCHFRAME_ORDER), columnIndexes));
 		items->setColumnWidths(WinUtil::splitTokens(SETTING(ADLSEARCHFRAME_WIDTHS), columnSizes));
 		items->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -62,32 +65,32 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
 
-		cs.caption = TSTRING(NEW);
+		cs.caption = T_("&New...");
 		add = createButton(cs);
 		add->onClicked(std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 		addWidget(add);
 
-		cs.caption = TSTRING(PROPERTIES);
+		cs.caption = T_("&Properties");
 		properties = createButton(cs);
 		properties->onClicked(std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 		addWidget(properties);
 
-		cs.caption = TSTRING(MOVE_UP);
+		cs.caption = T_("Move &Up");
 		up = createButton(cs);
 		up->onClicked(std::tr1::bind(&ADLSearchFrame::handleUp, this));
 		addWidget(up);
 
-		cs.caption = TSTRING(MOVE_DOWN);
+		cs.caption = T_("Move &Down");
 		down = createButton(cs);
 		down->onClicked(std::tr1::bind(&ADLSearchFrame::handleDown, this));
 		addWidget(down);
 
-		cs.caption = TSTRING(REMOVE);
+		cs.caption = T_("&Remove");
 		remove = createButton(cs);
 		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 		addWidget(remove);
 
-		cs.caption = TSTRING(MENU_HELP);
+		cs.caption = T_("&Help");
 		help = createButton(cs);
 		help->onClicked(std::tr1::bind(&ADLSearchFrame::handleHelp, this));
 		addWidget(help);
@@ -287,9 +290,9 @@ bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	}
 
 	WidgetMenuPtr contextMenu = createMenu(true);
-	contextMenu->appendItem(IDC_ADD, TSTRING(NEW), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
-	contextMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
-	contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
+	contextMenu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
+	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
+	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 
 	bool status = items->hasSelection();
 	contextMenu->setItemEnabled(IDC_EDIT, status);
@@ -302,10 +305,10 @@ bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
 	TStringList l;
 	l.push_back(Text::toT(search.searchString));
-	l.push_back(search.SourceTypeToDisplayString(search.sourceType));
+	l.push_back(Text::toT(search.SourceTypeToString(search.sourceType)));
 	l.push_back(Text::toT(search.destDir));
-	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
-	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
+	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + Text::toT(search.SizeTypeToString(search.typeFileSize)) : Util::emptyStringT);
+	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + Text::toT(search.SizeTypeToString(search.typeFileSize)) : Util::emptyStringT);
 	int itemCount = items->insert(l, 0, index);
 	if(index == -1)
 		index = itemCount;

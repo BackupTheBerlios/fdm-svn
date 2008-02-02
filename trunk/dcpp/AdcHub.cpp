@@ -29,7 +29,6 @@
 #include "Util.h"
 #include "UserCommand.h"
 #include "CryptoManager.h"
-#include "ResourceManager.h"
 #include "LogManager.h"
 
 namespace dcpp {
@@ -484,26 +483,30 @@ void AdcHub::handle(AdcCommand::GET, AdcCommand& c) throw() {
 		return;
 	}
 	const string& type = c.getParam(0);
-	string tmp;
-	if(type == "blom" && c.getParam("BK", 4, tmp))  {
+	string sk, sh;
+	if(type == "blom" && c.getParam("BK", 4, sk) && c.getParam("BH", 4, sh))  {
 		ByteVector v;
 		size_t m = Util::toUInt32(c.getParam(3)) * 8;
-		size_t k = Util::toUInt32(tmp);
+		size_t k = Util::toUInt32(sk);
+		size_t h = Util::toUInt32(sh);
 		
 		if(k > 8 || k < 1) {
 			send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_TRANSFER_GENERIC, "Unsupported k"));
 			return;
 		}
-		
+		if(h > 64 || h < 1) {
+			send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_TRANSFER_GENERIC, "Unsupported h"));
+			return;
+		}
 		size_t n = ShareManager::getInstance()->getSharedFiles();
 		
 		// Ideal size for m is n * k / ln(2), but we allow some slack
-		if(m > (5 * n * k / log(2))) {
+		if(m > (5 * n * k / log(2)) || m > (1 << h)) {
 			send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_TRANSFER_GENERIC, "Unsupported m"));
 			return;
 		}
 		
-		ShareManager::getInstance()->getBloom(v, k, m);
+		ShareManager::getInstance()->getBloom(v, k, m, h);
 		AdcCommand cmd(AdcCommand::CMD_SND, AdcCommand::TYPE_HUB);
 		cmd.addParam(c.getParam(0));
 		cmd.addParam(c.getParam(1));
@@ -548,7 +551,7 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		uint16_t port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
 		if(port == 0) {
 			// Oops?
-			LogManager::getInstance()->message(STRING(NOT_LISTENING));
+			LogManager::getInstance()->message(_("Not listening for connections - please restart DC++"));
 			return;
 		}
 		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(*proto).addParam(Util::toString(port)).addParam(token));
@@ -618,7 +621,7 @@ void AdcHub::password(const string& pwd) {
 		}
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
-		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
+		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::BYTES)));
 		salt.clear();
 	}
 }

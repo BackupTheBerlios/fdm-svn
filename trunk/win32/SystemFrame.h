@@ -22,7 +22,6 @@
 #include "StaticFrame.h"
 
 #include <dcpp/LogManager.h>
-#include <dcpp/ResourceManager.h>
 #include "resource.h"
 
 class SystemFrame : public StaticFrame<SystemFrame>,
@@ -33,8 +32,6 @@ public:
 		STATUS_STATUS,
 		STATUS_LAST
 	};
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
-	static const unsigned ICON_RESOURCE = IDR_MAINFRAME;
 	
 private:
 	typedef StaticFrame<SystemFrame> BaseType;

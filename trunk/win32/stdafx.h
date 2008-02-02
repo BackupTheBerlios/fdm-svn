@@ -50,6 +50,9 @@ using std::tr1::placeholders::_2;
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
 #define T_(String) Text::toT(gettext(String))
+#define CT_(String) T_(String).c_str()
+#define F_(String) boost::format(gettext(String))
+#define FN_(String1,String2, N) boost::format(ngettext(String1, String2, N))
 #ifdef UNICODE
 #define TF_(String) boost::wformat(Text::toT(gettext(String)))
 #define TFN_(String1,String2, N) boost::wformat(Text::toT(ngettext(String1, String2, N)))

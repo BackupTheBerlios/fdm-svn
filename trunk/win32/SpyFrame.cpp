@@ -28,10 +28,16 @@
 
 int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
-static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING, ResourceManager::COUNT, ResourceManager::TIME };
+const size_t SpyFrame::AVG_TIME; // TODO gcc needs this - why?
+
+static const char* columnNames[] = {
+	N_("Search String"),
+	N_("Count"),
+	N_("Time")
+};
 
 SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, T_("Search Spy"), IDR_SPY),
 	searches(0),
 	ignoreTTH(0),
 	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)),
@@ -46,7 +52,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 		searches = createListView(cs);
 		addWidget(searches);
 
-		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		searches->createColumns(WinUtil::getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
 		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
@@ -57,7 +63,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetCheckBox::Seed cs(TSTRING(IGNORE_TTH_SEARCHES));
+		WidgetCheckBox::Seed cs(T_("Ignore TTH searches"));
 		ignoreTTH = createCheckBox(cs);
 		ignoreTTH->setChecked(bIgnoreTTH);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
@@ -100,13 +106,13 @@ void SpyFrame::initSecond() {
 
 bool SpyFrame::eachSecond() {
 	size_t tot = std::accumulate(perSecond, perSecond + AVG_TIME, 0u);
-	size_t t = std::max(1u, std::min(cur, (size_t)AVG_TIME));
+	size_t t = std::max(1u, std::min(cur, AVG_TIME));
 	
 	float x = static_cast<float>(tot)/t;
 
 	cur++;
-	perSecond[cur] = 0;
-	setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(x)));
+	perSecond[cur % AVG_TIME] = 0;
+	setStatus(STATUS_AVG_PER_SECOND, str(TF_("Average/s: %1%") % x));
 	return true;
 }
 
@@ -150,10 +156,10 @@ LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 				searches->resort();
 		}
 
-		setStatus(STATUS_TOTAL, Text::toT(STRING(TOTAL) + Util::toString(total)));
-		setStatus(STATUS_HITS, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())));
+		setStatus(STATUS_TOTAL, str(TF_("Total: %1%") % total));
+		setStatus(STATUS_HITS, str(TF_("Hits: %1%") % ShareManager::getInstance()->getHits()));
 		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
-		setStatus(STATUS_HIT_RATIO, Text::toT(STRING(HIT_RATIO) + Util::toString(ratio)));
+		setStatus(STATUS_HIT_RATIO, str(TF_("Hit Ratio: %1%") % ratio));
 	}
 	return 0;
 }
@@ -182,7 +188,7 @@ bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		searchString = searches->getText(searches->getSelectedIndex(), COLUMN_STRING);
 
 		WidgetMenuPtr contextMenu = createMenu(true);
-		contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
+		contextMenu->appendItem(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this));
 
 		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

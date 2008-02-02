@@ -26,7 +26,6 @@
 #include "HubListsDlg.h"
 
 #include <dcpp/FavoriteManager.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 
 int PublicHubsFrame::columnIndexes[] = {
@@ -46,20 +45,19 @@ int PublicHubsFrame::columnIndexes[] = {
 
 int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 
-static ResourceManager::Strings columnNames[] = {
-	ResourceManager::HUB_NAME,
-	ResourceManager::DESCRIPTION,
-	ResourceManager::USERS,
-	ResourceManager::HUB_ADDRESS,
-	ResourceManager::COUNTRY,
-	ResourceManager::SHARED,
-	ResourceManager::MIN_SHARE,
-	ResourceManager::MIN_SLOTS,
-	ResourceManager::MAX_HUBS,
-	ResourceManager::MAX_USERS,
-	ResourceManager::RELIABILITY,
-	ResourceManager::RATING,
-
+static const char*  columnNames[] = {
+	N_("Name"),
+	N_("Description"),
+	N_("Users"),
+	N_("Address"),
+	N_("Country"),
+	N_("Shared"),
+	N_("Min Share"),
+	N_("Min Slots"),
+	N_("Max Hubs"),
+	N_("Max Users"),
+	N_("Reliability"),
+	N_("Rating")
 };
 
 PublicHubsFrame::HubInfo::HubInfo(const HubEntry* entry_) : entry(entry_) {
@@ -92,7 +90,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 }
 
 PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, T_("Public Hubs"), IDR_PUBLICHUBS),
 	hubs(0),
 	configure(0),
 	refresh(0),
@@ -110,7 +108,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
 		addWidget(hubs);
 		
-		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		hubs->createColumns(WinUtil::getStrings(columnNames));
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -135,9 +133,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		//populate the filter list with the column names
 		for(int j=0; j<COLUMN_LAST; j++) {
-			filterSel->addValue(TSTRING_I(columnNames[j]));
+			filterSel->addValue(T_(columnNames[j]));
 		}
-		filterSel->addValue(TSTRING(ANY));
+		filterSel->addValue(T_("Any"));
 		filterSel->setSelectedIndex(COLUMN_LAST);
 		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
 
@@ -149,13 +147,13 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
-		cs.caption = TSTRING(CONFIGURE);
+		cs.caption = T_("&Configure");
 		configure = createButton(cs);
 		configure->onClicked(std::tr1::bind(&PublicHubsFrame::handleConfigure, this));
 		configure->setFont(WinUtil::font);
 		addWidget(configure);
 		
-		cs.caption = TSTRING(REFRESH);
+		cs.caption = T_("&Refresh");
 		refresh = createButton(cs);
 		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 		refresh->setFont(WinUtil::font);
@@ -163,11 +161,11 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_GROUPBOX;
 		cs.exStyle = WS_EX_TRANSPARENT;
-		cs.caption = TSTRING(CONFIGURED_HUB_LISTS);
+		cs.caption = T_("Configured Public Hub Lists");
 		lists = createButton(cs);
 		lists->setFont(WinUtil::font);
 
-		cs.caption = TSTRING(FILTER);
+		cs.caption = T_("F&ilter");
 		filterDesc = createButton(cs);
 		filterDesc->setFont(WinUtil::font);
 	}
@@ -187,7 +185,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	onSpeaker(std::tr1::bind(&PublicHubsFrame::handleSpeaker, this, _1, _2));
 	
 	if(FavoriteManager::getInstance()->isDownloading()) {
-		setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_HUB_LIST));
+		setStatus(STATUS_STATUS, T_("Downloading public hub list..."));
 	} else if(entries.empty()) {
 		FavoriteManager::getInstance()->refresh();
 	}
@@ -270,8 +268,8 @@ void PublicHubsFrame::layout() {
 }
 
 void PublicHubsFrame::updateStatus() {
-	setStatus(STATUS_HUBS, Text::toT(STRING(HUBS) + ": " + Util::toString(visibleHubs)));
-	setStatus(STATUS_USERS, Text::toT(STRING(USERS) + ": " + Util::toString(users)));
+	setStatus(STATUS_HUBS, str(TF_("Hubs: %1%") % visibleHubs));
+	setStatus(STATUS_USERS, str(TF_("Users: %1%") % users));
 }
 
 void PublicHubsFrame::updateDropDown() {
@@ -315,13 +313,13 @@ LRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
 		entries = FavoriteManager::getInstance()->getPublicHubs();
 		updateList();
-		setStatus(STATUS_STATUS, ((wParam == LOADED_FROM_CACHE) ? TSTRING(HUB_LIST_LOADED_FROM_CACHE) : TSTRING(HUB_LIST_DOWNLOADED)) + _T(" (") + (*x) + _T(")"));
+		setStatus(STATUS_STATUS, ((wParam == LOADED_FROM_CACHE) ? T_("Hub list loaded from cache...") : str(TF_("Hub list downloaded... (%1%)") % (*x))));
 	} else if(wParam == STARTING) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
-		setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_HUB_LIST) + _T(" (") + (*x) + _T(")"));
+		setStatus(STATUS_STATUS, str(TF_("Downloading public hub list... (%1%)") % (*x)));
 	} else if(wParam == FAILED) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
-		setStatus(STATUS_STATUS, TSTRING(DOWNLOAD_FAILED) + (*x));
+		setStatus(STATUS_STATUS, str(TF_("Download failed: %1%") % (*x)));
 	}
 	return 0;
 }
@@ -446,9 +444,9 @@ bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		}
 
 		WidgetMenuPtr menu = createMenu(true);
-		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
-		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
-		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
+		menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
+		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
+		menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 		menu->setDefaultItem(IDC_CONNECT);
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
@@ -457,7 +455,7 @@ bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 void PublicHubsFrame::handleRefresh() {
-	setStatus(STATUS_STATUS, CTSTRING(DOWNLOADING_HUB_LIST));
+	setStatus(STATUS_STATUS, CT_("Downloading public hub list..."));
 	FavoriteManager::getInstance()->refresh(true);
 	updateDropDown();
 }
@@ -495,7 +493,7 @@ void PublicHubsFrame::handleCopyHub() {
 
 bool PublicHubsFrame::checkNick() {
 	if(SETTING(NICK).empty()) {
-		createMessageBox().show(TSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
+		createMessageBox().show(T_("Please enter a nickname in the settings dialog!"), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		return false;
 	}
 	return true;

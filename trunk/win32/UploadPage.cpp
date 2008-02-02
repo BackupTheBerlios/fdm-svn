@@ -30,17 +30,17 @@
 #include "HashProgressDlg.h"
 
 PropPage::TextItem UploadPage::texts[] = {
-	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
-	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE },
-	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
-	{ IDC_REMOVE, ResourceManager::REMOVE },
-	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
-	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
-	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
-	{ IDC_SETTINGS_KBPS, ResourceManager::KiBPS },
-	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
-	{ IDC_SETTINGS_ONLY_HASHED, ResourceManager::SETTINGS_ONLY_HASHED },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+	{ IDC_SETTINGS_SHARED_DIRECTORIES, N_("Shared directories") },
+	{ IDC_SETTINGS_SHARE_SIZE, N_("Total size:") },
+	{ IDC_SHAREHIDDEN, N_("Share hidden files") },
+	{ IDC_REMOVE, N_("&Remove") },
+	{ IDC_ADD, N_("&Add folder") },
+	{ IDC_RENAME, N_("Rename") },
+	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, N_("Automatically open an extra slot if speed is below (0 = disable)") },
+	{ IDC_SETTINGS_KBPS, N_("KiB/s") },
+	{ IDC_SETTINGS_UPLOADS_SLOTS, N_("Upload slots") },
+	{ IDC_SETTINGS_ONLY_HASHED, N_("Note; Files appear in the share only after they've been hashed!") },
+	{ 0, 0 }
 };
 
 PropPage::Item UploadPage::items[] = {
@@ -60,9 +60,9 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
-	columns.push_back(TSTRING(VIRTUAL_NAME));
-	columns.push_back(TSTRING(DIRECTORY));
-	columns.push_back(TSTRING(SIZE));
+	columns.push_back(T_("Virtual name"));
+	columns.push_back(T_("Directory"));
+	columns.push_back(T_("Size"));
 	directories->createColumns(columns);
 	directories->setColumnWidth(0, 100);
 	directories->setColumnWidth(1, directories->getSize().x - 220);
@@ -185,7 +185,7 @@ void UploadPage::handleRenameClicked() {
 		tstring vName = directories->getText(i, 0);
 		tstring rPath = directories->getText(i, 1);
 		try {
-			LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), vName);
+			LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), vName);
 			if(dlg.run() == IDOK) {
 				tstring line = dlg.getLine();
 				if (Util::stricmp(vName, line) != 0) {
@@ -194,7 +194,7 @@ void UploadPage::handleRenameClicked() {
 
 					setDirty = true;
 				} else {
-					createMessageBox().show(TSTRING(SKIP_RENAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONINFORMATION);
+					createMessageBox().show(T_("New virtual name matches old name, skipping..."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONINFORMATION);
 				}
 			}
 		} catch(const ShareException& e) {
@@ -229,7 +229,7 @@ void UploadPage::addDirectory(const tstring& aPath) {
 		path += _T('\\');
 
 	try {
-		LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
+		LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
 		if(dlg.run() == IDOK) {
 			tstring line = dlg.getLine();
 			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));

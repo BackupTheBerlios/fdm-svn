@@ -27,7 +27,6 @@
 #include <dcpp/ShareManager.h>
 #include <dcpp/ClientManager.h>
 #include <dcpp/HashManager.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/LogManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/StringTokenizer.h>
@@ -247,16 +246,16 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		int j = Util::toInt(Text::fromT(param));
 		if(j > 0) {
 			SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
-			status = TSTRING(SLOTS_SET);
+			status = T_("Slots set");
 			ClientManager::getInstance()->infoUpdated();
 		} else {
-			status = TSTRING(INVALID_NUMBER_OF_SLOTS);
+			status = T_("Invalid number of slots");
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
 			SearchFrame::openWindow(mainWindow->getMDIParent(), param);
 		} else {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
+			status = T_("Specify a search string");
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("dc++")) == 0) {
 		message = msgs[GET_TICK() % MSGS];
@@ -264,31 +263,32 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(Util::getAway() && param.empty()) {
 			Util::setAway(false);
 			Util::setManualAway(false);
-			status = TSTRING(AWAY_MODE_OFF);
+			status = T_("Away mode off");
 		} else {
 			Util::setAway(true);
 			Util::setManualAway(true);
 			Util::setAwayMessage(Text::fromT(param));
-			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
+			status = str(TF_("Away mode on: %1%") % Text::toT(Util::getAwayMessage()));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
 		Util::setAway(false);
-		status = TSTRING(AWAY_MODE_OFF);
+		Util::setManualAway(false);
+		status = T_("Away mode off");
 	} else if(Util::stricmp(cmd.c_str(), _T("g")) == 0) {
 		if(param.empty()) {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
+			status = T_("Specify a search string");
 		} else {
 			WinUtil::openLink(_T("http://www.google.com/search?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("imdb")) == 0) {
 		if(param.empty()) {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
+			status = T_("Specify a search string");
 		} else {
 			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("u")) == 0) {
 		if (param.empty()) {
-			status = TSTRING(SPECIFY_URL);
+			status = T_("Specify a URL");
 		} else {
 			WinUtil::openLink(Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
@@ -324,7 +324,7 @@ tstring WinUtil::getNicks(const UserPtr& u) {
 pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
 	StringList hubs = ClientManager::getInstance()->getHubNames(cid);
 	if(hubs.empty()) {
-		return make_pair(TSTRING(OFFLINE), false);
+		return make_pair(T_("Offline"), false);
 	} else {
 		return make_pair(Text::toT(Util::toString(hubs)), true);
 	}
@@ -361,6 +361,11 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		return 2;
 	}
 }
+void WinUtil::addHashItems(const SmartWin::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename) {
+	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&WinUtil::searchHash, tth));
+	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(WinUtil::bitziLink, tth));
+	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&WinUtil::copyMagnet, tth, filename));
+}
 
 void WinUtil::bitziLink(const TTHValue& aHash) {
 	// to use this free service by bitzi, we must not hammer or request information from bitzi
@@ -378,15 +383,6 @@ void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
 
 void WinUtil::searchHash(const TTHValue& aHash) {
 	SearchFrame::openWindow(mainWindow->getMDIParent(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
-}
-
-tstring WinUtil::escapeMenu(tstring str) {
-	string::size_type i = 0;
-	while( (i = str.find(_T('&'), i)) != string::npos) {
-		str.insert(str.begin()+i, 1, _T('&'));
-		i += 2;
-	}
-	return str;
 }
 
 void WinUtil::addLastDir(const tstring& dir) {
@@ -418,7 +414,7 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
-	bi.lpszTitle = CTSTRING(CHOOSE_FOLDER);
+	bi.lpszTitle = CT_("Choose folder");
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
@@ -693,7 +689,7 @@ void WinUtil::registerDchubHandler() {
 
 	if(Util::stricmp(app.c_str(), Buf) != 0) {
 		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_DCHUB));
+			LogManager::getInstance()->message(_("Error creating dchub registry key"));
 			return;
 		}
 
@@ -732,7 +728,7 @@ void WinUtil::registerDchubHandler() {
 
 	 if(Util::stricmp(app.c_str(), Buf) != 0) {
 		 if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-			 LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_ADC));
+			 LogManager::getInstance()->message(_("Error creating adc registry key"));
 			 return;
 		 }
 
@@ -792,7 +788,7 @@ void WinUtil::registerDchubHandler() {
 		} else {
 			// set Magnet\Location
 			if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-				LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
+				LogManager::getInstance()->message(_("Error creating magnet registry key"));
 				return;
 			}
 
@@ -805,10 +801,10 @@ void WinUtil::registerDchubHandler() {
 	if(BOOLSETTING(MAGNET_REGISTER) && (Util::strnicmp(openCmd, magnetLoc, magnetLoc.size()) != 0 || !haveMagnet)) {
 		SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
 		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
+			LogManager::getInstance()->message(_("Error creating magnet registry key"));
 			return;
 		}
-		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_SHELL_DESC), sizeof(TCHAR)*(TSTRING(MAGNET_SHELL_DESC).length()+1));
+		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CT_("URL:MAGNET URI"), sizeof(TCHAR)*(T_("URL:MAGNET URI").length()+1));
 		::RegSetValueEx(hk, _T("URL Protocol"), NULL, REG_SZ, NULL, NULL);
 		::RegCloseKey(hk);
 		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
@@ -824,8 +820,8 @@ void WinUtil::registerDchubHandler() {
 	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"));
 	// add DC++ to magnet-handler's list of applications
 	::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (TSTRING(MAGNET_HANDLER_ROOT).size()+1));
-	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
+	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CT_("DC++"), sizeof(TCHAR) * (T_("DC++").size()+1));
+	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CT_("Download files from the Direct Connect network"), sizeof(TCHAR) * (T_("Download files from the Direct Connect network").size()+1));
 	// set ShellExecute
 	tstring app = Text::toT("\"" + getAppName() + "\" %URL");
 	::RegSetValueEx(hk, _T("ShellExecute"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length()+1));
@@ -977,7 +973,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 	//  as = acceptable substitute
 	//  dn = display name
 	if (Util::strnicmp(aUrl.c_str(), _T("magnet:?"), 8) == 0) {
-		LogManager::getInstance()->message(STRING(MAGNET_DLG_TITLE) + ": " + Text::fromT(aUrl));
+		LogManager::getInstance()->message(str(F_("MAGNET Link detected: %1%") % Text::fromT(aUrl)));
 		StringTokenizer<tstring> mag(aUrl.substr(8), _T('&'));
 		typedef map<tstring, tstring> MagMap;
 		MagMap hashes;
@@ -1030,7 +1026,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-			SmartWin::WidgetMessageBox(mainWindow).show(TSTRING(MAGNET_DLG_TEXT_BAD), TSTRING(MAGNET_DLG_TITLE), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
+			SmartWin::WidgetMessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }
@@ -1039,15 +1035,15 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 double WinUtil::toBytes(TCHAR* aSize) {
 	double bytes = _tstof(aSize);
 
-	if (_tcsstr(aSize, CTSTRING(PIB))) {
+	if (_tcsstr(aSize, CT_("PiB"))) {
 		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(TiB))) {
+	} else if (_tcsstr(aSize, CT_("TiB"))) {
 		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(GiB))) {
+	} else if (_tcsstr(aSize, CT_("GiB"))) {
 		return bytes * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(MiB))) {
+	} else if (_tcsstr(aSize, CT_("MiB"))) {
 		return bytes * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(KiB))) {
+	} else if (_tcsstr(aSize, CT_("KiB"))) {
 		return bytes * 1024.0;
 	} else {
 		return bytes;

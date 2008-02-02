@@ -46,22 +46,22 @@ ADLSProperties::~ADLSProperties() {
 
 bool ADLSProperties::handleInitDialog() {
 	// Translate dialog
-	setText(TSTRING(ADLS_PROPERTIES));
-	::SetDlgItemText(handle(), IDC_ADLSP_SEARCH, CTSTRING(ADLS_SEARCH_STRING));
-	::SetDlgItemText(handle(), IDC_ADLSP_TYPE, CTSTRING(ADLS_TYPE));
-	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MIN, CTSTRING(ADLS_SIZE_MIN));
-	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MAX, CTSTRING(ADLS_SIZE_MAX));
-	::SetDlgItemText(handle(), IDC_ADLSP_UNITS, CTSTRING(ADLS_UNITS));
-	::SetDlgItemText(handle(), IDC_ADLSP_DESTINATION, CTSTRING(ADLS_DESTINATION));
+	setText(T_("ADLSearch Properties"));
+	::SetDlgItemText(handle(), IDC_ADLSP_SEARCH, CT_("Search String"));
+	::SetDlgItemText(handle(), IDC_ADLSP_TYPE, CT_("Search Type"));
+	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MIN, CT_("Min FileSize"));
+	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MAX, CT_("Max FileSize"));
+	::SetDlgItemText(handle(), IDC_ADLSP_UNITS, CT_("Size Type"));
+	::SetDlgItemText(handle(), IDC_ADLSP_DESTINATION, CT_("Destination Directory"));
 
 	searchString = attachTextBox(IDC_SEARCH_STRING);
 	searchString->setText(Text::toT(search->searchString));
 	searchString->setFocus();
 
 	searchType = attachComboBox(IDC_SOURCE_TYPE);
-	searchType->addValue(TSTRING(FILENAME));
-	searchType->addValue(TSTRING(DIRECTORY));
-	searchType->addValue(TSTRING(ADLS_FULL_PATH));
+	searchType->addValue(T_("Filename"));
+	searchType->addValue(T_("Directory"));
+	searchType->addValue(T_("Full Path"));
 	searchType->setSelectedIndex(search->sourceType);
 
 	minSize = attachTextBox(IDC_MIN_FILE_SIZE);
@@ -71,21 +71,21 @@ bool ADLSProperties::handleInitDialog() {
 	maxSize->setText((search->maxFileSize > 0) ? Text::toT(Util::toString(search->maxFileSize)) : Util::emptyStringT);
 
 	sizeType = attachComboBox(IDC_SIZE_TYPE);
-	sizeType->addValue(TSTRING(B));
-	sizeType->addValue(TSTRING(KiB));
-	sizeType->addValue(TSTRING(MiB));
-	sizeType->addValue(TSTRING(GiB));
+	sizeType->addValue(T_("B"));
+	sizeType->addValue(T_("KiB"));
+	sizeType->addValue(T_("MiB"));
+	sizeType->addValue(T_("GiB"));
 	sizeType->setSelectedIndex(search->typeFileSize);
 
 	destDir = attachTextBox(IDC_DEST_DIR);
 	destDir->setText(Text::toT(search->destDir));
 
 	active = attachCheckBox(IDC_IS_ACTIVE);
-	active->setText(TSTRING(ADLS_ENABLED));
+	active->setText(T_("Enabled"));
 	active->setChecked(search->isActive);
 
 	autoQueue = attachCheckBox(IDC_AUTOQUEUE);
-	autoQueue->setText(TSTRING(ADLS_DOWNLOAD));
+	autoQueue->setText(T_("Download Matches"));
 	autoQueue->setChecked(search->isAutoQueue);
 
 	WidgetButtonPtr button = attachButton(IDOK);
@@ -109,11 +109,11 @@ void ADLSProperties::handleOKClicked() {
 	search->sourceType = (ADLSearch::SourceType)searchType->getSelectedIndex();
 
 	tstring minFileSize = minSize->getText();
-
 	search->minFileSize = minFileSize.empty() ? -1 : Util::toInt64(Text::fromT(minFileSize));
+	
 	tstring maxFileSize = maxSize->getText();
-
 	search->maxFileSize = maxFileSize.empty() ? -1 : Util::toInt64(Text::fromT(maxFileSize));
+	
 	search->typeFileSize = (ADLSearch::SizeType)sizeType->getSelectedIndex();
 
 	search->destDir = Text::fromT(destDir->getText());
