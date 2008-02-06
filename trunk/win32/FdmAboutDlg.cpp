@@ -21,7 +21,7 @@
 #include "FdmAboutDlg.h"
 
 #include <dcpp/SimpleXML.h>
-#include <dcpp/ResourceManager.h>
+#include <dcpp/FdmResourceManager.h>
 #include <dcpp/FdmVersion.h>
 #include "WinUtil.h"
 
@@ -46,7 +46,7 @@ FdmAboutDlg::~FdmAboutDlg() {
 bool FdmAboutDlg::handleInitDialog() {
 	setItemText(IDC_FDM_ABOUT_VERSION, Text::toT("Fdm v" FDMVERSIONSTRING " " FDMSVNVERSIONSTRING "\n(c) Copyright 2005-2008 Michael Jones\nFdm  is licenced under GPL\nhttp://fdm.berlios.de/"));
 	setItemText(IDC_FDM_ABOUT_THANKS, Text::toT(fdmThanks));
-	setItemText(IDC_FDM_ABOUT_LATEST, CTSTRING(DOWNLOADING));
+	setItemText(IDC_FDM_ABOUT_LATEST, FDMCTSTRING(DOWNLOADING));
 
 	attachButton(IDOK)->onClicked(std::tr1::bind(&FdmAboutDlg::endDialog, this, IDOK));
 

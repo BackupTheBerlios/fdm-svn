@@ -358,6 +358,7 @@ bool HubFrame::enter() {
 			}
 		} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 			addChat(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
+			addChat(_T("\r\n*** Fdm Commands:\r\n") + MoreWinUtil::commands);
 		} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 			string::size_type j = param.find(_T(' '));
 			if(j != string::npos) {

@@ -21,6 +21,7 @@
 #include "PrivateFrame.h"
 #include "HoldRedraw.h"
 #include "resource.h"
+#include "FdmMoreWinUtil.h"
 
 #include <dcpp/ClientManager.h>
 #include <dcpp/Client.h>
@@ -301,6 +302,7 @@ bool PrivateFrame::enter() {
 			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true))));
 		} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 			addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log <system, downloads, uploads>"));
+			addStatus(_T("\r\n*** Fdm Commands:\r\n") + MoreWinUtil::commands);
 		} else {
 			send = true;
 		}

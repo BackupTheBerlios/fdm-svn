@@ -17,16 +17,49 @@
  */
 
 #include "stdinc.h"
-#include "../client/DCPlusPlus.h"
+#include "DCPlusPlus.h"
 
 #include "FdmUtil.h"
-#include "../client/Util.h"
-#include "../Other-Projects/DC++/client/ResourceManager.h"
-#include "../Other-Projects/DC++/client/SettingsManager.h"
+#include "Text.h"
+#include "Util.h"
+#include "StringTokenizer.h"
 
-#include "dcplusplus-rips/Fdm-Version.h"
+namespace dcpp {
 
-bool FdmUtil::toBool(int aInt) {
+bool FdmUtil::isIp(string aString) {
+// maybe todo
+// if use reg exp's in future replace this with one
+	int count = 0;
+	StringTokenizer<string> tok(aString, '.');
+	for(StringIter i = tok.getTokens().begin(); i != tok.getTokens().end(); ++i) {
+		count++;
+		if (!isNumber(*i))
+			return false;
+		if (Util::toInt(*i) < 0 || Util::toInt(*i) > 255)
+			return false;
+	}
+	if (count == 4)
+		return true;
+	return false;
+}
+
+bool FdmUtil::isNumber(string aString) {
+	const char* asChar = aString.c_str();
+	size_t sizeOfString = strlen(asChar);
+	for(size_t i = 0; i < sizeOfString; ++i) {
+		if(!isdigit(asChar[i]))
+			return false;
+	}
+	return true;
+}
+
+//#include "../client/Util.h"
+//#include "../Other-Projects/DC++/client/ResourceManager.h"
+//#include "../Other-Projects/DC++/client/SettingsManager.h"
+
+//#include "dcplusplus-rips/Fdm-Version.h"
+
+/*bool FdmUtil::toBool(int aInt) {
 	if (aInt) return true;
 	return false;
 }
@@ -50,4 +83,6 @@ int FdmUtil::getSettingDownloadSpeed() {
 
 int FdmUtil::getSettingUploadSpeed() {
 	return FDMSETTING(UPLOAD_SPEED);
-}
+}*/
+
+} // namespace dcpp

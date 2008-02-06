@@ -21,20 +21,21 @@
 
 //#include "../client/File.h"
 
-namespace MoreWinUtil
-{
+class MoreWinUtil {
+public:
 	// For allowing for instances
-	bool allowMoreInstances();
+	static bool allowMoreInstances();
 
-	bool possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status);
-	void winampSpam(tstring& message, tstring& status);
+	static bool possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status);
+	static void winampSpam(tstring param, tstring& message, tstring& status);
 
-	string findNickInString(const string aLine);
-	void addIPToString(string& aLine, string ip);
-
+	static string findNickInString(const string aLine);
+	static void addIPToString(string& aLine, string ip);
+	
+	static tstring commands;
 //	void addFdmStuffToExceptionInfo(char* buf, File& aFile);
 
-	void initilize();
+//	void initilize();
 };
 
 /*class StaticWindowsSettings 

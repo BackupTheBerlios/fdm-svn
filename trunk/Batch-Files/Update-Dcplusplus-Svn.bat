@@ -4,10 +4,12 @@ ECHO ------------------------------------------------------------------------
 ECHO Preparing . . .
 cd..
 attrib +h /S /D "bleh these files need manually merging" > nul
-attrib +h /S /D build > nul
-attrib +h /S /D Batch-Files > nul
 attrib +h /S /D Fdm-Client > nul
 attrib +h /S /D Fdm-Windows > nul
+attrib +h /S /D build > nul
+attrib +h dcpp\stdinc.h.gch > nul
+attrib +h win32\stdafx.h.gch > nul
+attrib +h /S /D Batch-Files > nul
 attrib +h /S /D Other-Projects > nul
 attrib +h /S /D .svn > nul
 attrib +h /S /D _svn > nul
@@ -50,6 +52,8 @@ ECHO ------------------------------------------------------------------------
 ECHO Cleaning Up . . .
 attrib -h /S /D "bleh these files need manually merging" > nul
 attrib -h /S /D build > nul
+attrib -h dcpp\stdinc.h.gch > nul
+attrib -h win32\stdafx.h.gch > nul
 attrib -h /S /D Batch-Files > nul
 attrib -h /S /D Fdm-Client > nul
 attrib -h /S /D Fdm-Windows > nul

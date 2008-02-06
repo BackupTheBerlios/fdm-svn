@@ -24,15 +24,25 @@
 #include <dcpp/FdmVersion.h>
 #include <dcpp/Util.h>
 #include <dcpp/Text.h>
+#include <dcpp/Socket.h>
+#include <dcpp/FdmUtil.h>
+#include <Ws2tcpip.h>
 //#include "../Other-Projects/DC++/client/SettingsManager.h"
 
 bool MoreWinUtil::allowMoreInstances() {
+// todo
+// probably broke
+// some other time
 	if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
 		return true;
 	return false;
 }
 
-bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& message, tstring& status) {
+tstring MoreWinUtil::commands = _T("\r\n /fdm \t or \t /fdm++ \t Fdm's spam,")
+								_T("\r\n /winamp \t or \t /w \t Winamp spam.  Accepts text after the command which will be appended to the end of the normal winamp spam text,")
+								_T("\r\n /dns \t or \t /resolve \t Resolves a DNS to an IP address.  Or an IP address to it's 'real' DNS");
+
+bool MoreWinUtil::possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status) {
 	if(Util::stricmp(cmd.c_str(), _T("fdm")) == 0 || Util::stricmp(cmd.c_str(), _T("fdm++")) == 0) {
 		string tmp = "\r\nSmile and be happy. :)\r\nhttp://fdm.berlios.de/ <";
 		tmp += FDMAPPNAME;
@@ -41,7 +51,27 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring /*param*/, tstring& messa
 		tmp += ">";
 		message = Text::toT(tmp);
 	} else if((Util::stricmp(cmd.c_str(), _T("winamp")) == 0) || (Util::stricmp(cmd.c_str(), _T("w")) == 0)) {
-		MoreWinUtil::winampSpam(message, status);
+		MoreWinUtil::winampSpam(param, message, status);
+	} else if((Util::stricmp(cmd.c_str(), _T("dns")) == 0) || (Util::stricmp(cmd.c_str(), _T("resolve")) == 0)) {
+		string toResolve = Text::fromT(param);
+		if (FdmUtil::isIp(toResolve)) {
+			struct sockaddr_in ip;
+			ip.sin_family = AF_INET;
+			ip.sin_addr.s_addr = inet_addr(toResolve.c_str());
+			char result[NI_MAXHOST];
+			
+			int isError = getnameinfo((struct sockaddr*)&ip, sizeof(struct sockaddr), result, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
+			if (isError)
+				status = _T("The IP ") + param + _T(" failed to resolve");
+			else
+				status = _T("The IP ") + param + _T(" resolves to ") + Text::toT(result);
+		} else {
+			string result = Socket::resolve(toResolve);
+			if (result.empty())
+				status = _T("The DNS ") + param + _T(" failed to resolve");
+			else
+				status = _T("The DNS ") + param + _T(" resolves to ") + Text::toT(result);
+		}
 	} else {
 		return false;
 	}
@@ -68,12 +98,12 @@ void MoreWinUtil::addIPToString(string& aLine, string ip) {
 	aFile.write(buf, strlen(buf));*/
 //}
 
-void MoreWinUtil::initilize() {
-/*	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
+/*void MoreWinUtil::initilize() {
+	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
 	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
 	StaticWindowsSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
-	StaticWindowsSettings::myNickSpoken		= FDMSETTING(MY_NICK_SPOKEN_COLOUR);*/
-}
+	StaticWindowsSettings::myNickSpoken		= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+}*/
 /*
 COLORREF StaticWindowsSettings::opSpoken			= 0;
 COLORREF StaticWindowsSettings::notOpSpoken			= 0;

@@ -14,6 +14,7 @@ enum FdmStrings { // @DontAdd
 	AUTO_MATCH_THESE, // "Match These Strings (Separate With A |)"
 	COPY, // "Copy"
 	CLOSE, // "Close"
+	DOWNLOADING, // "Downloading..."
 	ENABLED, // "Enabled"
 	FDM_BROWSE_ACCEL, // "&Browse..."
 	FDM_MENU_FILE, // "&File"

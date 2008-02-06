@@ -1,22 +1,9 @@
 $$$ 0.01 $$$
-Pothead
-	Added PCRE 6.4
-	Added Sqlite 
-	Added CppSQLite3
-	Added a sample database
-	Added IP's to Main Chat and PM's
-	Added Autosearch.
-	Added Winamp spam (from BCDC++)
-	Added IP column to hubframe and private messages
-	Added a few python scripts (thanks fulDC)
-	Added Bandwidth Limiting (thanks BCDC)
-	Added Coloured Text
-	Ripped a few DCplusplus files, so can have own Language and Settings files.
-	Ripped a few DCplusplus files, so can have own Settings and Notepad pages.
-
-Carraya
-	Added Fdm-Config file
-	Added Fdm-Version file
-	Added Fdm-Windows library
-	Added Fdm Toolbar
-	Changed DC++ code to ask for multiple instances
+Added IP's to Main Chat and PM's
+Added IP column to hubframe and private messages
+Added a few python scripts (thanks fulDC)
+Added /resolve to resolve IP's from a DNS, and the Domain name from Ip's
+Added Winamp spam (from BCDC++)
+Changed Winamp spam to accept text after the command, which is appended to the spam
+Ripped a few DCplusplus files, so can have own Language and Settings files
+Ripped a few DCplusplus files, so can have own Settings and Notepad pages

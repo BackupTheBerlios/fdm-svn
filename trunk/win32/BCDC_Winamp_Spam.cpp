@@ -24,7 +24,7 @@
 
 #include "../Other-Projects/Nullsoft/Winamp.h"
 
-void MoreWinUtil::winampSpam(tstring& message, tstring& status) {
+void MoreWinUtil::winampSpam(tstring param, tstring& message, tstring& status) {
 	HWND hwndWinamp = FindWindow(_T("Winamp v1.x"), NULL);
 	if (hwndWinamp) {
 		StringMap params;
@@ -85,6 +85,8 @@ void MoreWinUtil::winampSpam(tstring& message, tstring& status) {
 		params["elapsed"] = Util::formatSeconds(curPos);
 		params["length"] = Util::formatSeconds(length);
 		message = Text::toT(Util::formatParams(FDMSETTING(WINAMP_FORMAT), params, false));
+		if (!param.empty())
+			message += _T(" " + param);
 	} else {
 		status = _T("Winamp is not running");
 	}

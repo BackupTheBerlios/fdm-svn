@@ -16,28 +16,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FDM_UTIL_H)
+#ifndef FDM_UTIL_H
 #define FDM_UTIL_H
 
-namespace FdmUtil
+namespace dcpp
 {
-	bool toBool(int aInt);
+
+class FdmUtil
+{
+public:
+	static bool isIp(string aString);
+	static bool isNumber(string aString);
+
+/*	bool toBool(int aInt);
 	string toString(bool aBool);
 
 	string addFdmDes(string aCurDes);
 
-	tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
-	string replace(const string& aString, const string& fStr, const string& rStr);
-
 	bool getSettingThrottleEnable();
 	int getSettingDownloadSpeed();
-	int getSettingUploadSpeed();
+	int getSettingUploadSpeed();*/
 };
 
-
-class StaticClientSettings 
-{
-};
-
+} // namespace dcpp
 
 #endif // !defined(FDM_UTIL_H)
