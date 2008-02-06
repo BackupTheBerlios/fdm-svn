@@ -1,6 +1,6 @@
 @ECHO OFF
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
 ECHO Preparing . . .
 cd..
 attrib +h /S /D "bleh these files need manually merging" > nul
@@ -26,29 +26,33 @@ attrib +h *.pyc > nul
 attrib +h .sconsign.dblite > nul
 attrib +h *.rar > nul
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
 ECHO Copying Files Over
 xcopy /q /y /e *.* ..\original-dcplusplus\ > nul
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
 ECHO Time To Update.  Look In ..\original-dcplusplus Directory.
 PAUSE
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
+ECHO Don't Forget To Delete All Files From FDM Which Have Been Deleted From DC++
+PAUSE
+
+ECHO ---------------------------------------------------------------------------
 ECHO Remove All Conflicts Before Proceeding
 PAUSE
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
 ECHO Remove All Conflicts Before Proceeding
 PAUSE
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
 ECHO Copying Files Back
 attrib +h /S /D ..\original-dcplusplus\.svn > nul
 attrib +h /S /D ..\original-dcplusplus\_svn > nul
 xcopy /q /y /e ..\original-dcplusplus\*.* > nul
 
-ECHO ------------------------------------------------------------------------
+ECHO ---------------------------------------------------------------------------
 ECHO Cleaning Up . . .
 attrib -h /S /D "bleh these files need manually merging" > nul
 attrib -h /S /D build > nul
