@@ -30,7 +30,7 @@ public:
 	static void winampSpam(tstring param, tstring& message, tstring& status);
 
 	static string findNickInString(const string aLine);
-	static void addIPToString(string& aLine, string ip);
+	static void addCountryIPToString(string& aLine, string ip);
 	
 	static tstring commands;
 //	void addFdmStuffToExceptionInfo(char* buf, File& aFile);

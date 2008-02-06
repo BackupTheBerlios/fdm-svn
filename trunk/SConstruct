@@ -167,7 +167,7 @@ pot_bld = Builder (action = Action([pot_args], 'Extracting messages to $TARGET f
 env.Append(BUILDERS = {'PotBuild' : pot_bld})
 
 Execute('FdmMakedefs.py')
-Execute('fulDC_Version_Template.py')
+Execute('fulDC_VersionTemplate.py')
 
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')

@@ -39,7 +39,7 @@ const string FdmSettingsManager::settingTags[] =
 	"SENTRY", 
 	// Ints
 	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour",
-	"IpInChats","ThrottleEnable", "DownloadSpeed", "UploadSpeed",
+	"IpInChats", "CCInChats", "ThrottleEnable", "DownloadSpeed", "UploadSpeed",
 	"SENTRY",
 	// Int64
 	"aInt64",
@@ -67,6 +67,7 @@ FdmSettingsManager::FdmSettingsManager()
 	setDefault(MY_NICK_SPOKEN_COLOUR, 32768);
 	setDefault(WINAMP_FORMAT, "winamp(%[version]) %[state] (%[title]) stats(%[percent] of %[length])");
 	setDefault(SHOW_IPS_IN_CHAT, true);
+	setDefault(SHOW_CC_IN_CHAT, true);
 	setDefault(THROTTLE_ENABLE, 1);
 	setDefault(DOWNLOAD_SPEED, 0);
 	setDefault(UPLOAD_SPEED, 20);

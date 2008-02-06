@@ -511,9 +511,9 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			setTabColor(RED);
 #endif
 		} else if(i->first == ADD_CHAT_LINE) {
-			if (FDMSETTING(SHOW_IPS_IN_CHAT)) {
+			if (FDMSETTING(SHOW_IPS_IN_CHAT) || FDMSETTING(SHOW_CC_IN_CHAT)) {
 				UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(static_cast<StringTask*>(i->second)->str)));
-				if (ui) MoreWinUtil::addIPToString(static_cast<StringTask*>(i->second)->str, ui->getIdentity().getIp());
+				if (ui) MoreWinUtil::addCountryIPToString(static_cast<StringTask*>(i->second)->str, ui->getIdentity().getIp());
 			}
 			addChat(Text::toT(static_cast<StringTask*>(i->second)->str));
 		} else if(i->first == ADD_STATUS_LINE) {
@@ -545,9 +545,9 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			}
 		} else if(i->first == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(i->second);
-			if (FDMSETTING(SHOW_IPS_IN_CHAT)) {
+			if (FDMSETTING(SHOW_IPS_IN_CHAT) || FDMSETTING(SHOW_CC_IN_CHAT)) {
 				UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(pm.str)));
-				if (ui) MoreWinUtil::addIPToString(pm.str, ui->getIdentity().getIp());
+				if (ui) MoreWinUtil::addCountryIPToString(pm.str, ui->getIdentity().getIp());
 			}
 			if(pm.hub) {
 				if(BOOLSETTING(IGNORE_HUB_PMS)) {

@@ -3,7 +3,7 @@ import sys
 import re
 
 ENTRIESSUBPATH = "/.svn/entries"
-TEMPLATE = "dcpp/fulDCVersionTemplate.h"
+TEMPLATE = "dcpp/fulDC_VersionTemplate.h"
 TARGET = "dcpp/FdmVersion.h"
 
 DEBUG = True

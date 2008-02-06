@@ -26,6 +26,7 @@
 #include <dcpp/Text.h>
 #include <dcpp/Socket.h>
 #include <dcpp/FdmUtil.h>
+#include <dcpp/FdmSettingsManager.h>
 #include <Ws2tcpip.h>
 //#include "../Other-Projects/DC++/client/SettingsManager.h"
 
@@ -88,9 +89,13 @@ string MoreWinUtil::findNickInString(const string aLine) {
 	return "";
 }
 
-void MoreWinUtil::addIPToString(string& aLine, string ip) {
-	if (ip != "")
-		aLine = "[ " + ip + " ] " + aLine;
+void MoreWinUtil::addCountryIPToString(string& aLine, string ip) {
+	if (ip != "") {
+		if (FDMSETTING(SHOW_IPS_IN_CHAT))
+			aLine = "[ " + ip + " ] " + aLine;
+		if (FDMSETTING(SHOW_CC_IN_CHAT))
+			aLine = "[ " + Util::getIpCountry(ip) + " ] " + aLine;
+	}
 }
 
 //void MoreWinUtil::addFdmStuffToExceptionInfo(char* buf, File& aFile) {
