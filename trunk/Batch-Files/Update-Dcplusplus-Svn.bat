@@ -28,7 +28,7 @@ attrib +h *.rar > nul
 
 ECHO ---------------------------------------------------------------------------
 ECHO Copying Files Over
-xcopy /q /y /e *.* ..\original-dcplusplus\ > nul
+xcopy /q /y /e /c *.* ..\original-dcplusplus\ > nul
 
 ECHO ---------------------------------------------------------------------------
 ECHO Time To Update.  Look In ..\original-dcplusplus Directory.
@@ -50,7 +50,7 @@ ECHO ---------------------------------------------------------------------------
 ECHO Copying Files Back
 attrib +h /S /D ..\original-dcplusplus\.svn > nul
 attrib +h /S /D ..\original-dcplusplus\_svn > nul
-xcopy /q /y /e ..\original-dcplusplus\*.* > nul
+xcopy /q /y /e /c ..\original-dcplusplus\*.* > nul
 
 ECHO ---------------------------------------------------------------------------
 ECHO Cleaning Up . . .
