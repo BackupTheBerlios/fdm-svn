@@ -54,7 +54,7 @@ bool FdmUtil::isNumber(string aString) {
 }
 
 //#include "../client/Util.h"
-//#include "../Other-Projects/DC++/client/ResourceManager.h"
+//#include "ResourceManager.h"
 //#include "../Other-Projects/DC++/client/SettingsManager.h"
 
 //#include "dcplusplus-rips/Fdm-Version.h"
@@ -65,8 +65,8 @@ bool FdmUtil::isNumber(string aString) {
 }
 
 string FdmUtil::toString(bool aBool) {
-	if (aBool) return FDMSTRING(STRING_TRUE);
-	return FDMSTRING(STRING_FALSE);
+	if (aBool) return STRING(STRING_TRUE);
+	return STRING(STRING_FALSE);
 }
 
 string FdmUtil::addFdmDes(string aCurDes) {

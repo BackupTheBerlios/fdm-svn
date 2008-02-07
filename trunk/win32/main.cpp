@@ -139,6 +139,7 @@ int SmartWinMain(SmartWin::Application& app) {
 		SplashWindow* splash(new SplashWindow);
 		startup(&callBack, splash);
 		startUpFdm();
+		
 		bindtextdomain(PACKAGE, LOCALEDIR);
 		textdomain(PACKAGE);
 		
@@ -160,6 +161,7 @@ int SmartWinMain(SmartWin::Application& app) {
 		printf("Unknown exception");
 	}
 	WinUtil::uninit();
+	
 	shutDownFdm();
 	shutdown();
 

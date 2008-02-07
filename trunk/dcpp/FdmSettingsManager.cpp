@@ -22,7 +22,6 @@
 #include "DCPlusPlus.h"
 
 #include "FdmSettingsManager.h"
-#include "ResourceManager.h"
 
 #include "SimpleXML.h"
 #include "Util.h"

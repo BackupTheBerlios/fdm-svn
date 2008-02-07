@@ -166,7 +166,7 @@ pot_args = ['xgettext', '--from-code=UTF-8', '--foreign-user', '--package-name=$
 pot_bld = Builder (action = Action([pot_args], 'Extracting messages to $TARGET from $SOURCES'))
 env.Append(BUILDERS = {'PotBuild' : pot_bld})
 
-Execute('FdmMakedefs.py')
+Execute('makedefs.py')
 Execute('fulDC_VersionTemplate.py')
 
 dev.zlib = dev.build('zlib/')

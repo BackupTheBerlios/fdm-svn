@@ -27,7 +27,6 @@ class FdmAboutDlg :
 	public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>,
 	public AspectSpeaker<FdmAboutDlg>,
 	private HttpConnectionListener
-
 {
 public:
 	FdmAboutDlg(SmartWin::Widget* parent);

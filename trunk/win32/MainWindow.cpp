@@ -27,15 +27,12 @@
 #include "TextFrame.h"
 #include "SingleInstance.h"
 #include "AboutDlg.h"
-#include "FdmAboutDlg.h"
 #include "UPnP.h"
 #include "TransferView.h"
 #include "HubFrame.h"
 #include "PrivateFrame.h"
 #include "DirectoryListingFrame.h"
 #include "SearchFrame.h"
-
-#include <dcpp/FdmResourceManager.h>
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ResourceManager.h>
@@ -246,8 +243,8 @@ void MainWindow::initMenu() {
 	help->appendItem(IDC_HELP_REPORT_BUG, T_("Report a bug"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 	help->appendItem(IDC_HELP_DONATE, T_("Donate (paypal)"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 
-	WidgetMenuPtr fdmMenu = mainMenu->appendPopup(FDMTSTRING(MENU_FDM));
-	fdmMenu->appendItem(IDC_FDM_ABOUT, FDMCTSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
+	WidgetMenuPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
+	fdmMenu->appendItem(IDC_FDM_ABOUT, TSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
 	fdmMenu->appendSeparatorItem();
 	
 	mainMenu->attach(this);
@@ -821,10 +818,6 @@ void MainWindow::handleHashProgress() {
 
 void MainWindow::handleAbout() {
 	AboutDlg(this).run();
-}
-
-void MainWindow::handleFdmAbout() {
-	FdmAboutDlg(this).run();
 }
 
 void MainWindow::handleOpenDownloadsDir() {

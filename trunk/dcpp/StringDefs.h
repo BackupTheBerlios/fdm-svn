@@ -1,12 +1,12 @@
 // @Prolog: #include "stdinc.h"
 // @Prolog: #include "DCPlusPlus.h"
-// @Prolog: #include "FdmResourceManager.h"
+// @Prolog: #include "ResourceManager.h"
 // @Prolog: namespace dcpp {
-// @Strings: string FdmResourceManager::strings[]
-// @Names: string FdmResourceManager::names[]
+// @Strings: string ResourceManager::strings[]
+// @Names: string ResourceManager::names[]
 // @Epilog: } // namespace dcpp
 
-enum FdmStrings { // @DontAdd
+enum Strings { // @DontAdd
 	ACTIVE_SEARCH_STRING, // "Active / Search String"	
 	AUTO_SEARCH_PROPERTIES, // "Autosearch Properties"
 	AUTO_EXCLUDE_THESE, // "Exclude These Strings (Separate With A |)"
@@ -14,7 +14,6 @@ enum FdmStrings { // @DontAdd
 	AUTO_MATCH_THESE, // "Match These Strings (Separate With A |)"
 	COPY, // "Copy"
 	CLOSE, // "Close"
-	DOWNLOADING, // "Downloading..."
 	ENABLED, // "Enabled"
 	FDM_BROWSE_ACCEL, // "&Browse..."
 	FDM_MENU_FILE, // "&File"
