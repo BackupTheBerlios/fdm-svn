@@ -33,6 +33,7 @@
 #include "SystemFrame.h"
 #include "UsersFrame.h"
 #include "WaitingUsersFrame.h"
+#include "FdmNotepadFrame.h"
 
 void MainWindow::handleOpenWindow(unsigned id) {
 	switch (id) {
@@ -74,6 +75,9 @@ void MainWindow::handleOpenWindow(unsigned id) {
 		break;
 	case IDC_NET_STATS:
 		StatsFrame::openWindow(getMDIParent());
+		break;
+	case IDC_FDM_NOTEPAD:
+		FdmNotepadFrame::openWindow(getMDIParent());
 		break;
 	default:
 		dcassert(0);

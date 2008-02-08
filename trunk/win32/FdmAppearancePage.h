@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
+/*
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,5 +15,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
- #include "dcplusplus-rips\Fdm-Version.h"
+
+#ifndef FDM_APPEARANCE_PAGE_H
+#define FDM_APPEARANCE_PAGE_H
+
+#include "PropPage.h"
+
+class FdmAppearancePage : public PropPage
+{
+public:
+	FdmAppearancePage(SmartWin::Widget* parent);
+	virtual ~FdmAppearancePage();
+
+	virtual void write();
+	virtual int getHelpId() { return IDD_FDM_APPEARANCE_PAGE; }
+
+private:
+	static FdmItem items[];
+	static FdmTextItem texts[];
+
+	COLORREF opSpoke, notOpSpoke, iSpoke, myNickSpoken;
+	SmartWin::BrushPtr bgBrush;
+	
+	void handleBrowse();
+	void handleOpSpoke();
+	void handleNotOpSpoke();
+	void handleISpoke();
+	void handleMyNickSpoken();
+};
+
+#endif // !defined(FDM_APPEARANCE_PAGE_H)

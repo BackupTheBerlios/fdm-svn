@@ -246,6 +246,8 @@ void MainWindow::initMenu() {
 	WidgetMenuPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
 	fdmMenu->appendItem(IDC_FDM_ABOUT, TSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
 	fdmMenu->appendSeparatorItem();
+	fdmMenu->appendItem(IDC_FDM_NOTEPAD, T_("&Fdm Notepad"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	fdmMenu->appendSeparatorItem();
 	
 	mainMenu->attach(this);
 }
@@ -289,6 +291,8 @@ void MainWindow::initToolbar() {
 	toolbar->appendItem(IDC_OPEN_FILE_LIST, image++, T_("Open file list..."));
 	toolbar->appendItem(IDC_SETTINGS, image++, T_("Settings"));
 	toolbar->appendItem(IDC_NOTEPAD, image++, T_("Notepad"));
+	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_FDM_NOTEPAD, image++, T_("Fdm Notepad"));
 }
 
 void MainWindow::initStatusBar() {

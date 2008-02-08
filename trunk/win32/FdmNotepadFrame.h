@@ -16,10 +16,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define FDMAPPNAME "Fdm"
-#define FDMVERSIONSTRING "0.00"
-#define FDMVERSIONFLOAT 0.00
-#define FDMSVNVERSIONSTRING "svn140"
-#define FDMSVNVERSIONFLOAT 140
+#ifndef FDM_NOTEPAD_FRAME_H
+#define FDM_NOTEPAD_FRAME_H
 
-/* Update the .rc file as well... */
+#include "StaticFrame.h"
+#include "resource.h"
+
+class FdmNotepadFrame : public StaticFrame<FdmNotepadFrame> {
+public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
+	
+protected:
+	typedef StaticFrame<FdmNotepadFrame> BaseType;
+	friend class StaticFrame<FdmNotepadFrame>;
+	friend class MDIChildFrame<FdmNotepadFrame>;
+	
+	FdmNotepadFrame(SmartWin::WidgetTabView* mdiParent);
+	virtual ~FdmNotepadFrame();
+
+	void layout();
+	bool preClosing();
+
+private:
+	WidgetTextBoxPtr pad;
+	
+	static string getFdmNotepadFile();
+};
+
+#endif
+
