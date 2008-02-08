@@ -418,24 +418,19 @@ void HubFrame::addChat(const tstring& aLine) {
 	}
 	line += aLine;
 
-	int limit = chat->getTextLimit();
-	if(chat->length() + static_cast<int>(line.size()) > limit) {
-		HoldRedraw hold(chat);
+	SCROLLINFO scrollInfo = { sizeof(SCROLLINFO), SIF_RANGE | SIF_PAGE | SIF_POS };
+	bool scroll = (
+		(::GetScrollInfo(chat->handle(), SB_VERT, &scrollInfo) == 0) || // on error, let's keep scrolling...
+		(scrollInfo.nPos == (scrollInfo.nMax - max(scrollInfo.nPage - 1, 0u))) // scroll only if the current scroll position is at the end
+	);
+	HoldRedraw hold(chat, !scroll);
+
+	size_t limit = chat->getTextLimit();
+	if(chat->length() + line.size() > limit) {
+		HoldRedraw hold2(chat, scroll);
 		chat->setSelection(0, chat->lineIndex(chat->lineFromChar(limit / 10)));
 		chat->replaceSelection(_T(""));
 	}
-#ifdef PORT_ME	
-	BOOL noscroll = TRUE;
-	POINT p = ctrlClient.PosFromChar(ctrlClient.GetWindowTextLength() - 1);
-	CRect r;
-	ctrlClient.GetClientRect(r);
-
-	if( r.PtInRect(p) || MDIGetActive() != m_hWnd)
-		noscroll = FALSE;
-	else {
-		ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
-	}
-#endif
 	if(BOOLSETTING(LOG_MAIN_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
@@ -445,11 +440,10 @@ void HubFrame::addChat(const tstring& aLine) {
 		LOG(LogManager::CHAT, params);
 	}
 	chat->addText(line);
-#ifdef PORT_ME
-	if(noscroll) {
-		ctrlClient.SetRedraw(TRUE);
-	}
-#endif
+
+	if(scroll)
+		chat->sendMessage(WM_VSCROLL, SB_BOTTOM);
+
 	setDirty(SettingsManager::BOLD_HUB);
 }
 
