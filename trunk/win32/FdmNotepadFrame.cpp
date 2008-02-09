@@ -74,4 +74,4 @@ void FdmNotepadFrame::layout() {
 	pad->setBounds(r);
 }
 
-string FdmNotepadFrame::getFdmNotepadFile() { return Util::getConfigPath() + "Fdm-Notepad.txt"; }
+string FdmNotepadFrame::getFdmNotepadFile() { return Util::getConfigPath() + "FdmNotepad.txt"; }

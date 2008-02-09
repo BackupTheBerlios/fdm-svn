@@ -63,6 +63,10 @@ public:
 	UserPtr findUser(const CID& cid) const throw();
 	UserPtr findLegacyUser(const string& aNick) const throw();
 
+	string findNickOrIP(const string& findThis);
+	//OnlineUser* getOnlineUser(const string& aNick, const string& aHubUrl);
+	//string getMyNick(const string& aHubUrl);
+	
 	bool isOnline(const UserPtr& aUser) const {
 		Lock l(cs);
 		return onlineUsers.find(aUser->getCID()) != onlineUsers.end();

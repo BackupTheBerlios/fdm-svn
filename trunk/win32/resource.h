@@ -21,8 +21,6 @@
 #define IDR_WAITING_USERS			115
 #define IDR_MAGNET					116
 
-#define IDR_FDM_NOTEPAD				130
-
 #define IDB_FOLDERS					150
 #define IDB_ARROWS					151
 #define IDB_USERS					152

@@ -60,7 +60,6 @@ IDR_SPY                 ICON                    "res/SearchSpy.ico"
 IDR_NET_STATS           ICON                    "res/NetStats.ico"
 IDR_WAITING_USERS       ICON                    "res/wuicon.ico"
 IDR_MAGNET              ICON                    "res/Magnet.ico"
-IDR_FDM_NOTEPAD         ICON                    "res/Notepad.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

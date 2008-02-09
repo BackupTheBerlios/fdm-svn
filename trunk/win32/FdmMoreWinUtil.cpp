@@ -18,17 +18,19 @@
 
 #include "stdafx.h"
 
+#include "FdmMoreWinUtil.h"
+
 #include "resource.h"
 
-#include "FdmMoreWinUtil.h"
-#include <dcpp/FdmVersion.h>
-#include <dcpp/Util.h>
-#include <dcpp/Text.h>
-#include <dcpp/Socket.h>
-#include <dcpp/FdmUtil.h>
 #include <dcpp/FdmSettingsManager.h>
+#include <dcpp/FdmUtil.h>
+#include <dcpp/FdmVersion.h>
+#include <dcpp/ClientManager.h>
+#include <dcpp/Socket.h>
+#include <dcpp/Text.h>
+#include <dcpp/Util.h>
+
 #include <Ws2tcpip.h>
-//#include "../Other-Projects/DC++/client/SettingsManager.h"
 
 bool MoreWinUtil::allowMoreInstances() {
 // todo
@@ -40,8 +42,9 @@ bool MoreWinUtil::allowMoreInstances() {
 }
 
 tstring MoreWinUtil::commands = _T("\r\n /fdm \t or \t /fdm++ \t Fdm's spam,")
-								_T("\r\n /winamp \t or \t /w \t Winamp spam.  Accepts text after the command which will be appended to the end of the normal winamp spam text,")
-								_T("\r\n /dns \t or \t /resolve \t Resolves a DNS to an IP address.  Or an IP address to it's 'real' DNS");
+								_T("\r\n /find something \t \t \t Searches for nick or ip in all connected hubs")
+								_T("\r\n /dns something \t or \t /resolve something \t Resolves a DNS to an IP address.  Or an IP address to it's 'real' DNS")
+								_T("\r\n /winamp \t or \t /w \t Winamp spam.  Text after the command will be appended to the end of the winamp spam text");
 
 bool MoreWinUtil::possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status) {
 	if(Util::stricmp(cmd.c_str(), _T("fdm")) == 0 || Util::stricmp(cmd.c_str(), _T("fdm++")) == 0) {
@@ -54,6 +57,10 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring param, tstring& message, 
 	} else if((Util::stricmp(cmd.c_str(), _T("winamp")) == 0) || (Util::stricmp(cmd.c_str(), _T("w")) == 0)) {
 		MoreWinUtil::winampSpam(param, message, status);
 	} else if((Util::stricmp(cmd.c_str(), _T("dns")) == 0) || (Util::stricmp(cmd.c_str(), _T("resolve")) == 0)) {
+		if (param.empty()) {
+			status = _T("An IP or DNS must be supplied.  Syntax /resolve somedns.com or /resolve 1.2.3.4");
+			return true;
+		}
 		string toResolve = Text::fromT(param);
 		if (FdmUtil::isIp(toResolve)) {
 			struct sockaddr_in ip;
@@ -73,6 +80,12 @@ bool MoreWinUtil::possibleCommand(tstring cmd, tstring param, tstring& message, 
 			else
 				status = _T("The DNS ") + param + _T(" resolves to ") + Text::toT(result);
 		}
+	} else if(Util::stricmp(cmd.c_str(), _T("find")) == 0) {
+		if (param.empty()) {
+			status = _T("An nick or IP must be supplied.  Syntax /find abc or /resolve 1.2.3.4");
+			return true;
+		}
+		status = Text::toT(ClientManager::getInstance()->findNickOrIP(Text::fromT(param)));
 	} else {
 		return false;
 	}

@@ -32,7 +32,7 @@ static const char fdmThanks[] = "Big thanks to everyone mentioned by Arnetheduck
 "Rob Groves for Cppsqlite, http://www.codeproject.com/database/CppSQLite.asp "
 "\r\nI would also like to thank these people who may or may not have already been mentioned by arne, but I think I have extra reason to thank them "
 "I hope I haven't missed someone, they're in roughly alphabetical order...=) : "
-"arnetheduck, Carraya, colognic, DanShUK, Farcry, Flow84, fusbar, GargoyleMT, iceman50, Paka, PPK, ullner, robertone, sulan, TheParanoidOne, TheNOP, Trem. ";
+"arnetheduck, Carraya, colognic, DanShUK, Farcry, Flow84, fusbar, GargoyleMT, iceman50, Lightgirl_xp, Paka, poy, PPK, ullner, robertone, sulan, TheParanoidOne, TheNOP, Trem. ";
 
 FdmAboutDlg::FdmAboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&FdmAboutDlg::handleInitDialog, this));
