@@ -94,16 +94,16 @@ private:
 		tstring homepage;
 		tstring downloads;
 		tstring geoipfile;
-		tstring translations;
 		tstring faq;
 		tstring help;
 		tstring discuss;
 		tstring features;
 		tstring bugs;
+		tstring donate;
 	} links;
 
 	WidgetHPanedPtr paned;
-	WidgetMenuPtr mainMenu;
+	WidgetMenuExtendedPtr mainMenu;
 	TransferView* transfers;
 	WidgetToolbarPtr toolbar;
 	WidgetTabViewPtr tabs;

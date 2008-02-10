@@ -44,7 +44,7 @@ PropPage::Item AppearancePage::items[] = {
 
 PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::ALT_SORT_ORDER, N_("Sort all downloads first") },
-	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick and NMDC debug messages") },
+	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick messages") },
 	{ SettingsManager::MINIMIZE_TRAY, N_("Minimize to tray") },
 	{ SettingsManager::TIME_STAMPS, N_("Show timestamps in chat by default") },
 	{ SettingsManager::STATUS_IN_CHAT, N_("View status messages in main chat") },
@@ -89,7 +89,8 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), lan
 	const tstring cur = Text::toT(SETTING(LANGUAGE));
 	for(TStringList::const_iterator i = langs.begin(); i != langs.end(); ++i, ++j) {
 		languages->addValue(*i);
-		if(selected != 0 && *i == cur || (*i == _T("en") && cur == _T("C"))) {
+		
+		if(selected == 0 && (*i == cur || (*i == _T("en") && cur == _T("C")))) {
 			selected = j;
 		}
 	}

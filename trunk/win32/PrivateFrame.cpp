@@ -145,11 +145,7 @@ void PrivateFrame::addChat(const tstring& aLine) {
 	}
 	line += aLine;
 
-	SCROLLINFO scrollInfo = { sizeof(SCROLLINFO), SIF_RANGE | SIF_PAGE | SIF_POS };
-	bool scroll = (
-		(::GetScrollInfo(chat->handle(), SB_VERT, &scrollInfo) == 0) || // on error, let's keep scrolling...
-		(scrollInfo.nPos == (scrollInfo.nMax - max(scrollInfo.nPage - 1, 0u))) // scroll only if the current scroll position is at the end
-	);
+	bool scroll = chat->scrollIsAtEnd();
 	HoldRedraw hold(chat, !scroll);
 
 	size_t limit = chat->getTextLimit();
@@ -229,6 +225,8 @@ void PrivateFrame::readLog() {
 }
 
 void PrivateFrame::layout() {
+	bool scroll = chat->scrollIsAtEnd();
+
 	const int border = 2;
 	
 	SmartWin::Rectangle r(getClientAreaSize()); 
@@ -241,6 +239,9 @@ void PrivateFrame::layout() {
 	
 	r.size.y -= rm.size.y + border;
 	chat->setBounds(r);
+
+	if(scroll)
+		chat->sendMessage(WM_VSCROLL, SB_BOTTOM);
 }
 
 void PrivateFrame::updateTitle() {
@@ -279,29 +280,31 @@ bool PrivateFrame::enter() {
 	bool send = false;
 	// Process special commands
 	if(s[0] == '/') {
+		tstring cmd = s;
 		tstring param;
 		tstring message;
 		tstring status;
-		if(WinUtil::checkCommand(s, param, message, status)) {
+		bool thirdPerson = false;
+		if(WinUtil::checkCommand(cmd, param, message, status, thirdPerson)) {
 			if(!message.empty()) {
-				sendMessage(message);
+				sendMessage(message, thirdPerson);
 			}
 			if(!status.empty()) {
 				addStatus(status);
 			}
-		} else if(Util::stricmp(s.c_str(), _T("clear")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
 			chat->setText(Util::emptyStringT);
-		} else if(Util::stricmp(s.c_str(), _T("grant")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("grant")) == 0) {
 			UploadManager::getInstance()->reserveSlot(replyTo);
 			addStatus(T_("Slot granted"));
-		} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
 			postMessage(WM_CLOSE);
-		} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
+		} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 			FavoriteManager::getInstance()->addFavoriteUser(replyTo);
 			addStatus(T_("Favorite user added"));
-		} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0) {
 			// TODO handleGetList();
-		} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
 			StringMap params;
 
 			params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
@@ -310,7 +313,7 @@ bool PrivateFrame::enter() {
 			params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 			params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true))));
-		} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 			addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log <system, downloads, uploads>"));
 			addStatus(_T("\r\n*** Fdm Commands:\r\n") + MoreWinUtil::commands);
 		} else {
@@ -335,8 +338,8 @@ bool PrivateFrame::enter() {
 	
 }
 
-void PrivateFrame::sendMessage(const tstring& msg) {
-	ClientManager::getInstance()->privateMessage(replyTo, Text::fromT(msg));
+void PrivateFrame::sendMessage(const tstring& msg, bool thirdPerson) {
+	ClientManager::getInstance()->privateMessage(replyTo, Text::fromT(msg), thirdPerson);
 }
 
 HRESULT PrivateFrame::handleSpeaker(WPARAM, LPARAM) {
@@ -372,20 +375,22 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 }
 
 bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
+
+	menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
 	
 	menu->appendItem(IDC_GETLIST, T_("&Get file list"), std::tr1::bind(&PrivateFrame::handleGetList, this));
 	menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
 	menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
 	if(!FavoriteManager::getInstance()->isFavoriteUser(replyTo))
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
 
 	prepareMenu(menu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&PrivateFrame::close, this, true));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&PrivateFrame::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
 
 	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-	return TRUE;
+	return true;
 }
 
 void PrivateFrame::runUserCommand(const UserCommand& uc) {

@@ -64,6 +64,7 @@ const SmartWin::WidgetButton::Seed WinUtil::Seeds::button;
 const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
 const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
 const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
+const SmartWin::WidgetMenuExtended::Seed WinUtil::Seeds::menuExtended;
 const SmartWin::WidgetTextBox::Seed WinUtil::Seeds::textBox;
 const SmartWin::WidgetTreeView::Seed WinUtil::Seeds::treeView;
 
@@ -125,6 +126,7 @@ void WinUtil::init() {
 	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
 	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
 	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);
+	SmartWin::WidgetMenuExtended::Seed& xmenuExtended = const_cast<SmartWin::WidgetMenuExtended::Seed&>(Seeds::menuExtended);
 	SmartWin::WidgetTextBox::Seed& xtextBox = const_cast<SmartWin::WidgetTextBox::Seed&>(Seeds::textBox);
 	SmartWin::WidgetTreeView::Seed& xtreeView =  const_cast<SmartWin::WidgetTreeView::Seed&>(Seeds::treeView);
 
@@ -135,7 +137,10 @@ void WinUtil::init() {
 	xlistView.exStyle = WS_EX_CLIENTEDGE;
 	xlistView.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
 	xlistView.font = font;
-	
+
+	// DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+	xmenuExtended.colorInfo.colorImageBackground = RGB(255, 0, 255);
+
 	xtextBox.exStyle = WS_EX_CLIENTEDGE;
 	xtextBox.font = font;
 
@@ -214,9 +219,9 @@ _T("\r\n-- My client supports XML file lists, does yours?\r\n") LINE2
 
 #define MSGS 16
 
-tstring WinUtil::commands = _T("/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /u <url>, /rebuild");
+tstring WinUtil::commands = _T("/refresh, /me <msg>, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /u <url>, /rebuild");
 
-bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
+bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status, bool& thirdPerson) {
 	string::size_type i = cmd.find(' ');
 	if(i != string::npos) {
 		param = cmd.substr(i+1);
@@ -235,6 +240,9 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		} else {
 			return false;
 		}
+	} else if(Util::stricmp(cmd.c_str(), _T("me")) == 0) {
+		message = param;
+		thirdPerson = true;
 	} else if(Util::stricmp(cmd.c_str(), _T("refresh"))==0) {
 		try {
 			ShareManager::getInstance()->setDirty();

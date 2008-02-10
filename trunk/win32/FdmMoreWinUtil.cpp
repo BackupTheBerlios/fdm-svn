@@ -42,7 +42,7 @@ bool MoreWinUtil::allowMoreInstances() {
 }
 
 tstring MoreWinUtil::commands = _T("\r\n /fdm \t or \t /fdm++ \t Fdm's spam,")
-								_T("\r\n /find something \t \t \t Searches for nick or ip in all connected hubs")
+								_T("\r\n /find something \t \t \t Searches for nick or IP in all connected hubs")
 								_T("\r\n /dns something \t or \t /resolve something \t Resolves a DNS to an IP address.  Or an IP address to it's 'real' DNS")
 								_T("\r\n /winamp \t or \t /w \t Winamp spam.  Text after the command will be appended to the end of the winamp spam text");
 

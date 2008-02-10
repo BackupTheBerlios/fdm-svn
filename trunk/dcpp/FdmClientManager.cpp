@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+/* 
+ * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,21 +41,21 @@ string ClientManager::findNickOrIP(const string& findThis) {
 				foundIps += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick() + ("\r\n"));
 			}
 			// Doubtful but you never know
-			if (Text::toLower(i->second->getIdentity().getNick()) == lowerNick) {
+			if ((Text::toLower(i->second->getIdentity().getNick())).find(lowerNick) != string::npos) {
 				countNicks++;
-				foundNicks += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\r\n"));
+				foundNicks += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick() + ("\r\n"));
 			}
 		} else {
-			if (Text::toLower(i->second->getIdentity().getNick()) == lowerNick) {
+			if ((Text::toLower(i->second->getIdentity().getNick())).find(lowerNick) != string::npos) {
 				countNicks++;
-				foundNicks += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\r\n"));
+				foundNicks += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick() + ("\r\n"));
 			}
 		}
 	}
-	
+
 	foundNicks = (string("\r\nFound ") + Util::toString(countNicks) + string(" nicks matching: ") + findThis + ("\r\n") + foundNicks);
-	foundIps = (string("\r\nFound ") + Util::toString(countIps) + string(" ips matching: ") + findThis + ("\r\n") + foundIps);
-	
+	foundIps = (string("\r\nFound ") + Util::toString(countIps) + string(" IPs matching: ") + findThis + ("\r\n") + foundIps);
+
 	if (countNicks && countIps)
 		return foundNicks + foundIps;
 	else if (countNicks && !countIps)
@@ -63,7 +63,7 @@ string ClientManager::findNickOrIP(const string& findThis) {
 	else if (!countNicks && countIps)
 		return foundIps;
 	else if (possibleIp)
-		return (("No Ips or nicks found matching: ") + findThis);
+		return (("No IPs or nicks found matching: ") + findThis);
 	else
 		return (("No nicks found matching: ") + findThis);
 }
