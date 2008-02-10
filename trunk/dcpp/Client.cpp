@@ -27,6 +27,8 @@
 #include "TimerManager.h"
 #include "ClientManager.h"
 
+#include "FdmUtil.h"
+
 namespace dcpp {
 
 Client::Counts Client::counts;
@@ -87,6 +89,7 @@ void Client::reloadSettings(bool updateNick) {
 		}
 		setCurrentDescription(SETTING(DESCRIPTION));
 	}
+	setCurrentDescription(FdmUtil::addFdmDes(getCurrentDescription()));
 }
 
 void Client::connect() {

@@ -38,23 +38,27 @@ string ClientManager::findNickOrIP(const string& findThis) {
 		if (possibleIp) {
 			if (i->second->getIdentity().getIp() == findThis) {
 				countIps++;
-				foundIps += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick() + ("\r\n"));
+				foundIps += (("\r\nIn hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick());
 			}
 			// Doubtful but you never know
 			if ((Text::toLower(i->second->getIdentity().getNick())).find(lowerNick) != string::npos) {
 				countNicks++;
-				foundNicks += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick() + ("\r\n"));
+				foundNicks += (("\r\nIn hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick());
+				if (!i->second->getIdentity().getIp().empty())
+					foundNicks += (("\twith IP: ")i->second->getIdentity().getIp().empty());
 			}
 		} else {
 			if ((Text::toLower(i->second->getIdentity().getNick())).find(lowerNick) != string::npos) {
 				countNicks++;
-				foundNicks += (("In hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick() + ("\r\n"));
+				foundNicks += (("\r\nIn hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick());
+				if (!i->second->getIdentity().getIp().empty())
+					foundNicks += (("\twith IP: ")i->second->getIdentity().getIp().empty());
 			}
 		}
 	}
 
-	foundNicks = (string("\r\nFound ") + Util::toString(countNicks) + string(" nicks matching: ") + findThis + ("\r\n") + foundNicks);
-	foundIps = (string("\r\nFound ") + Util::toString(countIps) + string(" IPs matching: ") + findThis + ("\r\n") + foundIps);
+	foundNicks = (string("\r\nFound ") + Util::toString(countNicks) + string(" nicks matching: ") + findThis + foundNicks);
+	foundIps = (string("\r\nFound ") + Util::toString(countIps) + string(" IPs matching: ") + findThis + foundIps);
 
 	if (countNicks && countIps)
 		return foundNicks + foundIps;

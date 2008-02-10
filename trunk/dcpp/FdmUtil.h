@@ -28,10 +28,9 @@ public:
 	static bool isIp(string aString);
 	static bool isNumber(string aString);
 
+	static string addFdmDes(string aCurDes);
 /*	bool toBool(int aInt);
 	string toString(bool aBool);
-
-	string addFdmDes(string aCurDes);
 
 	bool getSettingThrottleEnable();
 	int getSettingDownloadSpeed();

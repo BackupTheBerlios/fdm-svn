@@ -30,28 +30,8 @@ attrib +h *.rar > nul
 ECHO ---------------------------------------------------------------------------
 ECHO Copying Files Over
 xcopy /q /y /e /c *.* ..\original-dcplusplus\ > nul
-
-ECHO ---------------------------------------------------------------------------
-ECHO Time To Update.  Look In ..\original-dcplusplus Directory.
-PAUSE
-
-ECHO ---------------------------------------------------------------------------
-ECHO Don't Forget To Delete All Files From FDM Which Have Been Deleted From DC++
-PAUSE
-
-ECHO ---------------------------------------------------------------------------
-ECHO Remove All Conflicts Before Proceeding
-PAUSE
-
-ECHO ---------------------------------------------------------------------------
-ECHO Remove All Conflicts Before Proceeding
-PAUSE
-
-ECHO ---------------------------------------------------------------------------
-ECHO Copying Files Back
 attrib +h /S /D ..\original-dcplusplus\.svn > nul
 attrib +h /S /D ..\original-dcplusplus\_svn > nul
-xcopy /q /y /e /c ..\original-dcplusplus\*.* > nul
 
 ECHO ---------------------------------------------------------------------------
 ECHO Cleaning Up . . .

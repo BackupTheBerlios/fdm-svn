@@ -255,11 +255,11 @@ void MainWindow::initMenu() {
 	}
 
 	{
-		WidgetMenuPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
+		WidgetMenuExtendedPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
 
 		fdmMenu->appendItem(IDC_FDM_ABOUT, TSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
 		fdmMenu->appendSeparatorItem();
-		fdmMenu->appendItem(IDC_FDM_NOTEPAD, T_("&Fdm Notepad"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+		fdmMenu->appendItem(IDC_FDM_NOTEPAD, TSTRING(MENU_FDM_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 		fdmMenu->appendSeparatorItem();
 	}
 	
@@ -306,7 +306,7 @@ void MainWindow::initToolbar() {
 	toolbar->appendItem(IDC_SETTINGS, image++, T_("Settings"));
 	toolbar->appendItem(IDC_NOTEPAD, image++, T_("Notepad"));
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_FDM_NOTEPAD, image++, T_("Fdm Notepad"));
+	toolbar->appendItem(IDC_FDM_NOTEPAD, image++, TSTRING(MENU_FDM_NOTEPAD_FRAME));
 }
 
 void MainWindow::initStatusBar() {

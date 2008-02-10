@@ -818,6 +818,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
 		ui->setTransfered(u->getPos(), u->getActual());
 		ui->setSpeed(u->getAverageSpeed());
+		ui->setChunk(u->getPos(), u->getSize());
 
 		tasks.add(CONNECTIONS_UPDATE, ui);
 	}

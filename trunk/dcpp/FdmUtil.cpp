@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "FdmUtil.h"
+#include "FdmVersion.h"
 #include "Text.h"
 #include "Util.h"
 #include "StringTokenizer.h"
@@ -53,6 +54,11 @@ bool FdmUtil::isNumber(string aString) {
 	return true;
 }
 
+string FdmUtil::addFdmDes(string aCurDes) {
+	return (aCurDes + "<" FDMAPPNAME " " FDMVERSIONSTRING ">");
+}
+
+} // namespace dcpp
 //#include "../client/Util.h"
 //#include "ResourceManager.h"
 //#include "../Other-Projects/DC++/client/SettingsManager.h"
@@ -69,10 +75,6 @@ string FdmUtil::toString(bool aBool) {
 	return STRING(STRING_FALSE);
 }
 
-string FdmUtil::addFdmDes(string aCurDes) {
-	return ("<" FDMAPPNAME " " FDMVERSIONSTRING ">" + aCurDes);
-}
-
 bool FdmUtil::getSettingThrottleEnable() {
 	return FDMBOOLSETTING(THROTTLE_ENABLE);
 }
@@ -84,5 +86,3 @@ int FdmUtil::getSettingDownloadSpeed() {
 int FdmUtil::getSettingUploadSpeed() {
 	return FDMSETTING(UPLOAD_SPEED);
 }*/
-
-} // namespace dcpp
