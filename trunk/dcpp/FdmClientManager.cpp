@@ -45,14 +45,14 @@ string ClientManager::findNickOrIP(const string& findThis) {
 				countNicks++;
 				foundNicks += (("\r\nIn hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick());
 				if (!i->second->getIdentity().getIp().empty())
-					foundNicks += (("\twith IP: ")i->second->getIdentity().getIp().empty());
+					foundNicks += (("\twith IP: ") + i->second->getIdentity().getIp().empty());
 			}
 		} else {
 			if ((Text::toLower(i->second->getIdentity().getNick())).find(lowerNick) != string::npos) {
 				countNicks++;
 				foundNicks += (("\r\nIn hub:\t") + i->second->getClient().getHubUrl() + ("\twith nick: ") + i->second->getIdentity().getNick());
 				if (!i->second->getIdentity().getIp().empty())
-					foundNicks += (("\twith IP: ")i->second->getIdentity().getIp().empty());
+					foundNicks += (("\twith IP: ") + i->second->getIdentity().getIp().empty());
 			}
 		}
 	}
