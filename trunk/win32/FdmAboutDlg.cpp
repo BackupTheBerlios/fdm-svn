@@ -26,10 +26,6 @@
 
 static const char fdmThanks[] = "Big thanks to everyone mentioned by Arnetheduck in the other about page. And to Arne himself. :)"
 "Thanks go out to berlios for hosting the project. "
-"Fdm uses a few more projects than dc++, so I would like to also thank "
-"Philip Hazel for PCRE, http://www.pcre.org/ "
-"D. Richard Hipp for Sqlite, http://www.sqlite.org/ "
-"Rob Groves for Cppsqlite, http://www.codeproject.com/database/CppSQLite.asp "
 "\r\nI would also like to thank these people who may or may not have already been mentioned by arne, but I think I have extra reason to thank them "
 "I hope I haven't missed someone, they're in roughly alphabetical order...=) : "
 "arnetheduck, Carraya, colognic, DanShUK, Farcry, Flow84, fusbar, GargoyleMT, iceman50, Lightgirl_xp, Paka, poy, PPK, ullner, robertone, sulan, TheParanoidOne, TheNOP, Trem. ";

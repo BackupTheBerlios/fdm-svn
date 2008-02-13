@@ -890,21 +890,15 @@ void HubFrame::on(HubUpdated, Client*) throw() {
 }
 
 void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg, bool thirdPerson) throw() {
-	if(SETTING(FILTER_MESSAGES)) {
-		if((msg.find("Hub-Security") != string::npos) && (msg.find("was kicked by") != string::npos)) {
-			// Do nothing...
-		} else if((msg.find("is kicking") != string::npos) && (msg.find("because:") != string::npos)) {
-			speak(ADD_SILENT_STATUS_LINE, msg);
-		} else {
-			speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg, thirdPerson));
-		}
-	} else {
-		speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg, thirdPerson));
-	}
+	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg, thirdPerson));
 }
 
-void HubFrame::on(StatusMessage, Client*, const string& line) throw() {
-	speak(ADD_CHAT_LINE, line);
+void HubFrame::on(StatusMessage, Client*, const string& line, int statusFlags) throw() {
+	if(SETTING(FILTER_MESSAGES) && (statusFlags & ClientListener::FLAG_IS_SPAM)) {
+		speak(ADD_SILENT_STATUS_LINE, line);
+	} else {
+		speak(ADD_STATUS_LINE, line);
+	}
 }
 
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line, bool thirdPerson) throw() {
@@ -1133,7 +1127,7 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 			case GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
 			case LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
 			case NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
-			case NONE:; break;
+			case NONE: ; break;
 		}
 	} else {
 		if(sel >= COLUMN_LAST) {
@@ -1181,7 +1175,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(true);
+		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		
 		menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
@@ -1197,9 +1191,9 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
-	menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
+	menu->setTitle(getParent()->getTabText(this));
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
 		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));

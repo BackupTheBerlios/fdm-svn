@@ -117,7 +117,7 @@ void UsersFrame::addUser(const FavoriteUser& aUser) {
 }
 
 void UsersFrame::updateUser(const UserPtr& aUser) {
-	for(unsigned int i = 0; i < users->size(); ++i) {
+	for(size_t i = 0; i < users->size(); ++i) {
 		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser) {
 			ui->columns[COLUMN_SEEN] = aUser->isOnline() ? T_("Online") : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", FavoriteManager::getInstance()->getLastSeen(aUser)));
@@ -127,7 +127,7 @@ void UsersFrame::updateUser(const UserPtr& aUser) {
 }
 
 void UsersFrame::removeUser(const FavoriteUser& aUser) {
-	for(unsigned int i = 0; i < users->size(); ++i) {
+	for(size_t int i = 0; i < users->size(); ++i) {
 		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser.getUser()) {
 			users->erase(i);
@@ -180,7 +180,7 @@ bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(true);
+		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&UsersFrame::handleProperties, this));

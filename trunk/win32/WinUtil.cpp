@@ -64,7 +64,7 @@ const SmartWin::WidgetButton::Seed WinUtil::Seeds::button;
 const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
 const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
 const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
-const SmartWin::WidgetMenuExtended::Seed WinUtil::Seeds::menuExtended;
+const SmartWin::WidgetMenu::Seed WinUtil::Seeds::menu;
 const SmartWin::WidgetTextBox::Seed WinUtil::Seeds::textBox;
 const SmartWin::WidgetTreeView::Seed WinUtil::Seeds::treeView;
 
@@ -126,7 +126,7 @@ void WinUtil::init() {
 	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
 	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
 	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);
-	SmartWin::WidgetMenuExtended::Seed& xmenuExtended = const_cast<SmartWin::WidgetMenuExtended::Seed&>(Seeds::menuExtended);
+	SmartWin::WidgetMenu::Seed& xmenu = const_cast<SmartWin::WidgetMenu::Seed&>(Seeds::menu);
 	SmartWin::WidgetTextBox::Seed& xtextBox = const_cast<SmartWin::WidgetTextBox::Seed&>(Seeds::textBox);
 	SmartWin::WidgetTreeView::Seed& xtreeView =  const_cast<SmartWin::WidgetTreeView::Seed&>(Seeds::treeView);
 
@@ -138,8 +138,10 @@ void WinUtil::init() {
 	xlistView.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
 	xlistView.font = font;
 
-	// DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
-	xmenuExtended.colorInfo.colorImageBackground = RGB(255, 0, 255);
+	if(BOOLSETTING(OWNER_DRAWN_MENUS))
+		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+	else
+		xmenu.ownerDrawn = false;
 
 	xtextBox.exStyle = WS_EX_CLIENTEDGE;
 	xtextBox.font = font;
@@ -422,7 +424,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
-	bi.lpszTitle = CT_("Choose folder");
+	tstring title = T_("Choose folder");
+	bi.lpszTitle = title.c_str();
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
