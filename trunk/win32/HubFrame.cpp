@@ -939,23 +939,6 @@ tstring HubFrame::getStatusUsers() const {
 	return textForUsers + str(TFN_("%1% user", "%1% users", userCount) % userCount);
 }
 
-tstring HubFrame::getStatusAverageShared() const {
-	int64_t available;
-	size_t userCount = 0;
-	if (users->getSelectedCount() > 1) {
-		available = users->forEachSelectedT(CountAvailable()).available;
-		userCount = users->getSelectedCount();
-	} else {
-		available = std::for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
-		for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
-			UserInfo* ui = i->second;
-			if(!ui->isHidden())
-				userCount++;
-		}
-	}
- 
-	return str(TF_("Average: %1%") % Text::toT(Util::formatBytes(userCount > 0 ? available / userCount : 0)));
-}
 
 void HubFrame::on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw() {
 	resortForFavsFirst();

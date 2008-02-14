@@ -255,7 +255,7 @@ void MainWindow::initMenu() {
 	}
 
 	{
-		WidgetMenuExtendedPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
+		WidgetMenuPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
 
 		fdmMenu->appendItem(IDC_FDM_ABOUT, TSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
 		fdmMenu->appendSeparatorItem();

@@ -127,7 +127,7 @@ void UsersFrame::updateUser(const UserPtr& aUser) {
 }
 
 void UsersFrame::removeUser(const FavoriteUser& aUser) {
-	for(size_t int i = 0; i < users->size(); ++i) {
+	for(size_t i = 0; i < users->size(); ++i) {
 		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser.getUser()) {
 			users->erase(i);

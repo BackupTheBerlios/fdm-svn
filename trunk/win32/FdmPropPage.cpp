@@ -52,6 +52,8 @@ void PropPage::fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems /
 				::CheckDlgButton(page, i->itemID, BST_CHECKED);
 			else
 				::CheckDlgButton(page, i->itemID, BST_UNCHECKED);
+		case T_CUSTOM: ;
+		case T_END: ;
 		}
 	}
 
@@ -108,6 +110,8 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 				else
 					settings->set((FdmSettingsManager::IntSetting)i->setting, false);
 			}
+		case T_CUSTOM: ;
+		case T_END: ;
 		}
 	}
 

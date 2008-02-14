@@ -12,6 +12,7 @@ enum Strings { // @DontAdd
 	AUTO_EXCLUDE_THESE, // "Exclude These Strings (Separate With A |)"
 	AUTO_EXTENSION, // "One Of These Extensions (Separate With A |)"
 	AUTO_MATCH_THESE, // "Match These Strings (Separate With A |)"
+	AVERAGE, // "Average"
 	COPY, // "Copy"
 	CLOSE, // "Close"
 	ENABLED, // "Enabled"
