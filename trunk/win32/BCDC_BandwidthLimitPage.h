@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2003 cologic, cologic@parsoma.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FDM_MAINFRAME_H)
-#define FDM_MAINFRAME_H
+#ifndef BANDWIDTHLIMITPAGE_H
+#define BANDWIDTHLIMITPAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "PropPage.h"
 
-#include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../resource.h"
-
-class FdmMainFrame {
+class BandwidthLimitPage : public PropPage
+{
 public:
-	BEGIN_MSG_MAP(FdmMainFrame)
-		COMMAND_ID_HANDLER(IDD_FDM_ABOUT, OnFdmAppAbout)
-		COMMAND_ID_HANDLER(ID_AUTO_SEARCH_FRAME, OnAutoSearchFrame)
-	END_MSG_MAP()
+	BandwidthLimitPage(SmartWin::Widget* parent);
+	virtual ~BandwidthLimitPage();
 
-	LRESULT OnAutoSearchFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	virtual void write();
+	virtual int getHelpId() { return IDD_BANDWIDTHPAGE; }
+
+protected:
+	static FdmItem items[];
+	static FdmTextItem texts[];
+
+	void handleThrottleEnableClicked();
+	void setControlState();	
 };
 
-#endif // !defined(FDM_MAINFRAME_H)
-
-/**
- * @file
- * $Id: MainFrm.h,v 1.66 2006/01/23 08:00:50 arnetheduck Exp $
- */
+#endif //BANDWIDTHLIMITPAGE_H

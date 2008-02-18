@@ -37,6 +37,7 @@
 #include "UCPage.h"
 #include "CertificatesPage.h"
 #include "FdmAppearancePage.h"
+#include "BCDC_BandwidthLimitPage.h"
 
 static const TCHAR SEPARATOR = _T('\\');
 static const size_t MAX_NAME_LENGTH = 256;
@@ -70,7 +71,8 @@ bool SettingsDialog::initDialog() {
 	addPage(T_("Advanced\\Experts only"), new Advanced3Page(this));
 	addPage(T_("Advanced\\User Commands"), new UCPage(this));
 	addPage(T_("Advanced\\Security Certificates"), new CertificatesPage(this));
-	addPage(T_("Fdm\\Extra Apperance"), new FdmAppearancePage(this));
+	addPage(TSTRING(SETTINGS_APPEARANCE_PAGE), new FdmAppearancePage(this));
+	addPage(TSTRING(SETTINGS_BANDWIDTH), new BandwidthLimitPage(this));
 	
 	return false;
 }

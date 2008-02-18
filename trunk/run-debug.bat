@@ -1,1 +1,0 @@
-insight build\debug-mingw\bin\DCPlusPlus.exe -directory=dcpp;win32;bzip2;intl;smartwin\include;smartwin\include\smartwin;smartwin\include\smartwin\aspects;smartwin\include\smartwin\widgets;smartwin\SmartUtil;smartwin\source;smartwin\source\widgets

@@ -38,7 +38,13 @@ const string FdmSettingsManager::settingTags[] =
 	"SENTRY", 
 	// Ints
 	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour",
-	"IpInChats", "CCInChats", "ThrottleEnable", "DownloadSpeed", "UploadSpeed",
+	"IpInChats", "CCInChats",
+
+	// BCDC Ints
+	"MaxUploadSpeed", "MaxDownloadSpeedReal", "ThrottleEnabled",
+	"BandwidthLimitStart", "BandwidthLimitEnd", "TimeDependentThrottle", "MaxDownloadSpeedRealTime",
+	"MaxUploadSpeedTime", "EvilHiddenSetting", "YetAnotherEvilHiddenSetting",
+	"The_Ducklings_Are_Coming_Run_Run_Hide", "They_Are_Nasty_Fuckers_Are_They_Not",
 	"SENTRY",
 	// Int64
 	"aInt64",
@@ -67,12 +73,15 @@ FdmSettingsManager::FdmSettingsManager()
 	setDefault(WINAMP_FORMAT, "winamp(%[version]) %[state] (%[title]) stats(%[percent] of %[length])");
 	setDefault(SHOW_IPS_IN_CHAT, true);
 	setDefault(SHOW_CC_IN_CHAT, true);
-	setDefault(THROTTLE_ENABLE, 1);
-	setDefault(DOWNLOAD_SPEED, 0);
-	setDefault(UPLOAD_SPEED, 20);
 
 #ifdef _WIN32
 #endif
+	setDefault(THROTTLE_ENABLE, false);
+	setDefault(TIME_DEPENDENT_THROTTLE, false);
+	setDefault(MAX_DOWNLOAD_SPEED_REAL_TIME, 0);
+	setDefault(MAX_UPLOAD_SPEED_TIME, 0);
+	setDefault(BANDWIDTH_LIMIT_START, 0);
+	setDefault(BANDWIDTH_LIMIT_END, 0);
 }
 
 void FdmSettingsManager::load(string const& aFileName)

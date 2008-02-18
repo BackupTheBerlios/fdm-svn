@@ -33,6 +33,7 @@ public:
 private:
 	static FdmItem items[];
 	static FdmTextItem texts[];
+	static FdmListItem listItems[];
 
 	COLORREF opSpoke, notOpSpoke, iSpoke, myNickSpoken;
 	SmartWin::BrushPtr bgBrush;

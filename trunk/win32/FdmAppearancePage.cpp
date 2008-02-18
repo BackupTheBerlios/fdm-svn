@@ -32,6 +32,7 @@ PropPage::FdmTextItem FdmAppearancePage::texts[] = {
 	{ IDC_FDM_SETTINGS_MY_NICK_SPOKEN, ResourceManager::SETTINGS_APPEARANCE_MY_NICK_SPOKEN },
 	{ IDC_FDM_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_FDM_LANGUAGE_FILE },
 	{ IDC_FDM_SETTINGS_BROWSE, ResourceManager::FDM_BROWSE_ACCEL },
+	{ IDC_SETTINGS_FDM_APPEARANCE_OPTIONS, ResourceManager::OPTIONS },
 	{ IDC_FDM_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_APPEARANCE_REQUIRES_RESTART },
 	{ 0, ResourceManager::FDM_SETTINGS_AUTO_AWAY }
 };
@@ -41,11 +42,17 @@ PropPage::FdmItem FdmAppearancePage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
+PropPage::FdmListItem FdmAppearancePage::listItems[] = {
+	{ FdmSettingsManager::SHOW_IPS_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_SHOW_IPS_IN_CHATS },
+	{ FdmSettingsManager::SHOW_CC_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_SHOW_CC_IN_CHATS },
+	{ 0, ResourceManager::FDM_SETTINGS_AUTO_AWAY }
+};
+
 FdmAppearancePage::FdmAppearancePage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_FDM_APPEARANCE_PAGE);
 
 	PropPage::fdmTranslate(handle(), texts);
-	PropPage::fdmRead(handle(), items, 0, 0);
+	PropPage::fdmRead(handle(), items, listItems, ::GetDlgItem(handle(), IDC_FDM_APPEARANCE_BOOLEANS));
 
 	opSpoke = FDMSETTING(OP_SPOKE_COLOUR);
 	notOpSpoke = FDMSETTING(NOT_OP_SPOKE_COLOUR);
@@ -72,7 +79,7 @@ FdmAppearancePage::~FdmAppearancePage() {
 }
 
 void FdmAppearancePage::write() {
-	PropPage::fdmWrite(handle(), items, 0,0);
+	PropPage::fdmWrite(handle(), items, listItems, ::GetDlgItem(handle(), IDC_FDM_APPEARANCE_BOOLEANS));
 
 	FdmSettingsManager* settings = FdmSettingsManager::getInstance();
 
