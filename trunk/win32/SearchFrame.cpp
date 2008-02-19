@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -635,7 +635,7 @@ bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		}
 
 		WidgetMenuPtr contextMenu = makeMenu();
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
 	return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ private:
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
 	
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	LRESULT trayMessage(WPARAM wParam, LPARAM lParam);
+	LRESULT handleTrayMessage();
 	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
 	LRESULT handleWhereAreYou(WPARAM wParam, LPARAM lParam);
 
@@ -185,6 +185,8 @@ private:
 	void saveWindowSettings();
 	void parseCommandLine(const tstring& cmdLine);
 	bool filter(MSG& msg);
+
+	void bcdcThrottleSetup();
 	
 	bool closing();
 	void handleRestore();

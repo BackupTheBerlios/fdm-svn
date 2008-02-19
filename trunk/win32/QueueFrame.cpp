@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1068,7 +1068,7 @@ bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 		} else {
 			contextMenu = makeMultiMenu();
 		}
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}
@@ -1085,7 +1085,7 @@ bool QueueFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
 	if(dirs->getSelection()) {
 		usingDirMenu = true;
 		WidgetMenuPtr contextMenu = makeDirMenu();
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}

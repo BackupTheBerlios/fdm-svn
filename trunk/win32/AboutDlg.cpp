@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ AboutDlg::~AboutDlg() {
 }
 
 bool AboutDlg::handleInitDialog() {
-	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2007 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2008 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 	setItemText(IDC_TTH, WinUtil::tth);
 	setItemText(IDC_THANKS, Text::toT(thanks));
 	setItemText(IDC_TOTALS, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));

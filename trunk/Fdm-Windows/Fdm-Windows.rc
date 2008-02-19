@@ -47,20 +47,6 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
 END
 
-IDD_RAWS_PAGE DIALOGEX 0, 0, 287, 274
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_DISABLED | WS_CAPTION
-EXSTYLE WS_EX_STATICEDGE
-CAPTION "Raws"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    LISTBOX         IDC_POSSIBLE_RAWS,84,18,187,76,LBS_SORT | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_FDM_ADD,15,18,58,20
-    PUSHBUTTON      "Remove",IDC_FDM_REMOVE,15,67,58,20
-    PUSHBUTTON      "Edit",IDC_FDM_EDIT,15,42,58,21
-END
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
@@ -77,15 +63,6 @@ BEGIN
         BOTTOMMARGIN, 255
     END
 
-    IDD_RAWS_PAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 280
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 267
-    END
-END
-#endif    // APSTUDIO_INVOKED
 
 /////////////////////////////////////////////////////////////////////////////
 //

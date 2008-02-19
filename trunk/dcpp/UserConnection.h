@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,11 +91,13 @@ public:
 		// UploadManager
 		STATE_GET,			// Waiting for GET
 		STATE_SEND,			// Waiting for $Send
-		STATE_RUNNING,		// Transmitting data
 
 		// DownloadManager
 		STATE_SND,	// Waiting for SND
-		STATE_TREE
+		STATE_IDLE, // No more downloads for the moment
+
+		// Up & down
+		STATE_RUNNING,		// Transmitting data
 
 	};
 
@@ -125,6 +127,8 @@ public:
 
 	void connect(const string& aServer, uint16_t aPort) throw(SocketException, ThreadException);
 	void accept(const Socket& aServer) throw(SocketException, ThreadException);
+
+	void updated() { if(socket) socket->updated(); }
 
 	void disconnect(bool graceless = false) { if(socket) socket->disconnect(graceless); }
 	void transmitFile(InputStream* f) { socket->transmitFile(f); }
@@ -162,6 +166,8 @@ public:
 	GETSET(string, encoding, Encoding);
 	GETSET(States, state, State);
 	GETSET(uint64_t, lastActivity, LastActivity);
+
+	void setFlag(int aFlag);
 private:
 	BufferedSocket* socket;
 	bool secure;
@@ -205,6 +211,7 @@ private:
 	virtual void on(ModeChange) throw();
 	virtual void on(TransmitDone) throw();
 	virtual void on(Failed, const string&) throw();
+	virtual void on(Updated) throw();
 };
 
 } // namespace dcpp

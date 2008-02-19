@@ -83,7 +83,7 @@ bool WaitingUsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&WaitingUsersFrame::onGrantSlot, this));
 	menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&WaitingUsersFrame::onAddToFavorites, this));
 	menu->appendItem(IDC_PRIVATEMESSAGE, T_("&Send private message"), std::tr1::bind(&WaitingUsersFrame::onPrivateMessage, this));
-	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;
 }
 
@@ -180,11 +180,11 @@ void WaitingUsersFrame::onRemove()
 }
 
 // UploadManagerListener
-void WaitingUsersFrame::on(UploadManagerListener::WaitingRemoveUser, const UserPtr aUser) throw() {
+void WaitingUsersFrame::on(UploadManagerListener::WaitingRemoveUser, const UserPtr& aUser) throw() {
 	speak(SPEAK_REMOVE_USER, (LPARAM)new UserItem(aUser));
 }
 
-void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const UserPtr aUser, const string& aFilename) throw() {
+void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const UserPtr& aUser, const string& aFilename) throw() {
 	speak(SPEAK_ADD_FILE, (LPARAM)new pair<UserPtr, string>(aUser, aFilename));
 }
 

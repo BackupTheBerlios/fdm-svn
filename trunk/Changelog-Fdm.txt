@@ -4,6 +4,7 @@ Added Country Codes Main Chat and PM's
 Added a few python scripts (thanks fulDC)
 Added /find to search hubs for either Nick or Ip's
 Added /resolve to resolve IP's from a DNS, and the Domain name from Ip's
+Added Bandwidth Limiting (from BCDC++)
 Added Winamp spam (from BCDC++)
 Changed Winamp spam to accept text after the command, which is appended to the spam
 Ripped a few DCplusplus files, so can have own Settings file, Notepad and Aboutbox

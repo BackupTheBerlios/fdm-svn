@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ public:
 	typedef unordered_map<UserPtr, FileSet, User::Hash> FilesMap;
 	void clearUserFiles(const UserPtr&);
 	UserList getWaitingUsers();
-	const FileSet& getWaitingUserFiles(const UserPtr &);
+	const FileSet& getWaitingUserFiles(const UserPtr&);
 
 	/** @internal */
 	void addConnection(UserConnectionPtr conn);
@@ -67,7 +67,22 @@ public:
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
 	GETSET(uint64_t, lastGrant, LastGrant);
+
+	// Upload throttling
+	bool throttle() { return mThrottleEnable; }
+	size_t throttleGetSlice();
+	size_t throttleCycleTime();
 private:
+	void throttleZeroCounters();
+	void throttleBytesTransferred(uint32_t i);
+	void throttleSetup();
+	bool mThrottleEnable;
+	size_t mBytesSent,
+		   mBytesSpokenFor,
+		   mUploadLimit,
+		   mCycleTime,
+		   mByteSlice;
+
 	UploadList uploads;
 	CriticalSection cs;
 

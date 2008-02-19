@@ -33,6 +33,7 @@ void startUpFdm() {
 	FdmSettingsManager::newInstance();
 
 	FdmSettingsManager::getInstance()->load();
+	bcdcStartUpStuff();
 
 	if(!FDMSETTING(FDM_LANGUAGE_FILE).empty())
 		ResourceManager::getInstance()->loadLanguage(FDMSETTING(FDM_LANGUAGE_FILE));

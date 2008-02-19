@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ static const string UPLOAD_AREA = "Uploads";
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) {
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
+	throttleZeroCounters();	
 }
 
 UploadManager::~UploadManager() throw() {
@@ -155,6 +156,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	bool extraSlot = false;
 
+	throttleSetup();
 	if(!aSource.isSet(UserConnection::FLAG_HASSLOT)) {
 		bool hasReserved = (reservedSlots.find(aSource.getUser()) != reservedSlots.end());
 		bool isFavorite = FavoriteManager::getInstance()->hasSlot(aSource.getUser());
@@ -239,6 +241,7 @@ void UploadManager::removeUpload(Upload* aUpload) {
 	Lock l(cs);
 	dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
 	uploads.erase(remove(uploads.begin(), uploads.end(), aUpload), uploads.end());
+	throttleSetup();
 	delete aUpload;
 }
 
@@ -318,6 +321,7 @@ void UploadManager::on(UserConnectionListener::BytesSent, UserConnection* aSourc
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
 	u->addPos(aBytes, aActual);
+	throttleBytesTransferred(aActual);
 }
 
 void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
@@ -387,7 +391,7 @@ UserList UploadManager::getWaitingUsers() {
 	return u;
 }
 
-const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const UserPtr &u) {
+const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const UserPtr& u) {
 	Lock l(cs);
 	return waitingFiles.find(u)->second;
 }
@@ -486,6 +490,9 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 	Lock l(cs);
 	UploadList ticks;
+
+	throttleSetup();
+	throttleZeroCounters();
 
 	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
 		if((*i)->getPos() > 0) {

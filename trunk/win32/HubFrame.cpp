@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1167,7 +1167,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 		
 		inTabMenu = false;
 		
-		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
 	return false;
@@ -1191,7 +1191,7 @@ bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 
 	inTabMenu = true;
 	
-	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;
 }
 

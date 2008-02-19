@@ -31,6 +31,8 @@ public:
 	public:
 		/// Fills with default parameters
 		Seed();
+
+		bool toggleActive;
 	};
 
 	void add(WidgetChildWindow* w, const IconPtr& icon);
@@ -85,6 +87,8 @@ private:
 
 	std::tr1::function<void (const SmartUtil::tstring&)> titleChangedFunction;
 
+	bool toggleActive;
+
 	bool inTab;
 	
 	typedef std::list<WidgetChildWindow*> WindowList;
@@ -94,6 +98,7 @@ private:
 	std::vector<IconPtr> icons;
 	int active;
 	int dragging;
+	SmartUtil::tstring tipText;
 	
 	int findTab(WidgetChildWindow* w);
 	
@@ -106,7 +111,7 @@ private:
 	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
-	LRESULT handleToolTip(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleToolTip(LPARAM lParam);
 	void handleLeftMouseDown(const MouseEventResult& mouseEventResult);
 	void handleLeftMouseUp(const MouseEventResult& mouseEventResult);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);

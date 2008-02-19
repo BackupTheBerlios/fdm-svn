@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,7 +189,7 @@ private:
 		SmartWin::WidgetMenu::ObjectType menu = createMenu(WinUtil::Seeds::menu);
 		menu->setTitle(getParent()->getTabText(this));
 		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
-		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
 	

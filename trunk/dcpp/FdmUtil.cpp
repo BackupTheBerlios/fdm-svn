@@ -20,6 +20,8 @@
 #include "DCPlusPlus.h"
 
 #include "FdmUtil.h"
+
+#include "FdmSettingsManager.h"
 #include "FdmVersion.h"
 #include "Text.h"
 #include "Util.h"
@@ -55,7 +57,9 @@ bool FdmUtil::isNumber(string aString) {
 }
 
 string FdmUtil::addFdmDes(string aCurDes) {
-	return (aCurDes + "<" FDMAPPNAME " " FDMVERSIONSTRING ">");
+	string answer = (aCurDes + "<" FDMAPPNAME " " FDMVERSIONSTRING);
+	answer += FDMBOOLSETTING(THROTTLE_ENABLE) && FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) ? (" B:" + Util::toString(FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)) + ">") : ">";
+	return answer;
 }
 
 } // namespace dcpp

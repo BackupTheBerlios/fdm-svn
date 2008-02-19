@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,7 +186,7 @@ bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&UsersFrame::handleProperties, this));
 		menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&UsersFrame::handleRemove, this));
 		
-		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}

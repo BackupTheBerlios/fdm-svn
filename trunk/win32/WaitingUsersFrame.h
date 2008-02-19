@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,8 +89,8 @@ private:
 	void updateSearch(int index, BOOL doDelete = TRUE);
 
 	// UploadManagerListener
-	virtual void on(UploadManagerListener::WaitingRemoveUser, const UserPtr) throw();
-	virtual void on(UploadManagerListener::WaitingAddFile, const UserPtr, const string&) throw();
+	virtual void on(UploadManagerListener::WaitingRemoveUser, const UserPtr&) throw();
+	virtual void on(UploadManagerListener::WaitingAddFile, const UserPtr&, const string&) throw();
 };
 
 #endif	/* WAITING_QUEUE_FRAME_H */

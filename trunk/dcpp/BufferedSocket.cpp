@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,6 +163,10 @@ void BufferedSocket::threadRead() throw(SocketException) {
 	if(!sock)
 		return;
 	int left = sock->read(&inbuf[0], (int)inbuf.size());
+	DownloadManager *dm = DownloadManager::getInstance();
+	size_t readsize = inbuf.size();
+	bool throttling = false;
+	bcdcThreadRead(left, dm, readsize, throttling);
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
 		return;
@@ -254,6 +258,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 							fire(BufferedSocketListener::ModeChange());
 						}
 					}
+					bcdcThreadRead2(left, dm, readsize, throttling);
 				}
 				break;
 		}
@@ -279,6 +284,9 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 
 	bool readDone = false;
 	dcdebug("Starting threadSend\n");
+	UploadManager *um = UploadManager::getInstance();
+	size_t sendMaximum, start = 0, current= 0;
+	bool throttling;
 	while(true) {
 		if(!readDone && readBuf.size() > readPos) {
 			// Fill read buffer
@@ -312,11 +320,13 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 			if(disconnecting)
 				return;
 			size_t writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+			bcdcThreadSendFile(writeSize, sockSize, writePos, um, throttling, start, sendMaximum);
 			int written = sock->write(&writeBuf[writePos], writeSize);
 			if(written > 0) {
 				writePos += written;
 
 				fire(BufferedSocketListener::BytesSent(), 0, written);
+				bcdcThreadSendFile2(um, throttling, start, current);
 			} else if(written == -1) {
 				if(!readDone && readPos < readBuf.size()) {
 					// Read a little since we're blocking anyway...
@@ -429,6 +439,9 @@ bool BufferedSocket::checkEvents() {
 			case SHUTDOWN:
 				return false;
 			case ACCEPTED:
+				break;
+			case UPDATED:
+				fire(BufferedSocketListener::Updated());
 				break;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2004 cologic, cologic@parsoma.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FDM_MAINFRAME_H)
-#define FDM_MAINFRAME_H
+#include "stdinc.h"
+#include "DCPlusPlus.h"
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "UserConnection.h"
 
-#include "../../Fdm-Client/dcplusplus-rips/Fdm-ResourceManager.h"
-#include "../resource.h"
+#include "FdmSettingsManager.h"
 
-class FdmMainFrame {
-public:
-	BEGIN_MSG_MAP(FdmMainFrame)
-		COMMAND_ID_HANDLER(IDD_FDM_ABOUT, OnFdmAppAbout)
-		COMMAND_ID_HANDLER(ID_AUTO_SEARCH_FRAME, OnAutoSearchFrame)
-	END_MSG_MAP()
+namespace dcpp {
 
-	LRESULT OnAutoSearchFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-};
+void UserConnection::setFlag(int aFlag) {
+	if(FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) == 1337 && FDMBOOLSETTING(THROTTLE_ENABLE)) {
+		if(aFlag == UserConnection::FLAG_UPLOAD) {
+			socket->setThreadPriority(Thread::LOW);
+		} else if(aFlag == UserConnection::FLAG_DOWNLOAD) {
+			socket->setThreadPriority(Thread::NORMAL);
+		}
+	}
+	dcpp::Flags::setFlag(aFlag);
+}
 
-#endif // !defined(FDM_MAINFRAME_H)
-
-/**
- * @file
- * $Id: MainFrm.h,v 1.66 2006/01/23 08:00:50 arnetheduck Exp $
- */
+} // namespace dcpp

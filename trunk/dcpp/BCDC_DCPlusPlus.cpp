@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2004 cologic, cologic@parsoma.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
-#include "../../client/DCPlusPlus.h"
-#include "../../Fdm-Client/dcplusplus-rips/Fdm-SettingsManager.h"
+#include "stdinc.h"
+#include "DCPlusPlus.h"
 
-#include "Fdm-MainFrm.h"
-#include "AutoSearchFrame.h"
+#include "Fdm.h"
 
-#include "../../windows/WinUtil.h"
+#include "FdmSettingsManager.h"
+#include "SettingsManager.h"
 
+namespace dcpp {
 
-LRESULT FdmMainFrame::OnAutoSearchFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	AutoSearchFrame::openWindow();
-	return 0;
+void bcdcStartUpStuff() {
+	FdmSettingsManager::getInstance()->setDefault(FdmSettingsManager::WATCH_THE_DUCKLINGS_HOP_HOP_SKIP, SETTING(SLOTS));
+	FdmSettingsManager::getInstance()->setDefault(FdmSettingsManager::THE_DUCKLINGS_HATE_YOU_TOO, SETTING(SLOTS));
 }
-/**
- * @file
- * $Id: MainFrm.cpp,v 1.109 2006/01/23 08:00:50 arnetheduck Exp $
- */
+
+} // namespace dcpp

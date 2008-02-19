@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,14 +66,14 @@ MainWindow::MainWindow() :
 	UPnP_TCPConnection(0),
 	UPnP_UDPConnection(0)
 {
-	links.homepage = _T("http://dcpp.net/");
+	links.homepage = _T("http://dcplusplus.sourceforge.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
 	links.faq = links.homepage + _T("faq/");
-	links.help = links.homepage + _T("forum/");
-	links.discuss = links.homepage + _T("forum/");
-	links.features = links.homepage + _T("bugzilla/");
-	links.bugs = links.homepage + _T("bugzilla/");
+	links.help = links.homepage + _T("help/");
+	links.discuss = links.homepage + _T("discussion/");
+	links.features = links.homepage + _T("featurereq/");
+	links.bugs = links.homepage + _T("bugs/");
 	links.donate = _T("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8");
 	
 	initWindow();
@@ -98,7 +98,7 @@ MainWindow::MainWindow() :
 
 	onClosing(std::tr1::bind(&MainWindow::closing, this));
 
-	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayMessage, this), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
 	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
 	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this, _1, _2), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
 	
@@ -320,6 +320,7 @@ void MainWindow::initStatusBar() {
 void MainWindow::initTabs() {
 	WidgetTabView::Seed cs;
 	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
+	cs.toggleActive = BOOLSETTING(TOGGLE_ACTIVE_WINDOW);
 	tabs = createTabView(cs);
 	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
 	paned->setFirst(tabs);
@@ -518,8 +519,9 @@ bool MainWindow::closing() {
 	return true;
 }
 
-LRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
-	updateTray(true);
+LRESULT MainWindow::handleTrayMessage() {
+	if(BOOLSETTING(MINIMIZE_TRAY) && isIconic())
+		updateTray(true);
 	return 0;
 }
 
@@ -564,6 +566,8 @@ void MainWindow::updateStatus() {
 	lastTick = now;
 	lastUp = up;
 	lastDown = down;
+	
+	bcdcThrottleSetup();
 
 	/** @todo move this to client/ */
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + static_cast<int64_t>(updiff));
@@ -859,7 +863,6 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 		if(xml.findChild("Version")) {
 			if(Util::toDouble(xml.getChildData()) > VERSIONFLOAT) {
 				xml.resetCurrentChild();
-				xml.resetCurrentChild();
 				if(xml.findChild("Title")) {
 					const string& title = xml.getChildData();
 					xml.resetCurrentChild();
@@ -875,43 +878,42 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 					}
 				}
 			}
-
-			xml.resetCurrentChild();
-			if(xml.findChild("Links")) {
-				xml.stepIn();
-				if(xml.findChild("Homepage")) {
-					links.homepage = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Downloads")) {
-					links.downloads = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("GeoIP database update")) {
-					links.geoipfile = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Faq")) {
-					links.faq = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Bugs")) {
-					links.bugs = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Features")) {
-					links.features = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Help")) {
-					links.help = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Forum")) {
-					links.discuss = Text::toT(xml.getChildData());
-				}
-				xml.stepOut();
+		}
+		xml.resetCurrentChild();
+		if(xml.findChild("Links")) {
+			xml.stepIn();
+			if(xml.findChild("Homepage")) {
+				links.homepage = Text::toT(xml.getChildData());
 			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Downloads")) {
+				links.downloads = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("GeoIP database update")) {
+				links.geoipfile = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Faq")) {
+				links.faq = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Bugs")) {
+				links.bugs = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Features")) {
+				links.features = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Help")) {
+				links.help = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Forum")) {
+				links.discuss = Text::toT(xml.getChildData());
+			}
+			xml.stepOut();
 		}
 		xml.stepOut();
 	} catch (const Exception&) {
@@ -1016,7 +1018,7 @@ LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 		trayMenu->setDefaultItem(0,TRUE);
 		::GetCursorPos(&pt.getPoint());
 		::SetForegroundWindow(handle());
-		trayMenu->trackPopupMenu(this, pt, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
+		trayMenu->trackPopupMenu(pt, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
 		postMessage(WM_NULL);
 	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
 		NOTIFYICONDATA nid;

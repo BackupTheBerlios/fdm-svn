@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,9 @@
 #include "Speaker.h"
 #include "Util.h"
 #include "Socket.h"
+
+#include "UploadManager.h"
+#include "DownloadManager.h"
 
 namespace dcpp {
 
@@ -77,10 +80,13 @@ public:
 	bool isTrusted() const { return sock && sock->isTrusted(); }
 	std::string getCipherName() const { return sock ? sock->getCipherName() : Util::emptyString; }
 	
-	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
+	void write(const string& aData) { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
 	/** Send the file f over this socket. */
-	void transmitFile(InputStream* f) throw() { Lock l(cs); addTask(SEND_FILE, new SendFileInfo(f)); }
+	void transmitFile(InputStream* f) { Lock l(cs); addTask(SEND_FILE, new SendFileInfo(f)); }
+	
+	/** Send an updated signal to all listeners */
+	void updated() { Lock l(cs); addTask(UPDATED, 0); }
 
 	void disconnect(bool graceless = false) throw() { Lock l(cs); if(graceless) disconnecting = true; addTask(DISCONNECT, 0); }
 
@@ -94,7 +100,8 @@ private:
 		SEND_DATA,
 		SEND_FILE,
 		SHUTDOWN,
-		ACCEPTED
+		ACCEPTED,
+		UPDATED
 	};
 
 	struct TaskData {
@@ -153,6 +160,11 @@ private:
 
 	void shutdown();
 	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
+
+	void bcdcThreadRead(int& left, DownloadManager *dm, size_t& readsize, bool& throttling);
+	void bcdcThreadRead2(int left, DownloadManager *dm, size_t readsize, bool throttling);
+	void bcdcThreadSendFile(size_t& writeSize, size_t sockSize, size_t writePos, UploadManager *um, bool& throttling, size_t& start, size_t& sendMaximum);
+	void bcdcThreadSendFile2(UploadManager *um, bool throttling, size_t start, size_t& current);
 };
 
 } // namespace dcpp

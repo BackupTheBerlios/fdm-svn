@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ public:
 	
 	static void gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage);
 	static void openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
-	static bool isOpen(const UserPtr u) { return frames.find(u) != frames.end(); }
+	static bool isOpen(const UserPtr& u) { return frames.find(u) != frames.end(); }
 	static void closeAll();
 	static void closeAllOffline();
 

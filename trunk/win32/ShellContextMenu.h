@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+* Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ public:
 
 	void SetPath(const wstring& strPath);
 
-	UINT ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, SmartWin::Widget * parent, const SmartWin::ScreenCoordinate& pt);
+	UINT ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, const SmartWin::ScreenCoordinate& pt);
 
 private:
 	bool bDelete;

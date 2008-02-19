@@ -19,7 +19,7 @@
 #define FDMAPPNAME "Fdm"
 #define FDMVERSIONSTRING "0.00"
 #define FDMVERSIONFLOAT 0.00
-#define FDMSVNVERSIONSTRING "svn148"
-#define FDMSVNVERSIONFLOAT 148
+#define FDMSVNVERSIONSTRING "svn149"
+#define FDMSVNVERSIONFLOAT 149
 
 /* Update the .rc file as well... */
