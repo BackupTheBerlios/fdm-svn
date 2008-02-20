@@ -162,11 +162,11 @@ void BufferedSocket::threadRead() throw(SocketException) {
 	dcassert(sock);
 	if(!sock)
 		return;
-	int left = sock->read(&inbuf[0], (int)inbuf.size());
 	DownloadManager *dm = DownloadManager::getInstance();
 	size_t readsize = inbuf.size();
 	bool throttling = false;
-	bcdcThreadRead(left, dm, readsize, throttling);
+	bcdcThreadRead(dm, readsize, throttling);
+	int left = sock->read(&inbuf[0], (int)readsize);
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
 		return;

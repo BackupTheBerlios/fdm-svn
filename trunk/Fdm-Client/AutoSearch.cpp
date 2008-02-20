@@ -24,16 +24,16 @@
  // Pothead used ADLSearch.cpp as a template
 
 #include "stdinc.h"
-#include "../client/DCPlusPlus.h"
+#include "DCPlusPlus.h"
 
 #include "AutoSearch.h"
 
-#include "../client/File.h"
-#include "../client/SimpleXML.h"
-#include "../client/ClientManager.h"
-#include "../client/QueueManager.h"
-#include "../client/LogManager.h"
-#include "../FdmUtil.h"
+#include "File.h"
+#include "SimpleXML.h"
+#include "ClientManager.h"
+#include "QueueManager.h"
+#include "LogManager.h"
+#include "FdmUtil.h"
 
 AutoSearchManager::AutoSearchManager() {
 	TimerManager::getInstance()->addListener(this);

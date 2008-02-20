@@ -161,7 +161,7 @@ private:
 	void shutdown();
 	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
 
-	void bcdcThreadRead(int& left, DownloadManager *dm, size_t& readsize, bool& throttling);
+	void bcdcThreadRead(DownloadManager *dm, size_t& readsize, bool& throttling);
 	void bcdcThreadRead2(int left, DownloadManager *dm, size_t readsize, bool throttling);
 	void bcdcThreadSendFile(size_t& writeSize, size_t sockSize, size_t writePos, UploadManager *um, bool& throttling, size_t& start, size_t& sendMaximum);
 	void bcdcThreadSendFile2(UploadManager *um, bool throttling, size_t start, size_t& current);

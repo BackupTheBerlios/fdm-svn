@@ -26,7 +26,7 @@
 
 namespace dcpp {
 
-void BufferedSocket::bcdcThreadRead(int& left, DownloadManager *dm, size_t& readsize, bool& throttling) {
+void BufferedSocket::bcdcThreadRead(DownloadManager *dm, size_t& readsize, bool& throttling) {
 	if(mode == MODE_DATA)
 	{
 		uint32_t getMaximum;
@@ -41,7 +41,6 @@ void BufferedSocket::bcdcThreadRead(int& left, DownloadManager *dm, size_t& read
 			}
 		}
 	}
-	left = sock->read(&inbuf[0], (int)readsize);
 }
 
 void BufferedSocket::bcdcThreadRead2(int left, DownloadManager *dm, size_t readsize, bool throttling) {

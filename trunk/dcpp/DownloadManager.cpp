@@ -46,6 +46,7 @@ const string Download::ANTI_FRAG_EXT = ".antifrag";
 
 DownloadManager::DownloadManager() {
 	TimerManager::getInstance()->addListener(this);
+	throttleZeroCounters();
 }
 
 DownloadManager::~DownloadManager() throw() {
@@ -464,6 +465,7 @@ void DownloadManager::removeDownload(Download* d) {
 		dcassert(find(downloads.begin(), downloads.end(), d) != downloads.end());
 
 		downloads.erase(remove(downloads.begin(), downloads.end(), d), downloads.end());
+		throttleSetup();
 	}
 }
 

@@ -26,22 +26,17 @@
 #if !defined(AUTO_SEARCH_H)
 #define AUTO_SEARCH_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
+#include "Util.h"
 
-#include "../client/Util.h"
+#include "FdmSettingsManager.h"
+#include "ResourceManager.h"
+#include SearchManager.h"
+#include "ADLSearch.h"
 
-#include "../Other-Projects/DC++/client/SettingsManager.h"
-#include "../Other-Projects/DC++/client/ResourceManager.h"
-#include "../client/SearchManager.h"
-#include "../client/ADLSearch.h"
-#include "../client/ResourceManager.h"
-
-#include "../client/CriticalSection.h"
-#include "../client/Singleton.h"
-#include "../client/TimerManager.h"
-#include "../client/SearchManagerListener.h"
+#include "CriticalSection.h"
+#include "Singleton.h"
+#include "TimerManager.h"
+#include "SearchManagerListener.h"
 
 class AutoSearch
 {
