@@ -259,7 +259,8 @@ void MainWindow::initMenu() {
 
 		fdmMenu->appendItem(IDC_FDM_ABOUT, TSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
 		fdmMenu->appendSeparatorItem();
-		fdmMenu->appendItem(IDC_FDM_NOTEPAD, TSTRING(MENU_FDM_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+		fdmMenu->appendItem(IDC_AUTOSEARCH, TSTRING(MENU_FDM_AUTOSEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_AUTOSEARCH)));
+		fdmMenu->appendItem(IDC_FDM_NOTEPAD, TSTRING(MENU_FDM_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NOTEPAD)));
 		fdmMenu->appendSeparatorItem();
 	}
 	
@@ -306,6 +307,7 @@ void MainWindow::initToolbar() {
 	toolbar->appendItem(IDC_SETTINGS, image++, T_("Settings"));
 	toolbar->appendItem(IDC_NOTEPAD, image++, T_("Notepad"));
 	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_AUTOSEARCH, image++, TSTRING(MENU_FDM_AUTOSEARCH_FRAME));
 	toolbar->appendItem(IDC_FDM_NOTEPAD, image++, TSTRING(MENU_FDM_NOTEPAD_FRAME));
 }
 

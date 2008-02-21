@@ -34,6 +34,7 @@
 #include "UsersFrame.h"
 #include "WaitingUsersFrame.h"
 #include "FdmNotepadFrame.h"
+#include "FdmAutoSearchFrame.h"
 
 void MainWindow::handleOpenWindow(unsigned id) {
 	switch (id) {
@@ -78,6 +79,9 @@ void MainWindow::handleOpenWindow(unsigned id) {
 		break;
 	case IDC_FDM_NOTEPAD:
 		FdmNotepadFrame::openWindow(getMDIParent());
+		break;
+	case IDC_AUTOSEARCH:
+		AutoSearchFrame::openWindow(getMDIParent());
 		break;
 	default:
 		dcassert(0);

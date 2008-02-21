@@ -368,7 +368,7 @@ void QueueManager::on(TimerManagerListener::Minute, uint32_t aTick) throw() {
 	string fn;
 	string searchString;
 	bool online = false;
-
+	if (!getBlockAutoSearch())
 	{
 		Lock l(cs);
 

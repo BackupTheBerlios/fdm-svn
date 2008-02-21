@@ -23,9 +23,10 @@
 
 #include "FdmSettingsManager.h"
 #include "FdmVersion.h"
+#include "ResourceManager.h"
+#include "StringTokenizer.h"
 #include "Text.h"
 #include "Util.h"
-#include "StringTokenizer.h"
 
 namespace dcpp {
 
@@ -56,20 +57,7 @@ bool FdmUtil::isNumber(string aString) {
 	return true;
 }
 
-string FdmUtil::addFdmDes(string aCurDes) {
-	string answer = (aCurDes + "<" FDMAPPNAME " " FDMVERSIONSTRING);
-	answer += FDMBOOLSETTING(THROTTLE_ENABLE) && FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) ? (" B:" + Util::toString(FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)) + ">") : ">";
-	return answer;
-}
-
-} // namespace dcpp
-//#include "../client/Util.h"
-//#include "ResourceManager.h"
-//#include "../Other-Projects/DC++/client/SettingsManager.h"
-
-//#include "dcplusplus-rips/Fdm-Version.h"
-
-/*bool FdmUtil::toBool(int aInt) {
+bool FdmUtil::toBool(int aInt) {
 	if (aInt) return true;
 	return false;
 }
@@ -79,14 +67,10 @@ string FdmUtil::toString(bool aBool) {
 	return STRING(STRING_FALSE);
 }
 
-bool FdmUtil::getSettingThrottleEnable() {
-	return FDMBOOLSETTING(THROTTLE_ENABLE);
+string FdmUtil::addFdmDes(string aCurDes) {
+	string answer = (aCurDes + "<" FDMAPPNAME " " FDMVERSIONSTRING);
+	answer += FDMBOOLSETTING(THROTTLE_ENABLE) && FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) ? (" B:" + Util::toString(FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)) + ">") : ">";
+	return answer;
 }
 
-int FdmUtil::getSettingDownloadSpeed() {
-	return FDMSETTING(DOWNLOAD_SPEED);
-}
-
-int FdmUtil::getSettingUploadSpeed() {
-	return FDMSETTING(UPLOAD_SPEED);
-}*/
+} // namespace dcpp

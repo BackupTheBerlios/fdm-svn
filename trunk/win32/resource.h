@@ -21,6 +21,8 @@
 #define IDR_WAITING_USERS			115
 #define IDR_MAGNET					116
 
+#define IDR_AUTOSEARCH				130
+
 #define IDB_ADL_SEARCH		150
 #define IDB_ARROWS		151
 #define IDB_DL_QUEUE		152
@@ -45,6 +47,9 @@
 #define IDB_EXIT		171
 #define IDB_HUB			172
 #define IDB_DCPP		173
+
+#define IDB_AUTOSEARCH				190
+
 
 #define IDD_ABOUTBOX 				200
 #define IDD_ADLS_PROPERTIES			201
@@ -74,6 +79,7 @@
 #define IDD_FDM_ABOUTBOX			500
 #define IDD_FDM_APPEARANCE_PAGE		501
 #define IDD_BANDWIDTHPAGE			502
+#define IDD_AUTOSEARCH_PROPERTIES	503
 
 // Stuff not in the resource file
 #define IDC_EXIT 					1000
@@ -146,6 +152,7 @@
 
 #define IDC_FDM_ABOUT				1500
 #define IDC_FDM_NOTEPAD				1501
+#define IDC_AUTOSEARCH				1502
 
 
 // Stuff that uses multiple id's
@@ -497,5 +504,28 @@
 #define IDC_UPLOADSLOTS_TIME				2849
 #define IDC_UPLOADSLOTSSPIN_TIME			2850
 #define IDC_TEXT_UPLOADSLOTSSPIN_TIME		2851
+
+#define IDC_AUTOS_SOURCE_TYPE				2860
+#define IDC_AUTOS_SIZE_TYPE					2861
+#define IDC_AUTOS_RES_SIZE_TYPE				2862
+#define IDC_AUTOS_SIZE_MODES				2863
+#define IDC_AUTOS_SEARCH_STRING				2864
+#define IDC_AUTOS_FILE_SIZE					2865
+#define IDC_AUTOS_SEARCH_MATCH				2866
+#define IDC_AUTOS_SEARCH_EXCLUDE			2867
+#define IDC_AUTOS_SEARCH_EXTENSION			2868
+#define IDC_AUTOS_MIN_SIZE					2869
+#define IDC_AUTOS_MAX_SIZE					2870
+#define IDC_AS_IS_ACTIVE					2871
+#define IDC_AS_ONLY_IF_OP					2872
+#define IDC_AS_SEARCH						2873
+#define IDC_AS_SOURCE_TYPE					2874
+#define IDC_AS_RESULTS						2875
+#define IDC_AS_FILE_SIZE					2876
+#define IDC_AS_MATCH						2877
+#define IDC_AS_EXCLUDE						2878
+#define IDC_AS_EXTENSION					2879
+#define IDC_AS_MIN_SIZE						2880
+#define IDC_AS_MAX_SIZE						2881
 
 #endif

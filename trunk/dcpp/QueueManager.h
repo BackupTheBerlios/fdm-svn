@@ -120,6 +120,7 @@ public:
 
 	GETSET(uint64_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
+	GETSET(bool, blockAutoSearch, BlockAutoSearch);
 private:
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {

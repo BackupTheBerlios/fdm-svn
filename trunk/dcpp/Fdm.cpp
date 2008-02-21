@@ -23,8 +23,7 @@
 
 #include "ResourceManager.h"
 #include "FdmSettingsManager.h"
-//#include "dcplusplus-rips/AutoSearch.h"
-//#include "UserDatabase.h"
+#include "FdmAutoSearch.h"
 
 namespace dcpp {
 
@@ -38,14 +37,11 @@ void startUpFdm() {
 	if(!FDMSETTING(FDM_LANGUAGE_FILE).empty())
 		ResourceManager::getInstance()->loadLanguage(FDMSETTING(FDM_LANGUAGE_FILE));
 
-//	AutoSearchManager::newInstance();
-	
-//	UserDatabase::newInstance();
+	AutoSearchManager::newInstance();
 }
 
 void shutDownFdm() {
-//	UserDatabase::deleteInstance();
-//	AutoSearchManager::deleteInstance();
+	AutoSearchManager::deleteInstance();
 
 	FdmSettingsManager::getInstance()->save();
 

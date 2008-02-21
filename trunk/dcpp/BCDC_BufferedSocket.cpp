@@ -36,6 +36,7 @@ void BufferedSocket::bcdcThreadRead(DownloadManager *dm, size_t& readsize, bool&
 			getMaximum = dm->throttleGetSlice();
 			readsize = (uint32_t)min((int64_t)inbuf.size(), (int64_t)getMaximum);
 			if (readsize <= 0  || readsize > inbuf.size()) { // FIX
+				dcdebug("sleep 1\n");
 				sleep(dm->throttleCycleTime());
 				return;
 			}
@@ -49,6 +50,7 @@ void BufferedSocket::bcdcThreadRead2(int left, DownloadManager *dm, size_t reads
 			dm->throttleReturnBytes(left - readsize);
 		}
 		uint32_t sleep_interval =  dm->throttleCycleTime();
+		dcdebug("sleep 2\n");
 		Thread::sleep(sleep_interval);
 	}
 }
@@ -75,6 +77,7 @@ void BufferedSocket::bcdcThreadSendFile2(UploadManager *um, bool throttling, siz
 		current = TimerManager::getTick();
 		int32_t sleep_time = cycle_time - (current - start);
 		if (sleep_time > 0 && sleep_time <= cycle_time) {
+			dcdebug("sleep 3\n");
 			Thread::sleep(sleep_time);
 		}
 	}

@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+/* 
+ * Copyright (C) 2005 Michael J Jones, mrmikejj at hotmail dot com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom at home se
- */
- 
- // Pothead used ADLSearch.cpp as a template
 
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
-#include "AutoSearch.h"
+#include "FdmAutoSearch.h"
 
 #include "File.h"
 #include "SimpleXML.h"
@@ -34,6 +28,8 @@
 #include "QueueManager.h"
 #include "LogManager.h"
 #include "FdmUtil.h"
+
+namespace dcpp {
 
 AutoSearchManager::AutoSearchManager() {
 	TimerManager::getInstance()->addListener(this);
@@ -63,7 +59,7 @@ void AutoSearchManager::on(TimerManagerListener::Minute, uint32_t /*aTick*/) thr
 	if (time == timeToSearch)
 		QueueManager::getInstance()->setBlockAutoSearch(true);
 
-	AutoSearchCollection::iterator pos = collection.begin() + curPos;
+	SearchCollection::iterator pos = collection.begin() + curPos;
 
 	// If have some searches
 	if (pos < collection.end()) {
@@ -154,7 +150,7 @@ void AutoSearchManager::on(SearchManagerListener::SR, SearchResult* sr) throw() 
 
 	// Got a hit, Notify
 	// Fixme, some better way of notifying
-	LogManager::getInstance()->message("Autosearch Result. File " + sr->getFile() + " from " + sr->getUser()->getFirstNick() + " in " + sr->getHubName());
+	LogManager::getInstance()->message("Autosearch Result. File " + sr->getFile() + " from " + Util::toString(ClientManager::getInstance()->getNicks(sr->getUser()->getCID())) + " in " + sr->getHubName());
 }
 
 void AutoSearchManager::Load() {
@@ -186,16 +182,16 @@ void AutoSearchManager::Load() {
 						search.searchString = xml.getChildData();
 
 					if(xml.findChild("SourceType"))
-						search.sourceType = Util::toInt(xml.getChildData());
+						search.sourceType = AutoSearch::SourceType(Util::toInt(xml.getChildData()));
 
-					if(xml.findChild("SizeMode"))
-						search.sizeMode = Util::toInt(xml.getChildData());
+					if(xml.findChild("SizeModes"))
+						search.sizeModes = AutoSearch::SizeModes(Util::toInt(xml.getChildData()));
 
 					if(xml.findChild("Size"))
 						search.size = Util::toInt64(xml.getChildData());
 
 					if(xml.findChild("SizeType"))
-						search.typeFileSize =Util::toInt(xml.getChildData());
+						search.typeFileSize = AutoSearch::TypeFileSize(Util::toInt(xml.getChildData()));
 
 					if(xml.findChild("OnlyIfOp"))
 						search.onlyIfOp = (Util::toInt(xml.getChildData()) != 0);
@@ -219,7 +215,7 @@ void AutoSearchManager::Load() {
 						search.resultsMaxSize = Util::toInt64(xml.getChildData());
 
 					if(xml.findChild("ResSizeType"))
-						search.resultsTypeFileSize = Util::toInt(xml.getChildData());
+						search.resultsTypeFileSize = AutoSearch::TypeFileSize(Util::toInt(xml.getChildData()));
 
 					// Add search to collection
 					if(search.searchString.size() > 0)
@@ -252,7 +248,7 @@ void AutoSearchManager::Save() {
 		xml.stepIn();
 
 		// Save all	searches
-		for(AutoSearchCollection::iterator i = collection.begin(); i != collection.end(); ++i) {
+		for(SearchCollection::iterator i = collection.begin(); i != collection.end(); ++i) {
 			AutoSearch& search = *i;
 			if(search.searchString.size() == 0) {
 				continue;
@@ -267,7 +263,7 @@ void AutoSearchManager::Save() {
 			xml.addTag("SourceType", search.sourceType);
 			xml.addChildAttrib(type, string("int"));
 
-			xml.addTag("SizeMode", search.sizeMode);
+			xml.addTag("SizeModes", search.sizeModes);
 			xml.addChildAttrib(type, string("int"));
 
 			xml.addTag("Size", search.size);
@@ -320,3 +316,5 @@ void AutoSearchManager::Save() {
 		return;
 	}
 }
+
+} // namespace dcpp

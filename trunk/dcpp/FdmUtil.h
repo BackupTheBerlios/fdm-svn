@@ -28,13 +28,10 @@ public:
 	static bool isIp(string aString);
 	static bool isNumber(string aString);
 
-	static string addFdmDes(string aCurDes);
-/*	bool toBool(int aInt);
-	string toString(bool aBool);
+	static bool toBool(int aInt);
+	static string toString(bool aBool);
 
-	bool getSettingThrottleEnable();
-	int getSettingDownloadSpeed();
-	int getSettingUploadSpeed();*/
+	static string addFdmDes(string aCurDes);
 };
 
 } // namespace dcpp
