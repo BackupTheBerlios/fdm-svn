@@ -32,16 +32,15 @@ void startUpFdm() {
 	FdmSettingsManager::newInstance();
 
 	FdmSettingsManager::getInstance()->load();
-	bcdcStartUpStuff();
 
 	if(!FDMSETTING(FDM_LANGUAGE_FILE).empty())
 		ResourceManager::getInstance()->loadLanguage(FDMSETTING(FDM_LANGUAGE_FILE));
 
-	AutoSearchManager::newInstance();
+//	AutoSearchManager::newInstance();
 }
 
 void shutDownFdm() {
-	AutoSearchManager::deleteInstance();
+//	AutoSearchManager::deleteInstance();
 
 	FdmSettingsManager::getInstance()->save();
 

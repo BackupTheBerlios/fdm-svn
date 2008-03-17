@@ -106,7 +106,7 @@ MainWindow::MainWindow() :
 
 	c = new HttpConnection;
 	c->addListener(this);
-	c->downloadFile("http://dcplusplus.sourceforge.net.nyud.net/version.xml");
+	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();
@@ -144,6 +144,7 @@ MainWindow::MainWindow() :
 }
 
 void MainWindow::initWindow() {
+	
 	// Create main window
 	dcdebug("initWindow\n");
 	Seed cs;
@@ -263,8 +264,8 @@ void MainWindow::initMenu() {
 		fdmMenu->appendItem(IDC_FDM_NOTEPAD, TSTRING(MENU_FDM_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NOTEPAD)));
 		fdmMenu->appendSeparatorItem();
 	}
-	
-	mainMenu->attach();
+
+	mainMenu->setMenu();
 }
 
 void MainWindow::initToolbar() {

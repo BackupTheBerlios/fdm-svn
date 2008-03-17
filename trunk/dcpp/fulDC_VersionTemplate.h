@@ -17,8 +17,8 @@
  */
 
 #define FDMAPPNAME "Fdm"
-#define FDMVERSIONSTRING "0.00"
-#define FDMVERSIONFLOAT 0.00
+#define FDMVERSIONSTRING "0.01"
+#define FDMVERSIONFLOAT 0.01
 #define FDMSVNVERSIONSTRING "svn$revision"
 #define FDMSVNVERSIONFLOAT $revision
 

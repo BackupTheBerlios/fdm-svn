@@ -41,10 +41,10 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, "
 "krzysztof tyszecki, poison, mikejj, pur, bigmuscle, martin, jove, bart vullings, "
 "steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman, james ross,"
-"stanislav maslovski, david grundberg. "
+"stanislav maslovski, david grundberg, pavel andreev, yakov suraev. "
 "Keep it coming!";
 
-AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
+AboutDlg::AboutDlg(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&AboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&AboutDlg::handleSpeaker, this, _1, _2));
 }
@@ -53,12 +53,20 @@ AboutDlg::~AboutDlg() {
 }
 
 bool AboutDlg::handleInitDialog() {
-	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2008 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+	setText(T_("About DC++"));
+	
+	setItemText(IDC_VERSION, Text::toT(APPNAME " " VERSIONSTRING) + T_("\n(c) Copyright 2001-2008 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 	setItemText(IDC_TTH, WinUtil::tth);
 	setItemText(IDC_THANKS, Text::toT(thanks));
 	setItemText(IDC_TOTALS, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));
+	setItemText(IDC_GREETZ, T_("Greetz and Contributors"));
+	setItemText(IDC_TOTALS, T_("Totals"));
+	setItemText(IDC_LATEST_VERSION, T_("Latest stable version"));
+	
 	if(SETTING(TOTAL_DOWNLOAD) > 0) {
 		setItemText(IDC_RATIO, str(TF_("Ratio (up/down): %1$0.2f") % (((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)))));
+	} else {
+		setItemText(IDC_RATIO, str(TF_("No transfers yet") % (((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)))));
 	}
 	setItemText(IDC_LATEST, T_("Downloading..."));
 
@@ -67,7 +75,7 @@ bool AboutDlg::handleInitDialog() {
 	centerWindow();
 
 	c.addListener(this);
-	c.downloadFile("http://dcplusplus.sourceforge.net.nyud.net/version.xml");
+	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	return false;
 }

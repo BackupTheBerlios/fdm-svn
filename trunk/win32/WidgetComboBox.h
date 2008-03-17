@@ -16,35 +16,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_LINE_DLG_H
-#define DCPLUSPLUS_WIN32_LINE_DLG_H
+#ifndef DCPLUSPLUS_WIN32_WIDGETCOMBOBOX_H_
+#define DCPLUSPLUS_WIN32_WIDGETCOMBOBOX_H_
 
-#include "resource.h"
+#include "WidgetTextBox.h"
 
-#include <dcpp/Util.h>
-#include "WidgetFactory.h"
-
-class LineDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
-{
-public:
-	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);
-	
-	int run() { return createDialog(IDD_LINE); }
-	
-	tstring getLine() { return initial; }
+class WidgetComboBox : public SmartWin::WidgetComboBox {
 private:
-	WidgetTextBoxPtr line;
+	typedef SmartWin::WidgetComboBox BaseType;
+public:
+	typedef WidgetComboBox ThisType;
+	
+	typedef ThisType* ObjectType;
 
-	tstring title;
-	tstring desc;
-	tstring initial;
-	bool password;
+	explicit WidgetComboBox( SmartWin::Widget * parent );
 
-	void focus();
-	bool initDialog();
-	bool closing();
-	void okClicked();
-	void cancelClicked();
+	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
+	WidgetTextBoxPtr getTextBox();
+
+private:
+	WidgetTextBoxPtr textBox;
 };
 
-#endif // !defined(LINE_DLG_H)
+#endif /*WIDGETCOMBOBOX_H_*/

@@ -25,6 +25,7 @@
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/TaskQueue.h>
 #include <dcpp/forward.h>
+#include <dcpp/MerkleTree.h>
 #include <dcpp/Util.h>
 
 #include "AspectSpeaker.h"
@@ -291,8 +292,8 @@ private:
 
 	virtual void on(QueueManagerListener::Removed, QueueItem*) throw();
 
-	void onTransferTick(Transfer* aTransfer);
-	void onTransferComplete(Transfer* aTransfer, bool isUpload);
+	void onTransferTick(Transfer* aTransfer, bool isDownload);
+	void onTransferComplete(Transfer* aTransfer, bool isDownload);
 	void starting(UpdateInfo* ui, Transfer* t);
 	
 #ifdef PORT_ME

@@ -40,6 +40,8 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_AUTO_REFRESH_TIME, N_("Auto refresh time") },
 	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, N_("Auto-search limit") },
 	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, N_("Min segment size") },
+	{ IDC_SETTINGS_SOCKET_IN_BUFFER, N_("Socket read buffer") },
+	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, N_("Socket write buffer") },
 	{ 0, 0 }
 };
 
@@ -68,6 +70,21 @@ Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 
 	WidgetSpinnerPtr spinner = attachSpinner(IDC_SEARCH_HISTORY_SPIN);
 	spinner->setRange(0, 100);
+
+	attachTextBox(IDC_ROLLBACK);
+	attachTextBox(IDC_MAX_HASH_SPEED);
+	attachTextBox(IDC_SHOW_LAST_LINES_LOG);
+	attachTextBox(IDC_SET_MINISLOT_SIZE);
+	attachTextBox(IDC_MAX_FILELIST_SIZE);
+	attachTextBox(IDC_PRIVATE_ID);
+	attachTextBox(IDC_AUTO_REFRESH_TIME);
+	attachTextBox(IDC_BUFFERSIZE);
+	attachTextBox(IDC_AUTO_SEARCH_LIMIT);
+	attachTextBox(IDC_SEARCH_HISTORY);
+	attachTextBox(IDC_BIND_ADDRESS);
+	attachTextBox(IDC_SOCKET_IN_BUFFER);
+	attachTextBox(IDC_SOCKET_OUT_BUFFER);
+	attachTextBox(IDC_MIN_SEGMENT_SIZE);
 }
 
 Advanced3Page::~Advanced3Page() {

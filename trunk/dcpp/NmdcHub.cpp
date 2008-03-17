@@ -578,12 +578,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			fire(ClientListener::UserUpdated(), this, u);
 		}
 	} else if(cmd == "$ForceMove") {
-		socket->disconnect(false);
+		disconnect(false);
 		fire(ClientListener::Redirect(), this, param);
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HubFull(), this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
-		socket->disconnect(false);
+		disconnect(false);
 		fire(ClientListener::NickTaken(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
@@ -690,10 +690,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(fromNick.empty())
 			return;
 
+		if(param.size() < j + 2) {
+			return;
+		}
+		string msg = param.substr(j + 2);
+
 		OnlineUser* replyTo = findUser(rtNick);
 		OnlineUser* from = findUser(fromNick);
 
-		string msg = param.substr(j + 2);
 		if(replyTo == NULL || from == NULL) {
 			if(replyTo == 0) {
 				// Assume it's from the hub
@@ -725,7 +729,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$BadPass") {
 		setPassword(Util::emptyString);
 	} else if(cmd == "$ZOn") {
-		socket->setMode(BufferedSocket::MODE_ZPIPE);
+		sock->setMode(BufferedSocket::MODE_ZPIPE);
 	} else {
 		dcassert(cmd[0] == '$');
 		dcdebug("NmdcHub::onLine Unknown command %s\n", aLine.c_str());
@@ -807,7 +811,6 @@ void NmdcHub::myInfo(bool alwaysSend) {
 
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
 	checkstate();
-	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
 	string tmp = ((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : fromUtf8(escape(aString)));
@@ -815,19 +818,19 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
 	}
-	int chars = 0;
 	size_t BUF_SIZE;
+	string tmp2;
 	if(ClientManager::getInstance()->isActive()) {
 		string x = getLocalIp();
 		BUF_SIZE = x.length() + aString.length() + 64;
-		buf = new char[BUF_SIZE];
-		chars = snprintf(buf, BUF_SIZE, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		tmp2.resize(BUF_SIZE);
+		tmp2.resize(snprintf(&tmp2[0], tmp2.size(), "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str()));
 	} else {
 		BUF_SIZE = getMyNick().length() + aString.length() + 64;
-		buf = new char[BUF_SIZE];
-		chars = snprintf(buf, BUF_SIZE, "$Search Hub:%s %c?%c?%s?%d?%s|", fromUtf8(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		tmp2.resize(BUF_SIZE);
+		tmp2.resize(snprintf(&tmp2[0], tmp2.size(), "$Search Hub:%s %c?%c?%s?%d?%s|", fromUtf8(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str()));
 	}
-	send(buf, chars);
+	send(tmp2);
 }
 
 string NmdcHub::validateMessage(string tmp, bool reverse) {

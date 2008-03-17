@@ -23,7 +23,6 @@
 
 #include <dcpp/ResourceManager.h>
 #include "WidgetFactory.h"
-#include "resource.h"
 
 class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
 {

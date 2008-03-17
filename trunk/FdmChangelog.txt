@@ -2,8 +2,8 @@ $$$ 0.01 $$$
 Added IP's to Main Chat and PM's
 Added Country Codes Main Chat and PM's
 Added a few python scripts (thanks fulDC)
-Added /find to search hubs for either Nick or Ip's
-Added /resolve to resolve IP's from a DNS, and the Domain name from Ip's
+Added /find to search hubs for either Nick or IP's
+Added /resolve to resolve IP's from a DNS, and the Domain name from IP's
 Added Autosearch
 Added Bandwidth Limiting (from BCDC++)
 Added Winamp spam (from BCDC++)

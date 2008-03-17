@@ -44,7 +44,6 @@ const string FdmSettingsManager::settingTags[] =
 	"MaxUploadSpeed", "MaxDownloadSpeedReal", "ThrottleEnabled",
 	"BandwidthLimitStart", "BandwidthLimitEnd", "TimeDependentThrottle", "MaxDownloadSpeedRealTime",
 	"MaxUploadSpeedTime", "EvilHiddenSetting", "YetAnotherEvilHiddenSetting",
-	"The_Ducklings_Are_Coming_Run_Run_Hide", "They_Are_Nasty_Fuckers_Are_They_Not",
 	"SENTRY",
 	// Int64
 	"aInt64",

@@ -165,12 +165,6 @@ BEGIN
                     UDS_ARROWKEYS | UDS_NOTHOUSANDS,72,129,11,12
     LTEXT           "Maximum Download Rate (KiB/s) (0 = infinite)",
                     IDC_TEXT_TIME_MAXDOWNLOAD,88,130,170,8
-    EDITTEXT        IDC_UPLOADSLOTS_TIME,14,146,53,14,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    CONTROL         "",IDC_UPLOADSLOTSSPIN_TIME,"msctls_updown32",
-                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
-                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,72,147,11,12
-    LTEXT           "Upload slots",IDC_TEXT_UPLOADSLOTSSPIN_TIME,88,147,170,8
 END
 
 IDD_AUTOSEARCH_PROPERTIES DIALOGEX 0, 0, 201, 263
@@ -214,10 +208,10 @@ BEGIN
     GROUPBOX        "",IDC_STATIC,7,7,229,102
     EDITTEXT        IDC_TTH,35,93,196,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     LTEXT           "TTH:",IDC_STATIC,13,93,18,12
-    GROUPBOX        "Greetz && Contributors",IDC_STATIC,7,112,229,82,BS_CENTER
-    GROUPBOX        "Latest version",IDC_STATIC,7,239,229,24,BS_CENTER
+    GROUPBOX        "Greetz and Contributors",IDC_GREETZ,7,112,229,82,BS_CENTER
+    GROUPBOX        "Latest stable version",IDC_LATEST_VERSION,7,239,229,24,BS_CENTER
     CTEXT           "0.xxx",IDC_LATEST,13,250,218,8
-    GROUPBOX        "Totals",IDC_STATIC,7,197,229,39,BS_CENTER
+    GROUPBOX        "Totals",IDC_TOTALS,7,197,229,39,BS_CENTER
     CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,208,218,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,221,218,8
     EDITTEXT        IDC_THANKS,13,122,218,66,ES_MULTILINE | ES_READONLY | WS_VSCROLL
@@ -591,6 +585,8 @@ BEGIN
     EDITTEXT        IDC_PORT_TCP,230,28,29,14,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "UDP",IDC_SETTINGS_PORT_UDP,209,48,16,8
     EDITTEXT        IDC_PORT_UDP,230,45,30,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "TLS",IDC_SETTINGS_PORT_TLS,209,64,21,8
+    EDITTEXT        IDC_PORT_TLS,230,61,30,14,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "External / WAN IP",IDC_SETTINGS_IP,59,59,68,8,NOT WS_GROUP
     EDITTEXT        IDC_EXTERNAL_IP,59,69,99,14,ES_AUTOHSCROLL
     CONTROL         "Don't allow hub/UPnP to override",IDC_OVERRIDE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,59,86,150,10
@@ -607,8 +603,6 @@ BEGIN
     EDITTEXT        IDC_SOCKS_PASSWORD,153,190,71,14,ES_AUTOHSCROLL
     CONTROL         "Use SOCKS5 server to resolve hostnames",IDC_SOCKS_RESOLVE,
                     "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,59,207,165,10
-    LTEXT           "TLS",IDC_SETTINGS_PORT_TLS,209,64,21,8
-    EDITTEXT        IDC_PORT_TLS,230,61,30,14,ES_AUTOHSCROLL | ES_NUMBER
 END
 
 IDD_WINDOWSPAGE DIALOGEX 100, 0, 275, 225
@@ -955,8 +949,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,7,0,4
- PRODUCTVERSION 0,7,0,4
+ FILEVERSION 0,7,0,5
+ PRODUCTVERSION 0,7,0,5
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -973,12 +967,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 7, 0, 4"
+            VALUE "FileVersion", "0, 7, 0, 5"
             VALUE "InternalName", "DC++"
-            VALUE "LegalCopyright", "Copyright 2001-2006 Jacek Sieka"
+            VALUE "LegalCopyright", "Copyright 2001-2008 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 7, 0, 4"
+            VALUE "ProductVersion", "0, 7, 0, 5"
         END
     END
     BLOCK "VarFileInfo"
@@ -1000,10 +994,10 @@ BEGIN
     "3",            IDC_VIEW_TRANSFER_VIEW,  VIRTKEY, CONTROL, NOINVERT
     "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
     "E",            IDC_REFRESH_FILE_LIST,  VIRTKEY, CONTROL, NOINVERT
-    "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
+    "F",            IDC_FAVORITE_HUBS,          VIRTKEY, CONTROL, NOINVERT
     "L",            IDC_OPEN_FILE_LIST,     VIRTKEY, CONTROL, NOINVERT
     "N",            IDC_NOTEPAD,            VIRTKEY, CONTROL, NOINVERT
-    "P",            IDC_CONNECT,        VIRTKEY, CONTROL, NOINVERT
+    "P",            IDC_PUBLIC_HUBS,        VIRTKEY, CONTROL, NOINVERT
     "Q",            IDC_QUICK_CONNECT,  VIRTKEY, CONTROL, NOINVERT
     "R",            IDC_RECONNECT,      VIRTKEY, CONTROL, NOINVERT
     "S",            IDC_SEARCH,         VIRTKEY, CONTROL, NOINVERT

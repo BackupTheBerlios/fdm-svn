@@ -103,17 +103,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
 	}
-	
-	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		chat = createTextBox(cs);
-		chat->setTextLimit(0);
-		addWidget(chat);
-		paned->setFirst(chat);
-		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
-	}
-	
+
 	{
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
@@ -133,7 +123,17 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		filterType->setSelectedIndex(COLUMN_LAST);
 		filterType->onSelectionChanged(std::tr1::bind(&HubFrame::updateUserList, this, (UserInfo*)0));
 	}
-	
+
+	{
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		chat = createTextBox(cs);
+		chat->setTextLimit(0);
+		addWidget(chat);
+		paned->setFirst(chat);
+		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
+	}
+
 	{
 		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::listView);
 		addWidget(users);
@@ -154,6 +154,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	
 	{
 		WidgetCheckBox::Seed cs(_T("+/-"));
+		cs.style &= ~WS_TABSTOP;
 		showUsers = createCheckBox(cs);
 		showUsers->setChecked(BOOLSETTING(GET_USER_INFO));
 	}
@@ -694,7 +695,7 @@ LRESULT HubFrame::handleMessageGetDlgCode() {
 
 bool HubFrame::handleMessageChar(int c) {
 	switch(c) {
-	case VK_TAB:
+	case VK_TAB: return true; break;
 	case VK_RETURN: {
 		if(!(isShiftPressed() || isControlPressed() || isAltPressed())) {
 			return true;
@@ -1305,7 +1306,8 @@ tstring HubFrame::scanNickPrefix(const tstring& prefixT) {
 
 bool HubFrame::tab() {
 	if(message->length() == 0) {
-		return false;
+		::SetFocus(::GetNextDlgTabItem(handle(), message->handle(), isShiftPressed()));
+		return true;
 	}
 
 	HWND focus = GetFocus();

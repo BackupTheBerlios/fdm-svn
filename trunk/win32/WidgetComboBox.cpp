@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 cologic, cologic@parsoma.net
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdinc.h"
-#include "DCPlusPlus.h"
+#include "stdafx.h"
 
-#include "Fdm.h"
+#include "WidgetComboBox.h"
 
-#include "FdmSettingsManager.h"
-#include "SettingsManager.h"
-
-namespace dcpp {
-
-void bcdcStartUpStuff() {
-	FdmSettingsManager::getInstance()->setDefault(FdmSettingsManager::WATCH_THE_DUCKLINGS_HOP_HOP_SKIP, SETTING(SLOTS));
-	FdmSettingsManager::getInstance()->setDefault(FdmSettingsManager::THE_DUCKLINGS_HATE_YOU_TOO, SETTING(SLOTS));
+WidgetComboBox::WidgetComboBox( SmartWin::Widget * parent ) : BaseType(parent), textBox(0) {
 }
 
-} // namespace dcpp
+WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {
+	if(!textBox) {
+		LONG_PTR style = ::GetWindowLongPtr(handle(), GWL_STYLE);
+		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
+			HWND wnd = ::FindWindowEx(handle(), NULL, _T("EDIT"), NULL);
+			if(wnd && wnd != handle())
+				textBox = SmartWin::WidgetCreator< WidgetTextBox >::attach(this, wnd);
+		}
+	}
+	return textBox;
+}

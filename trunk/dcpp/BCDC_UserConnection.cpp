@@ -25,15 +25,15 @@
 
 namespace dcpp {
 
-void UserConnection::setFlag(int aFlag) {
+void UserConnection::setFlag(MaskType aFlag) {
 	if(FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) == 1337 && FDMBOOLSETTING(THROTTLE_ENABLE)) {
 		if(aFlag == UserConnection::FLAG_UPLOAD) {
-			socket->setThreadPriority(Thread::LOW);
+//			socket->setThreadPriority(Thread::LOW);
 		} else if(aFlag == UserConnection::FLAG_DOWNLOAD) {
-			socket->setThreadPriority(Thread::NORMAL);
+//			socket->setThreadPriority(Thread::NORMAL);
 		}
 	}
-	dcpp::Flags::setFlag(aFlag);
+	this->dcpp::Flags::setFlag(aFlag);
 }
 
 } // namespace dcpp

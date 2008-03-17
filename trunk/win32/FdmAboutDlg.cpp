@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ static const char fdmThanks[] = "Big thanks to everyone mentioned by Arnetheduck
 "I hope I haven't missed someone, they're in roughly alphabetical order...=) : "
 "arnetheduck, Carraya, colognic, DanShUK, Farcry, Flow84, fusbar, GargoyleMT, iceman50, Lightgirl_xp, Paka, poy, PPK, ullner, robertone, sulan, TheParanoidOne, TheNOP, Trem. ";
 
-FdmAboutDlg::FdmAboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
+FdmAboutDlg::FdmAboutDlg(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&FdmAboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&FdmAboutDlg::handleSpeaker, this, _1, _2));
 }

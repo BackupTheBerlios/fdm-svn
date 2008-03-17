@@ -24,6 +24,8 @@
 
 #include <dcpp/FdmSettingsManager.h>
 
+#include "WinUtil.h"
+
 PropPage::FdmTextItem FdmAppearancePage::texts[] = {
 	{ IDC_FDM_SETTINGS_TEXT_COLOURING, ResourceManager::SETTINGS_APPEARANCE_TEXT_COLOURING },
 	{ IDC_FDM_SETTINGS_OP_SPOKE, ResourceManager::SETTINGS_APPEARANCE_OP_SPOKE },
@@ -73,6 +75,11 @@ FdmAppearancePage::FdmAppearancePage(SmartWin::Widget* parent) : PropPage(parent
 
 	button = attachButton(IDC_FDM_SETTINGS_MY_NICK_SPOKEN);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleMyNickSpoken, this));
+
+	::EnableWindow(GetDlgItem(handle(), IDC_FDM_SETTINGS_OP_SPOKE), false);
+	::EnableWindow(GetDlgItem(handle(), IDC_FDM_SETTINGS_NOT_OP_SPOKE), false);
+	::EnableWindow(GetDlgItem(handle(), IDC_FDM_SETTINGS_I_SPOKE), false);
+	::EnableWindow(GetDlgItem(handle(), IDC_FDM_SETTINGS_MY_NICK_SPOKEN), false);
 }
 
 FdmAppearancePage::~FdmAppearancePage() {

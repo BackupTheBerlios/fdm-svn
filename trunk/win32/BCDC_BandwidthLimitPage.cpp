@@ -34,7 +34,6 @@ PropPage::FdmTextItem BandwidthLimitPage::texts[] = {
 	{ IDC_TEXT_TIME_TRANSFER_LIMITING, ResourceManager::SETTINGS_BANDWIDTH_TEXT_TIME_TRANSFER_RATE_LIMITING },
 	{ IDC_TEXT_TIME_MAXUPLOAD, ResourceManager::SETTINGS_BANDWIDTH_TEXT_MAXUPLOAD },
 	{ IDC_TEXT_TIME_MAXDOWNLOAD, ResourceManager::SETTINGS_BANDWIDTH_TEXT_MAXDOWNLOAD },
-	{ IDC_TEXT_UPLOADSLOTSSPIN_TIME, ResourceManager::SETTINGS_BANDWIDTH_TEXT_UPLOAD_SLOTS },
 	{ 0, ResourceManager::FDM_SETTINGS_AUTO_AWAY }
 };
 
@@ -47,7 +46,6 @@ PropPage::FdmItem BandwidthLimitPage::items[] = {
 	{ IDC_MAXUPLOAD_TIME, FdmSettingsManager::MAX_UPLOAD_SPEED_TIME, PropPage::T_INT },
 	{ IDC_BW_START_TIME, FdmSettingsManager::BANDWIDTH_LIMIT_START, PropPage::T_INT },
 	{ IDC_BW_END_TIME, FdmSettingsManager::BANDWIDTH_LIMIT_END, PropPage::T_INT },
-	{ IDC_UPLOADSLOTS_TIME, FdmSettingsManager::WATCH_THE_DUCKLINGS_HOP_HOP_SKIP, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -74,9 +72,6 @@ BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(pare
 
 	spinner = attachSpinner(IDC_DOWNLOADSPEEDSPIN_TIME);
 	spinner->setRange(0, 999);
-
-	spinner = attachSpinner(IDC_UPLOADSLOTSSPIN_TIME);
-	spinner->setRange(1, 100);
 
 	WidgetComboBoxPtr times = attachComboBox(IDC_BW_START_TIME);
 	times->addValue(TSTRING(SETTINGS_BANDWIDTH_MIDNIGHT));
@@ -128,8 +123,6 @@ void BandwidthLimitPage::setControlState() {
 	::EnableWindow(GetDlgItem(handle(), IDC_UPLOADSPEEDSPIN_TIME), stateEnabled && stateTime);
 	::EnableWindow(GetDlgItem(handle(), IDC_MAXDOWNLOAD_TIME), stateEnabled && stateTime);
 	::EnableWindow(GetDlgItem(handle(), IDC_DOWNLOADSPEEDSPIN_TIME), stateEnabled && stateTime);
-	::EnableWindow(GetDlgItem(handle(), IDC_UPLOADSLOTS_TIME), stateEnabled && stateTime);
-	::EnableWindow(GetDlgItem(handle(), IDC_UPLOADSLOTSSPIN_TIME), stateEnabled && stateTime);
 }
 
 void BandwidthLimitPage::write()
@@ -142,5 +135,4 @@ void BandwidthLimitPage::write()
 	FdmSettingsManager* settings = FdmSettingsManager::getInstance();
 
 	if (FDMSETTING(MAX_DOWNLOAD_SPEED_REAL) < 0) settings->set(FdmSettingsManager::MAX_DOWNLOAD_SPEED_REAL, 0);
-	if (FDMSETTING(WATCH_THE_DUCKLINGS_HOP_HOP_SKIP) < 1) settings->set(FdmSettingsManager::WATCH_THE_DUCKLINGS_HOP_HOP_SKIP, 1);
 }

@@ -19,9 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 #define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 
-#include "WinUtil.h"
-
-/** Our own flavour of text boxes that handle double clicks */
+/** Our own flavour of text boxes that handle double clicks and have fancy menus */
 class WidgetTextBox : public SmartWin::WidgetTextBox {
 private:
 	typedef SmartWin::WidgetTextBox BaseType;
@@ -30,14 +28,16 @@ public:
 	
 	typedef ThisType* ObjectType;
 
-	explicit WidgetTextBox( SmartWin::Widget * parent ) : BaseType(parent) {
-		this->onLeftMouseDblClick(std::tr1::bind(&WidgetTextBox::handleLeftDblClick, this, _1));
-	}
+	explicit WidgetTextBox( SmartWin::Widget * parent );
 
 private:
-	void handleLeftDblClick(const SmartWin::MouseEventResult& ev) {
-		WinUtil::parseDBLClick(textUnderCursor(ev.pos));
-	}
+	void handleLeftDblClick(const SmartWin::MouseEventResult& ev);
+
+	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
+	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);
+
+	SmartWin::WidgetMenu::ObjectType menu;
+	bool menuOpened;
 };
 
 #endif /*WIDGETTEXTBOX_H_*/

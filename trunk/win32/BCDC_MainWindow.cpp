@@ -36,8 +36,6 @@ void MainWindow::bcdcThrottleSetup() {
 	time(&currentTime);
 	int currentHour = localtime(&currentTime)->tm_hour;
 
-	int currentSlots = SETTING(SLOTS);		//note current slots. if we change that in the transition send a myinfo.
-
 	if (FDMSETTING(TIME_DEPENDENT_THROTTLE) &&
 			((FDMSETTING(BANDWIDTH_LIMIT_START) < FDMSETTING(BANDWIDTH_LIMIT_END) &&
 			currentHour >= FDMSETTING(BANDWIDTH_LIMIT_START) && currentHour < FDMSETTING(BANDWIDTH_LIMIT_END)) ||
@@ -47,13 +45,8 @@ void MainWindow::bcdcThrottleSetup() {
 		//want to keep this out of the upload limiting code proper, where it might otherwise work more naturally
 		FdmSettingsManager::getInstance()->set(FdmSettingsManager::MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO, FDMSETTING(MAX_UPLOAD_SPEED_TIME));
 		FdmSettingsManager::getInstance()->set(FdmSettingsManager::MAX_DOWNLOAD_SPEED_REAL_A_PARALLEL_LEVEL_OF_HOPEFULLY_USEFUL_INDIRECTION_IN_AN_ABSURDLY_LONG_IDENTIFIER, FDMSETTING(MAX_DOWNLOAD_SPEED_REAL_TIME));
-		SettingsManager::getInstance()->set(SettingsManager::SLOTS, FDMSETTING(WATCH_THE_DUCKLINGS_HOP_HOP_SKIP));
 	} else {
 		FdmSettingsManager::getInstance()->set(FdmSettingsManager::MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO, FDMSETTING(MAX_UPLOAD_SPEED));
 		FdmSettingsManager::getInstance()->set(FdmSettingsManager::MAX_DOWNLOAD_SPEED_REAL_A_PARALLEL_LEVEL_OF_HOPEFULLY_USEFUL_INDIRECTION_IN_AN_ABSURDLY_LONG_IDENTIFIER, FDMSETTING(MAX_DOWNLOAD_SPEED_REAL));
-		SettingsManager::getInstance()->set(SettingsManager::SLOTS, FDMSETTING(THE_DUCKLINGS_HATE_YOU_TOO));
 	}
-
-	if(SETTING(SLOTS) != currentSlots)
-		ClientManager::getInstance()->infoUpdated();
 }

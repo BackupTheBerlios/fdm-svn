@@ -24,7 +24,6 @@ namespace dcpp {
 extern void startUpFdm();
 extern void shutDownFdm();
 
-void bcdcStartUpStuff();
 } // namespace dcpp
 
 #endif // #ifndef FDM_H

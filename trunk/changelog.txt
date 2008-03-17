@@ -1,4 +1,4 @@
-﻿-- 0.705 --
+﻿-- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
 * Improve segmented download implementation
 * Fix search request ip when using multiple ip's (thanks stanislav maslovski)
@@ -37,6 +37,12 @@
 * Don't always show the tray icon after killing and re-opening explorer.exe (poy)
 * Updated links (thanks pietry)
 * Fixed clicking on active tab (poy)
+* [L#195209] Fixed tabbing in hub windows (poy)
+* [L#195209] Fixed Ctrl+F that opens favorite hubs (poy)
+* [L#194696] Fixed small memory leak
+* Some unix compile fixes (thanks pavel andreev and yakov suraev)
+* [L#199192] [NMDC] Fixed crash on empty private message
+* [L#198416] Fixed crash when closing the download queue (poy)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

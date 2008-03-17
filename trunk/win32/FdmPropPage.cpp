@@ -69,8 +69,9 @@ void PropPage::fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems /
 
 		LVITEM lvi = { LVIF_TEXT };
 		for(int i = 0; listItems[i].setting != 0; i++) {
+			tstring str = TSTRING_I(listItems[i].desc);
 			lvi.iItem = i;
-			lvi.pszText = const_cast<TCHAR*>(CTSTRING_I(listItems[i].desc));
+			lvi.pszText = const_cast<TCHAR*>(str.c_str());
 			ListView_InsertItem(list, &lvi);
 			ListView_SetCheckState(list, i, settings->getBool(FdmSettingsManager::IntSetting(listItems[i].setting), true));
 		}
@@ -85,22 +86,24 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 	
 	FdmSettingsManager* settings = FdmSettingsManager::getInstance();
 
-	AutoArray<TCHAR> buf(SETTINGS_BUF_LEN);
+	tstring buf;
 	for(FdmItem const* i = items; i->type != T_END; i++)
 	{
 		switch(i->type)
 		{
 		case T_STR:
 			{
-				::GetDlgItemText(page, i->itemID, buf, SETTINGS_BUF_LEN);
-				settings->set((FdmSettingsManager::StrSetting)i->setting, Text::fromT(tstring(buf)));
+				buf.resize(SETTINGS_BUF_LEN);
+				buf.resize(::GetDlgItemText(page, i->itemID, &buf[0], buf.size()));
+				settings->set((FdmSettingsManager::StrSetting)i->setting, Text::fromT(buf));
 
 				break;
 			}
 		case T_INT:
 			{
-				::GetDlgItemText(page, i->itemID, buf, SETTINGS_BUF_LEN);
-				settings->set((FdmSettingsManager::IntSetting)i->setting, Text::fromT(tstring(buf)));
+				buf.resize(SETTINGS_BUF_LEN);
+				buf.resize(::GetDlgItemText(page, i->itemID, &buf[0], buf.size()));
+				settings->set((FdmSettingsManager::IntSetting)i->setting, Text::fromT(buf));
 				break;
 			}
 		case T_BOOL:
@@ -115,7 +118,7 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 		}
 	}
 
-	if(listItems != NULL) {
+	if(listItems) {
 		int i;
 		for(i = 0; listItems[i].setting != 0; i++) {
 			settings->set(FdmSettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
