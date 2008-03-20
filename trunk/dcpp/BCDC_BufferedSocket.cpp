@@ -21,7 +21,6 @@
 
 #include "BufferedSocket.h"
 
-#include "FdmSettingsManager.h"
 #include "TimerManager.h"
 
 namespace dcpp {
