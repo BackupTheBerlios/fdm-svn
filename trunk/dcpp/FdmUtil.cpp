@@ -21,7 +21,7 @@
 
 #include "FdmUtil.h"
 
-#include "FdmSettingsManager.h"
+#include "SettingsManager.h"
 #include "FdmVersion.h"
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
@@ -69,7 +69,7 @@ string FdmUtil::toString(bool aBool) {
 
 string FdmUtil::addFdmDes(string aCurDes) {
 	string answer = (aCurDes + "<" FDMAPPNAME " " FDMVERSIONSTRING);
-	answer += FDMBOOLSETTING(THROTTLE_ENABLE) && FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) ? (" B:" + Util::toString(FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)) + ">") : ">";
+	answer += BOOLSETTING(THROTTLE_ENABLE) && SETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO) ? (" B:" + Util::toString(SETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)) + ">") : ">";
 	return answer;
 }
 

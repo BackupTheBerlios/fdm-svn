@@ -55,8 +55,8 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		addWidget(items);
 
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
-		items->setColumnOrder(WinUtil::splitTokens(FDMSETTING(AUTO_SEARCH_FRAME_ORDER), columnIndexes));
-		items->setColumnWidths(WinUtil::splitTokens(FDMSETTING(AUTO_SEARCH_FRAME_WIDTHS), columnSizes));
+		items->setColumnOrder(WinUtil::splitTokens(SETTING(AUTO_SEARCH_FRAME_ORDER), columnIndexes));
+		items->setColumnWidths(WinUtil::splitTokens(SETTING(AUTO_SEARCH_FRAME_WIDTHS), columnSizes));
 		items->setColor(WinUtil::textColor, WinUtil::bgColor);
 
 		items->onDblClicked(std::tr1::bind(&AutoSearchFrame::handleDoubleClick, this));
@@ -151,8 +151,8 @@ bool AutoSearchFrame::preClosing() {
 }
 
 void AutoSearchFrame::postClosing() {
-	FdmSettingsManager::getInstance()->set(FdmSettingsManager::AUTO_SEARCH_FRAME_ORDER, WinUtil::toString(items->getColumnOrder()));
-	FdmSettingsManager::getInstance()->set(FdmSettingsManager::AUTO_SEARCH_FRAME_WIDTHS, WinUtil::toString(items->getColumnWidths()));
+	SettingsManager::getInstance()->set(SettingsManager::AUTO_SEARCH_FRAME_ORDER, WinUtil::toString(items->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::AUTO_SEARCH_FRAME_WIDTHS, WinUtil::toString(items->getColumnWidths()));
 }
 
 void AutoSearchFrame::handleAdd() {

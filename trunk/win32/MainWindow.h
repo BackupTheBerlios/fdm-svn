@@ -155,22 +155,21 @@ private:
 	void handleLink(unsigned id);
 	void handleAbout();
 	void handleFdmAbout();
-	void handleMenuHelp(unsigned id);
+	void handleHelp(unsigned id);
 	void handleHashProgress();
 	void handleCloseWindows(unsigned id);
 	void handleSize();
 	void handleActivate(bool active);
-	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
-	LRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
-	LRESULT handleTrayIcon(WPARAM wParam, LPARAM lParam);
+	LRESULT handleEndSession();
+	LRESULT handleTrayIcon(LPARAM lParam);
 	
 	// Other events
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
 	
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	LRESULT handleTrayMessage();
-	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
-	LRESULT handleWhereAreYou(WPARAM wParam, LPARAM lParam);
+	LRESULT handleCopyData(LPARAM lParam);
+	LRESULT handleWhereAreYou();
 
 	void handleTabsTitleChanged(const SmartUtil::tstring& title);
 	

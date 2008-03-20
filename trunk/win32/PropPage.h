@@ -72,8 +72,6 @@ protected:
 	void fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);
 	void fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);
 	void fdmTranslate(HWND page, FdmTextItem* textItems);
-	
-	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 };
 
 #endif // !defined(PROP_PAGE_H)

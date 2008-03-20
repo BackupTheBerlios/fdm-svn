@@ -22,7 +22,7 @@
 
 #include "resource.h"
 
-#include <dcpp/FdmSettingsManager.h>
+#include <dcpp/SettingsManager.h>
 #include <dcpp/FdmUtil.h>
 #include <dcpp/FdmVersion.h>
 #include <dcpp/ClientManager.h>
@@ -104,9 +104,9 @@ string MoreWinUtil::findNickInString(const string aLine) {
 
 void MoreWinUtil::addCountryIPToString(string& aLine, string ip) {
 	if (ip != "") {
-		if (FDMSETTING(SHOW_IPS_IN_CHAT))
+		if (SETTING(SHOW_IPS_IN_CHAT))
 			aLine = "[ " + ip + " ] " + aLine;
-		if (FDMSETTING(SHOW_CC_IN_CHAT))
+		if (SETTING(SHOW_CC_IN_CHAT))
 			aLine = "[ " + Util::getIpCountry(ip) + " ] " + aLine;
 	}
 }
@@ -117,10 +117,10 @@ void MoreWinUtil::addCountryIPToString(string& aLine, string ip) {
 //}
 
 /*void MoreWinUtil::initilize() {
-	StaticWindowsSettings::opSpoken			= FDMSETTING(OP_SPOKE_COLOUR);
-	StaticWindowsSettings::notOpSpoken		= FDMSETTING(NOT_OP_SPOKE_COLOUR);
-	StaticWindowsSettings::iSpoke			= FDMSETTING(I_SPOKE_COLOUR);
-	StaticWindowsSettings::myNickSpoken		= FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+	StaticWindowsSettings::opSpoken			= SETTING(OP_SPOKE_COLOUR);
+	StaticWindowsSettings::notOpSpoken		= SETTING(NOT_OP_SPOKE_COLOUR);
+	StaticWindowsSettings::iSpoke			= SETTING(I_SPOKE_COLOUR);
+	StaticWindowsSettings::myNickSpoken		= SETTING(MY_NICK_SPOKEN_COLOUR);
 }*/
 /*
 COLORREF StaticWindowsSettings::opSpoken			= 0;

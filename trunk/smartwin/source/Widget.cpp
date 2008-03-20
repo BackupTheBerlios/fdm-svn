@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -38,12 +37,11 @@
 #pragma warning( disable : 4311 )
 #endif
 
-#include "../include/smartwin/Threads.h"
 #include "../include/smartwin/Widget.h"
+
+#include "../include/smartwin/Threads.h"
 #include "../include/smartwin/Application.h"
-#include "../include/smartwin/BasicTypes.h"
 #include "../include/smartwin/xCeption.h"
-#include "../include/smartwin/WindowsHeaders.h"
 
 namespace SmartWin
 {
@@ -92,7 +90,7 @@ void Widget::create( const Seed & cs )
 		cs.className,
 		cs.caption.c_str(),
 		cs.style,
-		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
+		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		itsParent ? itsParent->handle() : 0,
 		cs.menuHandle,
 		Application::instance().getAppHandle(),

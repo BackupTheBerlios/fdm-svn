@@ -21,7 +21,6 @@
 
 #include "UploadManager.h"
 
-#include "FdmSettingsManager.h"
 #include "SettingsManager.h"
 
 namespace dcpp {
@@ -68,8 +67,8 @@ void UploadManager::throttleSetup() {
 // from the constructor to BufferedSocket
 	size_t INBUFSIZE = SETTING(SOCKET_OUT_BUFFER);
 	unsigned int num_transfers = getUploadCount();
-	mUploadLimit = FDMSETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)*1024;
-	mThrottleEnable = FDMBOOLSETTING(THROTTLE_ENABLE) && (mUploadLimit > 0 && mUploadLimit != 1337) && (num_transfers > 0);
+	mUploadLimit = SETTING(MAX_UPLOAD_SPEED_YAY_ANOTHER_LEVEL_OF_INDIRECTION_GO_GO_GO)*1024;
+	mThrottleEnable = BOOLSETTING(THROTTLE_ENABLE) && (mUploadLimit > 0 && mUploadLimit != 1337) && (num_transfers > 0);
 	if (mThrottleEnable) {
 		if (mUploadLimit <= (INBUFSIZE * 10 * num_transfers)) {
 			mByteSlice = mUploadLimit / (5 * num_transfers);

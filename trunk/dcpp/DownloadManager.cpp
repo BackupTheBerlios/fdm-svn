@@ -466,7 +466,6 @@ void DownloadManager::removeDownload(Download* d) {
 		dcassert(find(downloads.begin(), downloads.end(), d) != downloads.end());
 
 		downloads.erase(remove(downloads.begin(), downloads.end(), d), downloads.end());
-		throttleSetup();
 	}
 }
 

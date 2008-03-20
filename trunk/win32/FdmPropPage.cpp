@@ -22,13 +22,13 @@
 
 #include "PropPage.h"
 
-#include <dcpp/FdmSettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 void PropPage::fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems /* = NULL */, HWND list /* = 0 */)
 {
 	dcassert(page != NULL);
 
-	FdmSettingsManager* settings = FdmSettingsManager::getInstance();
+	SettingsManager* settings = SettingsManager::getInstance();
 	
 	bool const useDef = true;
 	for(FdmItem const* i = items; i->type != T_END; i++)
@@ -38,17 +38,17 @@ void PropPage::fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems /
 		case T_STR:
 			if(!settings->isDefault(i->setting)) {
 				::SetDlgItemText(page, i->itemID,
-					Text::toT(settings->get((FdmSettingsManager::StrSetting)i->setting, useDef)).c_str());
+					Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
 			}
 			break;
 		case T_INT:
 			if(!settings->isDefault(i->setting)) {
 				::SetDlgItemInt(page, i->itemID,
-					settings->get((FdmSettingsManager::IntSetting)i->setting, useDef), FALSE);
+					settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
 			}
 			break;
 		case T_BOOL:
-			if(settings->getBool((FdmSettingsManager::IntSetting)i->setting, useDef))
+			if(settings->getBool((SettingsManager::IntSetting)i->setting, useDef))
 				::CheckDlgButton(page, i->itemID, BST_CHECKED);
 			else
 				::CheckDlgButton(page, i->itemID, BST_UNCHECKED);
@@ -73,7 +73,7 @@ void PropPage::fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems /
 			lvi.iItem = i;
 			lvi.pszText = const_cast<TCHAR*>(str.c_str());
 			ListView_InsertItem(list, &lvi);
-			ListView_SetCheckState(list, i, settings->getBool(FdmSettingsManager::IntSetting(listItems[i].setting), true));
+			ListView_SetCheckState(list, i, settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
 		}
 
 		ListView_SetColumnWidth(list, 0, LVSCW_AUTOSIZE);
@@ -84,7 +84,7 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 {
 	dcassert(page != NULL);
 	
-	FdmSettingsManager* settings = FdmSettingsManager::getInstance();
+	SettingsManager* settings = SettingsManager::getInstance();
 
 	tstring buf;
 	for(FdmItem const* i = items; i->type != T_END; i++)
@@ -95,7 +95,7 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 			{
 				buf.resize(SETTINGS_BUF_LEN);
 				buf.resize(::GetDlgItemText(page, i->itemID, &buf[0], buf.size()));
-				settings->set((FdmSettingsManager::StrSetting)i->setting, Text::fromT(buf));
+				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(buf));
 
 				break;
 			}
@@ -103,15 +103,15 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 			{
 				buf.resize(SETTINGS_BUF_LEN);
 				buf.resize(::GetDlgItemText(page, i->itemID, &buf[0], buf.size()));
-				settings->set((FdmSettingsManager::IntSetting)i->setting, Text::fromT(buf));
+				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(buf));
 				break;
 			}
 		case T_BOOL:
 			{
 				if(::IsDlgButtonChecked(page, i->itemID) == BST_CHECKED)
-					settings->set((FdmSettingsManager::IntSetting)i->setting, true);
+					settings->set((SettingsManager::IntSetting)i->setting, true);
 				else
-					settings->set((FdmSettingsManager::IntSetting)i->setting, false);
+					settings->set((SettingsManager::IntSetting)i->setting, false);
 			}
 		case T_CUSTOM: ;
 		case T_END: ;
@@ -121,7 +121,7 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 	if(listItems) {
 		int i;
 		for(i = 0; listItems[i].setting != 0; i++) {
-			settings->set(FdmSettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
+			settings->set(SettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
 		}
 	}
 }

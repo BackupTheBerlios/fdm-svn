@@ -56,7 +56,7 @@ void BufferedSocket::bcdcThreadRead2(int left, DownloadManager *dm, size_t reads
 }
 
 void BufferedSocket::bcdcThreadSendFile(size_t& writeSize, size_t sockSize, size_t writePos, UploadManager *um, bool& throttling, size_t& start, size_t& sendMaximum) {
-	throttling = FDMBOOLSETTING(THROTTLE_ENABLE);
+	throttling = BOOLSETTING(THROTTLE_ENABLE);
 	if(throttling) {
 		start = TimerManager::getTick();
 		sendMaximum = um->throttleGetSlice();

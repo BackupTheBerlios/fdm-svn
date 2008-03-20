@@ -461,7 +461,7 @@ int Socket::wait(uint32_t millis, int waitFor) throw(SocketException) {
 	timeval tv;
 	fd_set rfd, wfd, efd;
 	fd_set *rfdp = NULL, *wfdp = NULL;
-	millis *=5;
+	millis *= 5;
 	tv.tv_sec = millis/1000;
 	tv.tv_usec = (millis%1000)*1000;
 

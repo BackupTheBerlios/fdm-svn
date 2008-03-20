@@ -19,7 +19,7 @@
 #include "stdafx.h"
 
 #include "FdmMoreWinUtil.h"
-#include <dcpp/FdmSettingsManager.h>
+#include <dcpp/SettingsManager.h>
 #include <dcpp/Util.h>
 
 #include "../Other-Projects/Nullsoft/Winamp.h"
@@ -84,7 +84,7 @@ void MoreWinUtil::winampSpam(tstring param, tstring& message, tstring& status) {
 		params["percent"] = Util::toString(intPercent) + "%";
 		params["elapsed"] = Util::formatSeconds(curPos);
 		params["length"] = Util::formatSeconds(length);
-		message = Text::toT(Util::formatParams(FDMSETTING(WINAMP_FORMAT), params, false));
+		message = Text::toT(Util::formatParams(SETTING(WINAMP_FORMAT), params, false));
 		if (!param.empty())
 			message += _T(" " + param);
 	} else {

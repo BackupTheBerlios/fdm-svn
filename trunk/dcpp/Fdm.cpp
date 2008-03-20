@@ -22,29 +22,21 @@
 #include "Fdm.h"
 
 #include "ResourceManager.h"
-#include "FdmSettingsManager.h"
 #include "FdmAutoSearch.h"
 
 namespace dcpp {
 
 void startUpFdm() {
 //	ResourceManager::newInstance();
-	FdmSettingsManager::newInstance();
+	if(!SETTING(FDM_LANGUAGE_FILE).empty())
+		ResourceManager::getInstance()->loadLanguage(SETTING(FDM_LANGUAGE_FILE));
 
-	FdmSettingsManager::getInstance()->load();
-
-	if(!FDMSETTING(FDM_LANGUAGE_FILE).empty())
-		ResourceManager::getInstance()->loadLanguage(FDMSETTING(FDM_LANGUAGE_FILE));
-
-//	AutoSearchManager::newInstance();
+	AutoSearchManager::newInstance();
 }
 
 void shutDownFdm() {
-//	AutoSearchManager::deleteInstance();
+	AutoSearchManager::deleteInstance();
 
-	FdmSettingsManager::getInstance()->save();
-
-	FdmSettingsManager::deleteInstance();
 //	ResourceManager::deleteInstance();
 }
 

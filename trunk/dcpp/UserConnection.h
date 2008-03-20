@@ -166,8 +166,6 @@ public:
 	GETSET(string, encoding, Encoding);
 	GETSET(States, state, State);
 	GETSET(uint64_t, lastActivity, LastActivity);
-
-	void setFlag(int aFlag);
 private:
 	BufferedSocket* socket;
 	bool secure;

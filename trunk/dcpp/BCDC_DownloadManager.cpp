@@ -21,7 +21,6 @@
 
 #include "DownloadManager.h"
 
-#include "FdmSettingsManager.h"
 #include "SettingsManager.h"
 
 namespace dcpp {
@@ -75,8 +74,8 @@ void DownloadManager::throttleSetup() {
 // with 64k, a few people get winsock error 0x2747
 #define INBUFSIZE 64*1024
 	unsigned int num_transfers = getDownloadCount();
-	mDownloadLimit = FDMSETTING(MAX_DOWNLOAD_SPEED_REAL_A_PARALLEL_LEVEL_OF_HOPEFULLY_USEFUL_INDIRECTION_IN_AN_ABSURDLY_LONG_IDENTIFIER)*1024;
-	mThrottleEnable = FDMBOOLSETTING(THROTTLE_ENABLE) && (mDownloadLimit > 0) && (num_transfers > 0);
+	mDownloadLimit = SETTING(MAX_DOWNLOAD_SPEED_REAL_A_PARALLEL_LEVEL_OF_HOPEFULLY_USEFUL_INDIRECTION_IN_AN_ABSURDLY_LONG_IDENTIFIER)*1024;
+	mThrottleEnable = BOOLSETTING(THROTTLE_ENABLE) && (mDownloadLimit > 0) && (num_transfers > 0);
 	if (mThrottleEnable) {
 		if (mDownloadLimit <= (INBUFSIZE * 10 * num_transfers)) {
 			mByteSlice = mDownloadLimit / (7 * num_transfers);

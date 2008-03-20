@@ -47,6 +47,9 @@ const string SettingsManager::settingTags[] =
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
 	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath", "BeepFile",
 	"Language", "DownloadsOrder", "DownloadsWidth",
+
+
+	"FdmLanguageFileLocation", "AutoSearchFrameOrder", "AutoSearchFrameWidths", "WinampFormat", 
 	"SENTRY",
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "AutoFollow", "ClearSearch",
@@ -78,6 +81,14 @@ const string SettingsManager::settingTags[] =
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
 	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu", "MinSegmentSize", "FollowLinks",
 	"SendBloom", "OwnerDrawnMenus", "Coral",
+
+
+	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour", "IpInChats", "CCInChats",
+
+	// BCDC++
+	"MaxUploadSpeed", "MaxDownloadSpeedReal", "ThrottleEnabled",
+	"BandwidthLimitStart", "BandwidthLimitEnd", "TimeDependentThrottle", "MaxDownloadSpeedRealTime",
+	"MaxUploadSpeedTime", "EvilHiddenSetting", "YetAnotherEvilHiddenSetting",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -286,6 +297,24 @@ SettingsManager::SettingsManager()
 	setDefault(DOWNLOAD_BAR_COLOR, RGB(55, 170, 85));
 
 #endif
+
+	// FDM
+	setDefault(FDM_LANGUAGE_FILE, "testing");
+	setDefault(OP_SPOKE_COLOUR, 16711680);
+	setDefault(NOT_OP_SPOKE_COLOUR, 128);
+	setDefault(I_SPOKE_COLOUR, 255);
+	setDefault(MY_NICK_SPOKEN_COLOUR, 32768);
+	setDefault(WINAMP_FORMAT, "winamp(%[version]) %[state] (%[title]) stats(%[percent] of %[length])");
+	setDefault(SHOW_IPS_IN_CHAT, true);
+	setDefault(SHOW_CC_IN_CHAT, true);
+
+	// BCDC++
+	setDefault(THROTTLE_ENABLE, false);
+	setDefault(TIME_DEPENDENT_THROTTLE, false);
+	setDefault(MAX_DOWNLOAD_SPEED_REAL_TIME, 0);
+	setDefault(MAX_UPLOAD_SPEED_TIME, 0);
+	setDefault(BANDWIDTH_LIMIT_START, 0);
+	setDefault(BANDWIDTH_LIMIT_END, 0);
 }
 
 void SettingsManager::load(string const& aFileName)

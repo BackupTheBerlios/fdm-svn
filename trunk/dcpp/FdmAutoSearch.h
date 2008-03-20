@@ -28,7 +28,6 @@
 
 #include "Util.h"
 
-#include "FdmSettingsManager.h"
 #include "ResourceManager.h"
 #include "SearchManager.h"
 #include "ADLSearch.h"

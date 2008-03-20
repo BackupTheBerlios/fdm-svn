@@ -24,7 +24,6 @@
 #include "HoldRedraw.h"
 
 #include "FdmMoreWinUtil.h"
-#include <dcpp/FdmSettingsManager.h>
 
 #include <dcpp/ClientManager.h>
 #include <dcpp/Client.h>
@@ -217,17 +216,17 @@ void HubFrame::layout() {
 	mapWidget(STATUS_SHOW_USERS, showUsers);
 	
 	int ymessage = message->getTextSize(_T("A")).y + 10;
-	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
+	int xfilter = showUsers->getChecked() ? std::min(r.width() / 4, 200l) : 0;
+	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.width() - xfilter, ymessage);
 	message->setBounds(rm);
 
 	r.size.y -= rm.size.y + border;
 	
-	rm.pos.x += rm.size.x + border;
+	rm.pos.x += rm.width() + border;
 	rm.size.x = showUsers->getChecked() ? xfilter * 2 / 3 - border : 0;
 	filter->setBounds(rm);
 	
-	rm.pos.x += rm.size.x + border;
+	rm.pos.x += rm.width() + border;
 	rm.size.x = showUsers->getChecked() ? xfilter / 3 - border : 0;
 	rm.size.y += 140;
 	filterType->setBounds(rm);
@@ -509,7 +508,7 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			setTabColor(RED);
 #endif
 		} else if(i->first == ADD_CHAT_LINE) {
-			if (FDMSETTING(SHOW_IPS_IN_CHAT) || FDMSETTING(SHOW_CC_IN_CHAT)) {
+			if (SETTING(SHOW_IPS_IN_CHAT) || SETTING(SHOW_CC_IN_CHAT)) {
 				UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(static_cast<StringTask*>(i->second)->str)));
 				if (ui) MoreWinUtil::addCountryIPToString(static_cast<StringTask*>(i->second)->str, ui->getIdentity().getIp());
 			}
@@ -543,7 +542,7 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			}
 		} else if(i->first == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(i->second);
-			if (FDMSETTING(SHOW_IPS_IN_CHAT) || FDMSETTING(SHOW_CC_IN_CHAT)) {
+			if (SETTING(SHOW_IPS_IN_CHAT) || SETTING(SHOW_CC_IN_CHAT)) {
 				UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(pm.str)));
 				if (ui) MoreWinUtil::addCountryIPToString(pm.str, ui->getIdentity().getIp());
 			}

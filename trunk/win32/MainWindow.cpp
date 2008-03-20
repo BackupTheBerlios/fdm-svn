@@ -87,8 +87,8 @@ MainWindow::MainWindow() :
 	onActivate(std::tr1::bind(&MainWindow::handleActivate, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&MainWindow::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
-	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _1, _2), SmartWin::Message(WM_APP + 242));
+	onHelp(std::tr1::bind(&MainWindow::handleHelp, this, IDC_HELP_CONTENTS));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _2), SmartWin::Message(WM_APP + 242));
 	
 	updateStatus();
 	layout();
@@ -99,8 +99,9 @@ MainWindow::MainWindow() :
 	onClosing(std::tr1::bind(&MainWindow::closing, this));
 
 	onRaw(std::tr1::bind(&MainWindow::handleTrayMessage, this), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
-	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
-	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this, _1, _2), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
+	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this), SmartWin::Message(WM_ENDSESSION));
+	onRaw(std::tr1::bind(&MainWindow::handleCopyData, this, _2), SmartWin::Message(WM_COPYDATA));
+	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
 	
 	TimerManager::getInstance()->start();
 
@@ -129,7 +130,7 @@ MainWindow::MainWindow() :
 	speak(PARSE_COMMAND_LINE);
 
 	if(SETTING(NICK).empty()) {
-		::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
+		handleHelp(IDD_GENERALPAGE);
 		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
 	
@@ -239,9 +240,9 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
-		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleHelp, this, _1));
 		help->appendSeparatorItem();
-		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleHelp, this, _1));
 		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
@@ -550,7 +551,7 @@ void MainWindow::layout() {
 	paned->setRect(r);
 }
 
-LRESULT MainWindow::handleWhereAreYou(WPARAM, LPARAM) {
+LRESULT MainWindow::handleWhereAreYou() {
 	return SingleInstance::WMU_WHERE_ARE_YOU;
 }
 
@@ -832,10 +833,9 @@ void MainWindow::parseCommandLine(const tstring& cmdLine)
 	}
 }
 
-LRESULT MainWindow::handleCopyData(WPARAM /*wParam*/, LPARAM lParam) {
-	tstring cmdLine = (LPCTSTR) (((COPYDATASTRUCT *)lParam)->lpData);
-	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + cmdLine);
-	return true;
+LRESULT MainWindow::handleCopyData(LPARAM lParam) {
+	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + reinterpret_cast<LPCTSTR>(reinterpret_cast<COPYDATASTRUCT*>(lParam)->lpData));
+	return TRUE;
 }
 
 void MainWindow::handleHashProgress() {
@@ -924,17 +924,12 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 	}
 }
 
-LRESULT MainWindow::handleHelp(WPARAM wParam, LPARAM lParam) {
-	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_DISPLAY_TOC, NULL);
-	return 0;
-}
-
-void MainWindow::handleMenuHelp(unsigned id) {
+void MainWindow::handleHelp(unsigned id) {
 	UINT action = (id == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
 	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
 }
 
-LRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
+LRESULT MainWindow::handleEndSession() {
 	if (c != NULL) {
 		c->removeListener(this);
 		delete c;
@@ -992,6 +987,7 @@ void MainWindow::handleRefreshFileList() {
 }
 
 void MainWindow::handleRestore() {
+	setVisible(true);
 	if(maximized) {
 		maximize();
 	} else {
@@ -1007,7 +1003,7 @@ bool MainWindow::tryFire(const MSG& msg, LRESULT& retVal) {
 	return handled;
 }
 
-LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
+LRESULT MainWindow::handleTrayIcon(LPARAM lParam)
 {
 	if (lParam == WM_LBUTTONUP) {
 		handleRestore();

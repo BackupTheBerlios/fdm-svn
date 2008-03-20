@@ -29,7 +29,7 @@
 #define WidgetWindowBase_h
 
 #include "../Application.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../Policies.h"
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectBorder.h"
@@ -40,6 +40,7 @@
 #include "../aspects/AspectEraseBackground.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
+#include "../aspects/AspectHelp.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouse.h"
 #include "../aspects/AspectPainting.h"
@@ -93,6 +94,7 @@ class WidgetWindowBase :
 	public AspectEraseBackground< WidgetWindowBase< Policy > >,
 	public AspectFocus< WidgetWindowBase< Policy > >,
 	public AspectFont< WidgetWindowBase< Policy > >,
+	public AspectHelp< WidgetWindowBase< Policy > >,
 	public AspectKeyboard< WidgetWindowBase< Policy > >,
 	public AspectMouse< WidgetWindowBase< Policy > >,
 	public AspectPainting< WidgetWindowBase< Policy > >,

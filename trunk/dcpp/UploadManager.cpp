@@ -43,7 +43,7 @@ static const string UPLOAD_AREA = "Uploads";
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) {
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
-	throttleZeroCounters();	
+	throttleZeroCounters();
 }
 
 UploadManager::~UploadManager() throw() {
@@ -156,7 +156,6 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	bool extraSlot = false;
 
-	throttleSetup();
 	if(!aSource.isSet(UserConnection::FLAG_HASSLOT)) {
 		bool hasReserved = (reservedSlots.find(aSource.getUser()) != reservedSlots.end());
 		bool isFavorite = FavoriteManager::getInstance()->hasSlot(aSource.getUser());
@@ -195,6 +194,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	uploads.push_back(u);
 
+	throttleSetup();
 	if(!aSource.isSet(UserConnection::FLAG_HASSLOT)) {
 		if(extraSlot) {
 			if(!aSource.isSet(UserConnection::FLAG_HASEXTRASLOT)) {

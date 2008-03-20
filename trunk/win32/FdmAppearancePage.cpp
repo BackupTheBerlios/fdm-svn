@@ -22,7 +22,7 @@
 
 #include "FdmAppearancePage.h"
 
-#include <dcpp/FdmSettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 #include "WinUtil.h"
 
@@ -40,13 +40,13 @@ PropPage::FdmTextItem FdmAppearancePage::texts[] = {
 };
 
 PropPage::FdmItem FdmAppearancePage::items[] = {
-	{ IDC_FDM_LANGUAGE, FdmSettingsManager::FDM_LANGUAGE_FILE, PropPage::T_STR },
+	{ IDC_FDM_LANGUAGE, SettingsManager::FDM_LANGUAGE_FILE, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
 PropPage::FdmListItem FdmAppearancePage::listItems[] = {
-	{ FdmSettingsManager::SHOW_IPS_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_SHOW_IPS_IN_CHATS },
-	{ FdmSettingsManager::SHOW_CC_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_SHOW_CC_IN_CHATS },
+	{ SettingsManager::SHOW_IPS_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_SHOW_IPS_IN_CHATS },
+	{ SettingsManager::SHOW_CC_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_SHOW_CC_IN_CHATS },
 	{ 0, ResourceManager::FDM_SETTINGS_AUTO_AWAY }
 };
 
@@ -56,10 +56,10 @@ FdmAppearancePage::FdmAppearancePage(SmartWin::Widget* parent) : PropPage(parent
 	PropPage::fdmTranslate(handle(), texts);
 	PropPage::fdmRead(handle(), items, listItems, ::GetDlgItem(handle(), IDC_FDM_APPEARANCE_BOOLEANS));
 
-	opSpoke = FDMSETTING(OP_SPOKE_COLOUR);
-	notOpSpoke = FDMSETTING(NOT_OP_SPOKE_COLOUR);
-	iSpoke = FDMSETTING(I_SPOKE_COLOUR);
-	myNickSpoken = FDMSETTING(MY_NICK_SPOKEN_COLOUR);
+	opSpoke = SETTING(OP_SPOKE_COLOUR);
+	notOpSpoke = SETTING(NOT_OP_SPOKE_COLOUR);
+	iSpoke = SETTING(I_SPOKE_COLOUR);
+	myNickSpoken = SETTING(MY_NICK_SPOKEN_COLOUR);
 
 	WidgetButtonPtr button = attachButton(IDC_FDM_SETTINGS_BROWSE);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleBrowse, this));
@@ -88,12 +88,12 @@ FdmAppearancePage::~FdmAppearancePage() {
 void FdmAppearancePage::write() {
 	PropPage::fdmWrite(handle(), items, listItems, ::GetDlgItem(handle(), IDC_FDM_APPEARANCE_BOOLEANS));
 
-	FdmSettingsManager* settings = FdmSettingsManager::getInstance();
+	SettingsManager* settings = SettingsManager::getInstance();
 
-	settings->set(FdmSettingsManager::OP_SPOKE_COLOUR, (int)opSpoke);
-	settings->set(FdmSettingsManager::NOT_OP_SPOKE_COLOUR, (int)notOpSpoke);
-	settings->set(FdmSettingsManager::I_SPOKE_COLOUR, (int)iSpoke);
-	settings->set(FdmSettingsManager::MY_NICK_SPOKEN_COLOUR, (int)myNickSpoken);
+	settings->set(SettingsManager::OP_SPOKE_COLOUR, (int)opSpoke);
+	settings->set(SettingsManager::NOT_OP_SPOKE_COLOUR, (int)notOpSpoke);
+	settings->set(SettingsManager::I_SPOKE_COLOUR, (int)iSpoke);
+	settings->set(SettingsManager::MY_NICK_SPOKEN_COLOUR, (int)myNickSpoken);
 }
 
 void FdmAppearancePage::handleBrowse() {
