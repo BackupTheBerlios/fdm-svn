@@ -33,9 +33,6 @@
 #include <Ws2tcpip.h>
 
 bool MoreWinUtil::allowMoreInstances() {
-// todo
-// probably broke
-// some other time
 	if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
 		return true;
 	return false;

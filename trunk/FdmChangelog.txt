@@ -7,6 +7,7 @@ Added /resolve to resolve IP's from a DNS, and the Domain name from IP's
 Added Autosearch
 Added Bandwidth Limiting (from BCDC++)
 Added Winamp spam (from BCDC++)
+Allow more instances (thanks Carraya)
 Changed Winamp spam to accept text after the command, which is appended to the spam
 Ripped a few DCplusplus files, so can have own Notepad and Aboutbox
 Revived a few DCplusplus files, so can have own Language files

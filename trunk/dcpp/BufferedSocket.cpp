@@ -29,6 +29,9 @@
 #include "CryptoManager.h"
 #include "ZUtils.h"
 
+#include "UploadManager.h"
+#include "DownloadManager.h"
+
 namespace dcpp {
 
 // Polling is used for tasks...should be fixed...
@@ -142,8 +145,20 @@ void BufferedSocket::threadRead() throw(SocketException) {
 	DownloadManager *dm = DownloadManager::getInstance();
 	size_t readsize = inbuf.size();
 	bool throttling = false;
-	bcdcThreadRead(dm, readsize, throttling);
-	
+	if(mode == MODE_DATA)
+	{
+		uint32_t getMaximum;
+		throttling = dm->throttle();
+		if (throttling)
+		{
+			getMaximum = dm->throttleGetSlice();
+			readsize = (uint32_t)min((int64_t)inbuf.size(), (int64_t)getMaximum);
+			if (readsize <= 0  || readsize > inbuf.size()) { // FIX
+				sleep(dm->throttleCycleTime());
+				return;
+			}
+		}
+	}
 	int left = sock->read(&inbuf[0], (int)readsize);
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
@@ -233,7 +248,13 @@ void BufferedSocket::threadRead() throw(SocketException) {
 							fire(BufferedSocketListener::ModeChange());
 						}
 					}
-					bcdcThreadRead2(left, dm, readsize, throttling);
+					if (throttling) {
+						if (left > 0 && left < (int)readsize) {
+							dm->throttleReturnBytes(left - readsize);
+						}
+						uint32_t sleep_interval =  dm->throttleCycleTime();
+						Thread::sleep(sleep_interval);
+					}
 				}
 				break;
 		}
@@ -296,14 +317,36 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		while(writePos < writeBuf.size()) {
 			if(disconnecting)
 				return;
-			size_t writeSize = min(sockSize / 2, writeBuf.size() - writePos);
-			bcdcThreadSendFile(writeSize, sockSize, writePos, um, throttling, start, sendMaximum);
+				
+			throttling = BOOLSETTING(THROTTLE_ENABLE);
+			size_t writeSize;
+    		if(throttling) {
+    			start = TimerManager::getTick();
+    			sendMaximum = um->throttleGetSlice();
+    			if(sendMaximum < 0) {
+    				throttling = false;
+					writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+				} else {
+					writeSize = min(min(sockSize / 2, writeBuf.size() - writePos), sendMaximum);
+				}
+			} else {
+				writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+			}
+			
 			int written = sock->write(&writeBuf[writePos], writeSize);
 			if(written > 0) {
 				writePos += written;
 
 				fire(BufferedSocketListener::BytesSent(), 0, written);
-				bcdcThreadSendFile2(um, throttling, start, current);
+
+				if(throttling) {
+					int32_t cycle_time = um->throttleCycleTime();
+					current = TimerManager::getTick();
+					int32_t sleep_time = cycle_time - (current - start);
+					if (sleep_time > 0 && sleep_time <= cycle_time) {
+						Thread::sleep(sleep_time);
+					}
+				}
 			} else if(written == -1) {
 				if(!readDone && readPos < readBuf.size()) {
 					// Read a little since we're blocking anyway...

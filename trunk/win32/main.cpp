@@ -23,6 +23,9 @@
 #include "MainWindow.h"
 #include "SplashWindow.h"
 
+#include "FdmMoreWinUtil.h"
+#include <dcpp/Fdm.h>
+
 #include <dcpp/MerkleTree.h>
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
@@ -80,6 +83,8 @@ int SmartWinMain(SmartWin::Application& app) {
 		HWND hOther = NULL;
 		::EnumWindows(&searchOtherInstance, (LPARAM)&hOther);
 
+if (!MoreWinUtil::allowMoreInstances())
+
 #ifndef _DEBUG
 		if( hOther != NULL ) {
 #else
@@ -124,6 +129,8 @@ int SmartWinMain(SmartWin::Application& app) {
 		SplashWindow* splash(new SplashWindow);
 		startup(&callBack, splash);
 		
+		startUpFdm();
+
 		bindtextdomain(PACKAGE, LOCALEDIR);
 		textdomain(PACKAGE);
 		
@@ -146,6 +153,8 @@ int SmartWinMain(SmartWin::Application& app) {
 	}
 	WinUtil::uninit();
 	
+	shutDownFdm();
+
 	shutdown();
 
 	::CoUninitialize();
