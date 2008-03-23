@@ -46,7 +46,7 @@ static const size_t MAX_NAME_LENGTH = 256;
 
 SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent), currentPage(0) {
 	onInitDialog(std::tr1::bind(&SettingsDialog::initDialog, this));
-	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this));
+	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this, _1, _2));
 }
 
 int SettingsDialog::run() {
@@ -73,7 +73,7 @@ bool SettingsDialog::initDialog() {
 
 		button = attachButton(IDHELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this));
+		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, handle(), 0));
 	}
 
 	addPage(T_("Personal information"), new GeneralPage(this));
@@ -97,17 +97,10 @@ bool SettingsDialog::initDialog() {
 	return false;
 }
 
-void SettingsDialog::handleHelp() {
-	UINT action;
-	DWORD id;
-	if(currentPage) {
-		action = HH_HELP_CONTEXT;
+void SettingsDialog::handleHelp(HWND hWnd, unsigned id) {
+	if(id == 0 && currentPage)
 		id = currentPage->getHelpId();
-	} else {
-		action = HH_DISPLAY_TOC;
-		id = 0;
-	}
-	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
+	WinUtil::help(hWnd, id);
 }
 
 void SettingsDialog::addPage(const tstring& title, PropPage* page) {

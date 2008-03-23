@@ -70,7 +70,7 @@ void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url)
 }
 
 HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
 	chat(0),
 	message(0),
 	filter(0),
@@ -97,7 +97,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = createTextBox(cs);
-		addWidget(message, true);
+		addWidget(message, true, false);
 		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), SmartWin::Message(WM_GETDLGCODE));
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));

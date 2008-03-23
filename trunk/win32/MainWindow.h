@@ -155,7 +155,6 @@ private:
 	void handleLink(unsigned id);
 	void handleAbout();
 	void handleFdmAbout();
-	void handleHelp(unsigned id);
 	void handleHashProgress();
 	void handleCloseWindows(unsigned id);
 	void handleSize();
