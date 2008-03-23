@@ -80,6 +80,8 @@ private:
 	enum {
 		CONNECTION_COLUMN_FIRST,
 		CONNECTION_COLUMN_USER = CONNECTION_COLUMN_FIRST,
+		CONNECTION_COLUMN_HUB,
+		CONNECTION_COLUMN_PATH,
 		CONNECTION_COLUMN_STATUS,
 		CONNECTION_COLUMN_SPEED,
 		CONNECTION_COLUMN_CHUNK,
@@ -172,6 +174,9 @@ private:
 		void setChunk(int64_t aChunkPos, int64_t aChunk) { chunkPos = aChunkPos; chunk = aChunk; updateMask |= MASK_CHUNK; }
 		int64_t chunkPos;
 		int64_t chunk;
+		
+		void setDisplayPath(const tstring& aDisplayPath) { path = aDisplayPath; }
+		tstring path;
 		
 		void setIP(const tstring& aIp) { ip = aIp; updateMask |= MASK_IP; }
 		tstring ip;

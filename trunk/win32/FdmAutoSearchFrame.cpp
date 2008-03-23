@@ -40,7 +40,7 @@ static ResourceManager::Strings columnNames[] = {
 };
 
 AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent, TSTRING(MENU_FDM_AUTOSEARCH_FRAME), IDR_AUTOSEARCH),
+	BaseType(mdiParent, TSTRING(MENU_FDM_AUTOSEARCH_FRAME), IDH_AUTO_SEARCH, IDR_AUTOSEARCH),
 	add(0),
 	properties(0),
 	up(0),
@@ -95,7 +95,7 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.caption = T_("&Help");
 		help = createButton(cs);
-		help->onClicked(std::tr1::bind(&AutoSearchFrame::handleHelp, this));
+		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_AUTO_SEARCH));
 		addWidget(help);
 	}
 
@@ -236,10 +236,6 @@ void AutoSearchFrame::handleRemove() {
 		collection.erase(collection.begin() + i);
 		items->erase(i);
 	}
-}
-
-void AutoSearchFrame::handleHelp() {
-	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_AUTOSEARCH);
 }
 
 void AutoSearchFrame::handleDoubleClick() {

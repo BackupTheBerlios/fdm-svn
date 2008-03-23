@@ -25,7 +25,7 @@
 #include <dcpp/ResourceManager.h>
 
 FdmNotepadFrame::FdmNotepadFrame(SmartWin::WidgetTabView* mdiParent) : 
-	BaseType(mdiParent, TSTRING(MENU_FDM_NOTEPAD_FRAME), IDR_NOTEPAD),
+	BaseType(mdiParent, TSTRING(MENU_FDM_NOTEPAD_FRAME), IDH_NOTEPAD, IDR_NOTEPAD),
 	pad(0) 
 {
 	{

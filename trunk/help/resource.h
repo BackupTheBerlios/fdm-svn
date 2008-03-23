@@ -37,4 +37,6 @@
 #define IDH_CERTIFICATESPAGE 533
 #define IDH_TABSPAGE 534
 
+#define IDH_AUTO_SEARCH 550
+
 #endif

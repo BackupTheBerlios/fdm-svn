@@ -32,14 +32,16 @@
 #include <dcpp/Download.h>
 #include <dcpp/Upload.h>
 
-int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COLUMN_STATUS, CONNECTION_COLUMN_SPEED, CONNECTION_COLUMN_CHUNK, CONNECTION_COLUMN_TRANSFERED, CONNECTION_COLUMN_QUEUED, CONNECTION_COLUMN_CIPHER, CONNECTION_COLUMN_IP };
-int TransferView::connectionSizes[] = { 125, 375, 100, 125, 125, 75, 100, 100 };
+int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COLUMN_HUB, CONNECTION_COLUMN_PATH, CONNECTION_COLUMN_STATUS, CONNECTION_COLUMN_SPEED, CONNECTION_COLUMN_CHUNK, CONNECTION_COLUMN_TRANSFERED, CONNECTION_COLUMN_QUEUED, CONNECTION_COLUMN_CIPHER, CONNECTION_COLUMN_IP };
+int TransferView::connectionSizes[] = { 125, 100, 100, 375, 100, 125, 125, 75, 100, 100 };
 
 int TransferView::downloadIndexes[] = { DOWNLOAD_COLUMN_FILE, DOWNLOAD_COLUMN_PATH, DOWNLOAD_COLUMN_STATUS, DOWNLOAD_COLUMN_TIMELEFT, DOWNLOAD_COLUMN_SPEED, DOWNLOAD_COLUMN_DONE, DOWNLOAD_COLUMN_SIZE };
 int TransferView::downloadSizes[] = { 200, 300, 150, 200, 125, 100, 100 };
 
 static const char* connectionNames[] = {
 	N_("User"),
+	N_("Hub"),
+	N_("Path"),
 	N_("Status"),
 	N_("Speed"),
 	N_("Chunk"),
@@ -534,6 +536,7 @@ TransferView::ConnectionInfo::ConnectionInfo(const UserPtr& u, bool aDownload) :
 	speed(0)	
 {
 	columns[CONNECTION_COLUMN_USER] = WinUtil::getNicks(u);
+	columns[CONNECTION_COLUMN_HUB] = WinUtil::getHubNames(u).first;
 	columns[CONNECTION_COLUMN_STATUS] = T_("Idle");
 	columns[CONNECTION_COLUMN_TRANSFERED] = Text::toT(Util::toString(0));
 	if(aDownload) {
@@ -551,6 +554,7 @@ void TransferView::ConnectionInfo::update(const UpdateInfo& ui) {
 			queued = QueueManager::getInstance()->getQueued(user);
 			columns[CONNECTION_COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
 		}
+		columns[CONNECTION_COLUMN_PATH] = (ui.path);
 	}
 
 	if(ui.updateMask & UpdateInfo::MASK_STATUS_STRING) {
@@ -701,6 +705,7 @@ void TransferView::on(DownloadManagerListener::Requesting, Download* d) throw() 
 	starting(ui, d);
 
 	ui->setStatusString(str(TF_("Requesting %1%") % getFile(d)));
+	ui->setDisplayPath(Text::toT(d->getPath()));
 
 	speak(CONNECTIONS_UPDATE, ui);
 	
@@ -731,6 +736,8 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 	statusString += str(TF_("Downloading %1%") % getFile(d));
 	
 	ui->setStatusString(statusString);
+	ui->setDisplayPath(Text::toT(d->getPath()));
+
 	speak(CONNECTIONS_UPDATE, ui);
 }
 
@@ -809,6 +816,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* u) throw() {
 	statusString += str(TF_("Uploading %1%") % getFile(u));
 
 	ui->setStatusString(statusString);
+	ui->setDisplayPath(Text::toT(u->getPath()));
 
 	speak(CONNECTIONS_UPDATE, ui);
 }

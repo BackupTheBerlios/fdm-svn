@@ -1,1 +1,0 @@
-CppSQLite 3.1
