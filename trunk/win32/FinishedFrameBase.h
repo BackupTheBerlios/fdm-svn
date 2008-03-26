@@ -66,7 +66,6 @@ protected:
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
 			items->setSort(COLUMN_DONE);
 			
-			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);
 
 			items->onDblClicked(std::tr1::bind(&ThisType::handleDoubleClick, this));
@@ -195,7 +194,7 @@ private:
 	}
 
 	void handleDoubleClick() {
-		if(items->hasSelection())
+		if(items->hasSelected())
 			items->getSelectedData()->openFile();
 	}
 
@@ -208,12 +207,12 @@ private:
 	}
 
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt) {
-		if(items->hasSelection()) {
+		if(items->hasSelected()) {
 			if(pt.x() == -1 && pt.y() == -1) {
 				pt = items->getContextMenuPos();
 			}
 
-			if(BOOLSETTING(SHOW_SHELL_MENU) && items->getSelectedCount() == 1) {
+			if(BOOLSETTING(SHOW_SHELL_MENU) && items->countSelected() == 1) {
 				string path = items->getSelectedData()->entry->getTarget();
 				if(File::getSize(path) != -1) {
 					CShellContextMenu shellMenu;

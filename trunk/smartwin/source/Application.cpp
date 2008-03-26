@@ -32,8 +32,6 @@
 #include "../include/smartwin/aspects/AspectMouse.h"
 #include "../include/smartwin/aspects/AspectSizable.h"
 
-#include <boost/lexical_cast.hpp>
-
 using namespace SmartWin;
 
 // link to Common Controls to relieve user of explicitly doing so
@@ -195,7 +193,7 @@ bool Application::isAppAlreadyRunning()
 	}
 }
 
-bool Application::addWaitEvent( HANDLE hWaitEvent, Application::SignalPtr pSignal )
+bool Application::addWaitEvent( HANDLE hWaitEvent, const Application::Callback& pSignal )
 {
 	// in case the maximum number of objects is already achieved return false
 	if ( itsVHEvents.size() >= MAXIMUM_WAIT_OBJECTS - 1 )
@@ -213,7 +211,7 @@ void Application::removeWaitEvent( HANDLE hWaitEvent )
 {
 	if ( hWaitEvent != INVALID_HANDLE_VALUE )
 	{
-		std::vector< Application::SignalPtr >::iterator pSig;
+		std::vector< Callback >::iterator pSig;
 		std::vector< HANDLE >::iterator pH;
 		for ( pSig = itsVSignals.begin(), pH = itsVHEvents.begin();
 			pSig != itsVSignals.end(); pSig++, pH++ )
@@ -314,7 +312,7 @@ int Application::run()
 		{
 			// the wait event was signalled by Windows
 			// signal its handlers
-			( * itsVSignals[dwWaitResult - WAIT_OBJECT_0] )();
+			itsVSignals[dwWaitResult - WAIT_OBJECT_0]();
 		}
 		else if ( dwWaitResult == WAIT_OBJECT_0 + itsVHEvents.size() )
 		{
@@ -345,12 +343,7 @@ int Application::run()
 		}
 		else if ( dwWaitResult < WAIT_ABANDONED_0 + itsVHEvents.size() )
 		{
-			SmartUtil::tstring strX =
-				_T( "Application::run : Encountered an abandoned wait mutex object (index " );
-			strX += boost::lexical_cast< SmartUtil::tstring >( dwWaitResult - WAIT_ABANDONED_0 );
-			strX += _T( " )." );
-
-			throw xCeption( strX );
+			throw xCeption( _T( "Application::run : Encountered an abandoned wait mutex object ") );
 		}
 		else if ( dwWaitResult != WAIT_TIMEOUT )
 		{
@@ -374,15 +367,7 @@ void Application::removeFilter(const FilterIter& i) {
 
 #endif // not __WINE__
 
-WidgetSizedEventResult::WidgetSizedEventResult( WPARAM wP, LPARAM lP )
-{
-	newSize = Point( GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ) );
-	isMaximized = ( wP == SIZE_MAXIMIZED );
-	isMinimized = ( wP == SIZE_MINIMIZED );
-	isRestored = ( wP == SIZE_RESTORED );
-}
-
-MouseEventResult::MouseEventResult(HWND hwnd, WPARAM wP, LPARAM lP ) : pos(Point(GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ))) {
+MouseEventResult::MouseEventResult(HWND hwnd, WPARAM wP, LPARAM lP ) : pos(Point::fromLParam(lP)) {
 	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
 	::ClientToScreen(hwnd, &pos.getPoint());
 	

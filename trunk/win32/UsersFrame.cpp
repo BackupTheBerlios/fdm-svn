@@ -49,7 +49,6 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setSort(COLUMN_NICK);
-		users->setColor(WinUtil::textColor, WinUtil::bgColor);
 
 		users->onDblClicked(std::tr1::bind(&UsersFrame::handleGetList, this));
 		users->onKeyDown(std::tr1::bind(&UsersFrame::handleKeyDown, this, _1));
@@ -137,8 +136,8 @@ void UsersFrame::removeUser(const FavoriteUser& aUser) {
 }
 
 void UsersFrame::handleProperties() {
-	if(users->getSelectedCount() == 1) {
-		int i = users->getSelectedIndex();
+	if(users->countSelected() == 1) {
+		int i = users->getSelected();
 		UserInfo* ui = users->getData(i);
 		LineDlg dlg(this, ui->columns[COLUMN_NICK], T_("Description"), ui->columns[COLUMN_DESCRIPTION]);
 
@@ -175,7 +174,7 @@ LRESULT UsersFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 }
 
 bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
-	if (users->hasSelection()) {
+	if (users->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = users->getContextMenuPos();
 		}

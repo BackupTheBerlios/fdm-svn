@@ -26,12 +26,23 @@
 #include <dcpp/FavoriteManager.h>
 #include "CommandDlg.h"
 #include "HoldRedraw.h"
+#include "WinUtil.h"
+
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_MENU_ITEMS, IDH_SETTINGS_UC_LIST },
+	{ IDC_ADD_MENU, IDH_SETTINGS_UC_ADD },
+	{ IDC_CHANGE_MENU, IDH_SETTINGS_UC_CHANGE },
+	{ IDC_MOVE_UP, IDH_SETTINGS_UC_MOVE_UP },
+	{ IDC_MOVE_DOWN, IDH_SETTINGS_UC_MOVE_DOWN },
+	{ IDC_REMOVE_MENU, IDH_SETTINGS_UC_REMOVE },
+	{ 0, 0 }
+};
 
 PropPage::TextItem UCPage::texts[] = {
-	{ IDC_MOVE_UP, N_("Move &Up") },
-	{ IDC_MOVE_DOWN, N_("Move &Down") },
 	{ IDC_ADD_MENU, N_("&Add") },
 	{ IDC_CHANGE_MENU, N_("&Change") },
+	{ IDC_MOVE_UP, N_("Move &Up") },
+	{ IDC_MOVE_DOWN, N_("Move &Down") },
 	{ IDC_REMOVE_MENU, N_("&Remove") },
 	{ 0, 0 }
 };
@@ -44,6 +55,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UCPAGE);
 	setHelpId(IDH_UCPAGE);
 
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
@@ -88,7 +100,7 @@ void UCPage::write() {
 }
 
 void UCPage::handleDoubleClick() {
-	if(commands->hasSelection()) {
+	if(commands->hasSelected()) {
 		handleChangeClicked();
 	} else {
 		handleAddClicked();
@@ -114,8 +126,8 @@ void UCPage::handleAddClicked() {
 }
 
 void UCPage::handleChangeClicked() {
-	if(commands->getSelectedCount() == 1) {
-		int i = commands->getSelectedIndex();
+	if(commands->countSelected() == 1) {
+		int i = commands->getSelected();
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(commands->getData(i), uc);
 
@@ -136,8 +148,8 @@ void UCPage::handleChangeClicked() {
 }
 
 void UCPage::handleMoveUpClicked() {
-	if(commands->getSelectedCount() == 1) {
-		int i = commands->getSelectedIndex();
+	if(commands->countSelected() == 1) {
+		int i = commands->getSelected();
 		if(i == 0)
 			return;
 		int n = commands->getData(i);
@@ -147,14 +159,14 @@ void UCPage::handleMoveUpClicked() {
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, --i);
-		commands->setSelectedIndex(i);
+		commands->setSelected(i);
 		commands->ensureVisible(i);
 	}
 }
 
 void UCPage::handleMoveDownClicked() {
-	if(commands->getSelectedCount() == 1) {
-		int i = commands->getSelectedIndex();
+	if(commands->countSelected() == 1) {
+		int i = commands->getSelected();
 		if(i == commands->size() - 1)
 			return;
 		int n = commands->getData(i);
@@ -164,14 +176,14 @@ void UCPage::handleMoveDownClicked() {
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, ++i);
-		commands->setSelectedIndex(i);
+		commands->setSelected(i);
 		commands->ensureVisible(i);
 	}
 }
 
 void UCPage::handleRemoveClicked() {
-	if(commands->getSelectedCount() == 1) {
-		int i = commands->getSelectedIndex();
+	if(commands->countSelected() == 1) {
+		int i = commands->getSelected();
 		FavoriteManager::getInstance()->removeUserCommand(commands->getData(i));
 		commands->erase(i);
 	}

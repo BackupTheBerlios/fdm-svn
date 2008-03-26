@@ -36,11 +36,9 @@ private:
 	WidgetStaticPtr example;
 
 	COLORREF fg, bg, upBar, downBar;
-	SmartWin::BrushPtr bgBrush;
 	SmartWin::FontPtr font;
 	LOGFONT logFont;
 
-	SmartWin::BrushPtr handleExampleColor(SmartWin::Canvas& canvas);
 	void handleBackgroundClicked();
 	void handleTextClicked();
 	void handleULClicked();

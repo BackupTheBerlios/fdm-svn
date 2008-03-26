@@ -38,7 +38,6 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		queued = createTreeView(WinUtil::Seeds::treeView);
 		addWidget(queued);
-		queued->setColor(WinUtil::textColor, WinUtil::bgColor);
 		queued->onContextMenu(std::tr1::bind(&WaitingUsersFrame::handleContextMenu, this, _1));
 		queued->onChar(std::tr1::bind(&WaitingUsersFrame::handleChar, this, _1));
 	}
@@ -138,7 +137,7 @@ void WaitingUsersFrame::onAddToFavorites() {
 }
 
 HTREEITEM WaitingUsersFrame::getParentItem() {
-	HTREEITEM sel = queued->getSelection();
+	HTREEITEM sel = queued->getSelected();
 	if(!sel) {
 		return NULL;
 	}
@@ -155,7 +154,7 @@ void WaitingUsersFrame::onGetList()
 }
 
 void WaitingUsersFrame::onCopyFilename() {
-	HTREEITEM selectedItem = queued->getSelection(), parentItem = getParentItem();
+	HTREEITEM selectedItem = queued->getSelected(), parentItem = getParentItem();
 
 	if (!selectedItem || !parentItem || selectedItem == parentItem)
 		return;

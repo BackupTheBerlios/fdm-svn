@@ -28,11 +28,20 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, IDH_SETTINGS_FAVORITE_DIRS_FAVORITE_DIRECTORIES },
+	{ IDC_FAVORITE_DIRECTORIES, IDH_SETTINGS_FAVORITE_DIRS_FAVORITE_DIRECTORIES },
+	{ IDC_RENAME, IDH_SETTINGS_FAVORITE_DIRS_RENAME },
+	{ IDC_REMOVE, IDH_SETTINGS_FAVORITE_DIRS_REMOVE },
+	{ IDC_ADD, IDH_SETTINGS_FAVORITE_DIRS_ADD },
+	{ 0, 0 }
+};
+
 PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, N_("Favorite download directories") },
+	{ IDC_RENAME, N_("Rename") },
 	{ IDC_REMOVE, N_("&Remove") },
 	{ IDC_ADD, N_("&Add folder") },
-	{ IDC_RENAME, N_("Rename") },
 	{ 0, 0 }
 };
 
@@ -40,6 +49,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	createDialog(IDD_FAVORITE_DIRSPAGE);
 	setHelpId(IDH_FAVORITE_DIRSPAGE);
 
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 
 	directories = attachList(IDC_FAVORITE_DIRECTORIES);
@@ -82,7 +92,7 @@ void FavoriteDirsPage::write()
 }
 
 void FavoriteDirsPage::handleDoubleClick() {
-	if(directories->hasSelection()) {
+	if(directories->hasSelected()) {
 		handleRenameClicked();
 	} else {
 		handleAddClicked();
@@ -102,9 +112,9 @@ bool FavoriteDirsPage::handleKeyDown(int c) {
 }
 
 LRESULT FavoriteDirsPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
-	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
-	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
-	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
+	BOOL hasSelected = directories->hasSelected() ? TRUE : FALSE;
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelected);
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelected);
 	return 0;
 }
 

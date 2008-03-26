@@ -27,6 +27,31 @@
 #include <dcpp/version.h>
 #include "WinUtil.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_SEPARATOR, IDH_USER_COMMAND_SEPARATOR },
+	{ IDC_SETTINGS_RAW, IDH_USER_COMMAND_RAW },
+	{ IDC_SETTINGS_CHAT, IDH_USER_COMMAND_CHAT },
+	{ IDC_SETTINGS_PM, IDH_USER_COMMAND_PM },
+	{ IDC_SETTINGS_CONTEXT, IDH_USER_COMMAND_CONTEXT },
+	{ IDC_SETTINGS_HUB_MENU, IDH_USER_COMMAND_HUB_MENU },
+	{ IDC_SETTINGS_USER_MENU, IDH_USER_COMMAND_USER_MENU },
+	{ IDC_SETTINGS_SEARCH_MENU, IDH_USER_COMMAND_SEARCH_MENU },
+	{ IDC_SETTINGS_FILELIST_MENU, IDH_USER_COMMAND_FILELIST_MENU },
+	{ IDC_SETTINGS_NAME, IDH_USER_COMMAND_NAME },
+	{ IDC_NAME, IDH_USER_COMMAND_NAME },
+	{ IDC_SETTINGS_COMMAND, IDH_USER_COMMAND_COMMAND },
+	{ IDC_COMMAND, IDH_USER_COMMAND_COMMAND },
+	{ IDC_SETTINGS_HUB, IDH_USER_COMMAND_HUB },
+	{ IDC_HUB, IDH_USER_COMMAND_HUB },
+	{ IDC_SETTINGS_TO, IDH_USER_COMMAND_NICK },
+	{ IDC_NICK, IDH_USER_COMMAND_NICK },
+	{ IDC_SETTINGS_ONCE, IDH_USER_COMMAND_ONCE },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ IDHELP, IDH_DCPP_HELP },
+	{ 0, 0 }
+};
+
 CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
 	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	separator(0),
@@ -59,8 +84,12 @@ CommandDlg::~CommandDlg() {
 }
 
 bool CommandDlg::handleInitDialog() {
+	setHelpId(IDH_USER_COMMAND);
+
+	WinUtil::setHelpIds(this, helpItems);
+
 	// Translate
-	setText(T_("Create / Modify Command"));
+	setText(T_("Create / Modify User Command"));
 	::SetDlgItemText(handle(), IDC_SETTINGS_TYPE, CT_("Command Type"));
 	::SetDlgItemText(handle(), IDC_SETTINGS_CONTEXT, CT_("Context"));
 	::SetDlgItemText(handle(), IDC_SETTINGS_PARAMETERS, CT_("Parameters"));
@@ -129,12 +158,12 @@ bool CommandDlg::handleInitDialog() {
 
 		button = attachButton(IDHELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_UCPAGE));
+		button->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_USER_COMMAND));
 	}
 
 	if(bOpenHelp) {
 		// launch the help file, instead of having the help in the dialog
-		postMessage(WM_COMMAND, IDHELP);
+		WinUtil::help(handle(), IDH_USER_COMMAND);
 	}
 
 	if(type == UserCommand::TYPE_SEPARATOR) {

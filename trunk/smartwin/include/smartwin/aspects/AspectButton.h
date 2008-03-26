@@ -1,8 +1,7 @@
 #ifndef ASPECTBUTTON_H_
 #define ASPECTBUTTON_H_
 
-#include "AspectBackgroundColor.h"
-#include "AspectBorder.h"
+#include "AspectColor.h"
 #include "AspectClickable.h"
 #include "AspectControl.h"
 #include "AspectDblClickable.h"
@@ -15,9 +14,9 @@ namespace SmartWin {
 /** Common stuff for all buttons */
 template<typename WidgetType>
 class AspectButton :
-	public AspectBackgroundColor<WidgetType>,
-	public AspectBorder< WidgetType >,
 	public AspectClickable<WidgetType>,
+	public AspectColor<WidgetType>,
+	public AspectColorCtlImpl<WidgetType>,
 	public AspectControl<WidgetType>,
 	public AspectDblClickable<WidgetType>,
 	public AspectFocus< WidgetType >,
@@ -25,11 +24,9 @@ class AspectButton :
 	public AspectPainting< WidgetType >,
 	public AspectText< WidgetType >
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 public:
 	
-	// Contract needed by AspectBackgroundColor Aspect class
-	static const Message & getBackgroundColorMessage();
-
 	// Contract needed by AspectClickable Aspect class
 	Message getClickMessage();
 
@@ -44,13 +41,6 @@ protected:
 	
 	AspectButton(Widget* parent);
 };
-
-template<typename WidgetType>
-inline const Message & AspectButton<WidgetType>::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORBTN );
-	return retVal;
-}
 
 template<typename WidgetType>
 Message AspectButton<WidgetType>::getClickMessage() {

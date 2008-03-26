@@ -27,6 +27,13 @@
 #include <dcpp/LogManager.h>
 #include "WinUtil.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_LOG_DIR, IDH_SETTINGS_LOG_DIRECTORY },
+	{ IDC_LOG_DIRECTORY, IDH_SETTINGS_LOG_DIRECTORY },
+	{ IDC_BROWSE_LOG, IDH_SETTINGS_LOG_DIRECTORY },
+	{ 0, 0 }
+};
+
 PropPage::TextItem LogPage::texts[] = {
 	{ IDC_SETTINGS_LOGGING, N_("Logging") },
 	{ IDC_SETTINGS_LOG_DIR, N_("Directory") },
@@ -56,6 +63,7 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_LOGPAGE);
 	setHelpId(IDH_LOGPAGE);
 
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 
@@ -123,7 +131,7 @@ void LogPage::handleBrowseClicked() {
 LRESULT LogPage::handleItemChanged() {
 	getValues();
 
-	int sel = dataGrid->getSelectedIndex();
+	int sel = dataGrid->getSelected();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
 		bool checkState = dataGrid->isChecked(sel);

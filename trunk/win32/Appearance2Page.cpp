@@ -25,6 +25,20 @@
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_COLORS, IDH_SETTINGS_APPEARANCE2_COLORS },
+	{ IDC_SELWINCOLOR, IDH_SETTINGS_APPEARANCE2_SELWINCOLOR },
+	{ IDC_SELTEXT, IDH_SETTINGS_APPEARANCE2_SELTEXT },
+	{ IDC_COLOREXAMPLE, IDH_SETTINGS_APPEARANCE2_COLORS },
+	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, IDH_SETTINGS_APPEARANCE2_UPLOAD_BAR_COLOR },
+	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, IDH_SETTINGS_APPEARANCE2_DOWNLOAD_BAR_COLOR },
+	{ IDC_SETTINGS_REQUIRES_RESTART, IDH_SETTINGS_APPEARANCE_REQUIRES_RESTART },
+	{ IDC_BEEP_NOTIFICATION, IDH_SETTINGS_APPEARANCE2_BEEPFILE },
+	{ IDC_BEEPFILE, IDH_SETTINGS_APPEARANCE2_BEEPFILE },
+	{ IDC_BROWSE, IDH_SETTINGS_APPEARANCE2_BEEPFILE },
+	{ 0, 0 }
+};
+
 PropPage::TextItem Appearance2Page::texts[] = {
 	{ IDC_BEEP_NOTIFICATION, N_("Notification sound") },
 	{ IDC_BROWSE, N_("&Browse...") },
@@ -52,6 +66,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_APPEARANCE2PAGE);
 	setHelpId(IDH_APPEARANCE2PAGE);
 
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 
@@ -60,13 +75,12 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	upBar = SETTING(UPLOAD_BAR_COLOR);
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 
-	bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
-
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), logFont);
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 
 	example = attachStatic(IDC_COLOREXAMPLE);
-	example->onBackgroundColor(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1));
+	example->setColor(fg, bg);
+	example->setFont(font);
 
 	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
@@ -101,20 +115,12 @@ void Appearance2Page::write() {
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(WinUtil::encodeFont(logFont)));
 }
 
-SmartWin::BrushPtr Appearance2Page::handleExampleColor(SmartWin::Canvas& canvas) {
-	canvas.setBkColor(bg);
-	canvas.setTextColor(fg);
-	canvas.selectFont(font);
-	return bgBrush;
-}
-
 void Appearance2Page::handleBackgroundClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(bg),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk()) {
 		bg = colorParams.getColor();
-		bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
-		example->invalidateWidget();
+		example->setColor(fg, bg);
 	}
 }
 
@@ -125,7 +131,7 @@ void Appearance2Page::handleTextClicked() {
 		logFont = logFont_;
 		fg = fg_;
 		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
-		example->invalidateWidget();
+		example->setFont(font);
 	}
 }
 

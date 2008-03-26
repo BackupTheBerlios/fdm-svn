@@ -29,6 +29,26 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_SHARED_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
+	{ IDC_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
+	{ IDC_SETTINGS_ONLY_HASHED, IDH_SETTINGS_UPLOAD_DIRECTORIES },
+	{ IDC_SHAREHIDDEN, IDH_SETTINGS_UPLOAD_SHAREHIDDEN },
+	{ IDC_SETTINGS_SHARE_SIZE, IDH_SETTINGS_UPLOAD_DIRECTORIES },
+	{ IDC_TOTAL, IDH_SETTINGS_UPLOAD_DIRECTORIES },
+	{ IDC_RENAME, IDH_SETTINGS_UPLOAD_RENAME },
+	{ IDC_REMOVE, IDH_SETTINGS_UPLOAD_REMOVE },
+	{ IDC_ADD, IDH_SETTINGS_UPLOAD_ADD },
+	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, IDH_SETTINGS_UPLOAD_MIN_UPLOAD_SPEED },
+	{ IDC_MIN_UPLOAD_SPEED, IDH_SETTINGS_UPLOAD_MIN_UPLOAD_SPEED },
+	{ IDC_MIN_UPLOAD_SPIN, IDH_SETTINGS_UPLOAD_MIN_UPLOAD_SPEED },
+	{ IDC_SETTINGS_KBPS, IDH_SETTINGS_UPLOAD_MIN_UPLOAD_SPEED },
+	{ IDC_SETTINGS_UPLOADS_SLOTS, IDH_SETTINGS_UPLOAD_SLOTS },
+	{ IDC_SLOTS, IDH_SETTINGS_UPLOAD_SLOTS },
+	{ IDC_SLOTSPIN, IDH_SETTINGS_UPLOAD_SLOTS },
+	{ 0, 0 }
+};
+
 PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, N_("Shared directories") },
 	{ IDC_SETTINGS_SHARE_SIZE, N_("Total size:") },
@@ -54,6 +74,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UPLOADPAGE);
 	setHelpId(IDH_UPLOADPAGE);
 
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
@@ -123,7 +144,7 @@ void UploadPage::write()
 }
 
 void UploadPage::handleDoubleClick() {
-	if(directories->hasSelection()) {
+	if(directories->hasSelected()) {
 		handleRenameClicked();
 	} else {
 		handleAddClicked();
@@ -143,9 +164,9 @@ bool UploadPage::handleKeyDown(int c) {
 }
 
 LRESULT UploadPage::handleItemChanged() {
-	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
-	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
-	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
+	BOOL hasSelected = directories->hasSelected() ? TRUE : FALSE;
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelected);
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelected);
 	return 0;
 }
 

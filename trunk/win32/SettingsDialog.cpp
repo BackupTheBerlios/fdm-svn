@@ -41,6 +41,14 @@
 #include "FdmAppearancePage.h"
 #include "BCDC_BandwidthLimitPage.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_PAGES, IDH_SETTINGS_TREE },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ IDHELP, IDH_DCPP_HELP },
+	{ 0, 0 }
+};
+
 static const TCHAR SEPARATOR = _T('\\');
 static const size_t MAX_NAME_LENGTH = 256;
 
@@ -57,6 +65,11 @@ SettingsDialog::~SettingsDialog() {
 }
 
 bool SettingsDialog::initDialog() {
+	// set this to IDH_STARTPAGE so that clicking in an empty space of the dialog generates a WM_HELP message with no error; then SettingsDialog::handleHelp will convert IDH_STARTPAGE to the current page's help id
+	setHelpId(IDH_STARTPAGE);
+
+	WinUtil::setHelpIds(this, helpItems);
+
 	setText(T_("Settings"));
 
 	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
@@ -73,7 +86,7 @@ bool SettingsDialog::initDialog() {
 
 		button = attachButton(IDHELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, handle(), 0));
+		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, handle(), IDH_STARTPAGE));
 	}
 
 	addPage(T_("Personal information"), new GeneralPage(this));
@@ -98,7 +111,7 @@ bool SettingsDialog::initDialog() {
 }
 
 void SettingsDialog::handleHelp(HWND hWnd, unsigned id) {
-	if(id == 0 && currentPage)
+	if(id == IDH_STARTPAGE && currentPage)
 		id = currentPage->getHelpId();
 	WinUtil::help(hWnd, id);
 }

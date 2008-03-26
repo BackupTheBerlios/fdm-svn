@@ -56,10 +56,8 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
 		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
-		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
 		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
 		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
-
 	}
 
 	{
@@ -180,13 +178,13 @@ void SpyFrame::handleColumnClick(int column) {
 }
 
 bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
-	if(searches->getSelectedCount() == 1) {
+	if(searches->countSelected() == 1) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = searches->getContextMenuPos();
 		}
 
 		WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
-		contextMenu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelectedIndex(), COLUMN_STRING)), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
+		contextMenu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelected(), COLUMN_STRING)), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
 
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

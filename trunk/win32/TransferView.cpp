@@ -146,7 +146,7 @@ TransferView::~TransferView() {
 }
 
 void TransferView::handleTabSelected() {
-	int i = tabs->getSelectedIndex();
+	int i = tabs->getSelected();
 	
 	if(i == 0) {
 		::ShowWindow(downloadsWindow->handle(), SW_HIDE);
@@ -157,9 +157,8 @@ void TransferView::handleTabSelected() {
 	}
 }
 
-bool TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
+void TransferView::handleSized(const SmartWin::SizedEvent& sz) {
 	layout();
-	return true;
 }
 
 void TransferView::layout() {
@@ -204,7 +203,7 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
 }
 
 bool TransferView::handleConnectionsMenu(SmartWin::ScreenCoordinate pt) {
-	if (connections->hasSelection()) {
+	if (connections->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = connections->getContextMenuPos();
 		}
@@ -220,7 +219,7 @@ bool TransferView::handleConnectionsMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 bool TransferView::handleDownloadsMenu(SmartWin::ScreenCoordinate pt) {
-	if (downloads->getSelectedCount() == 1) {
+	if (downloads->countSelected() == 1) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = downloads->getContextMenuPos();
 		}

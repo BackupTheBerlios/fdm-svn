@@ -34,16 +34,17 @@ public:
 
 	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
 
-	struct Item
-	{
+	struct Item {
 		WORD itemID;
 		int setting;
 		Type type;
 	};
+
 	struct ListItem {
 		int setting;
 		const char* desc;
 	};
+
 	struct TextItem {
 		WORD itemID;
 		const char* translatedString;
@@ -64,10 +65,9 @@ public:
 		ResourceManager::Strings translatedString;
 	};
 protected:
-
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
-	void translate(HWND page, TextItem* textItems);
+	void translate(HWND page, TextItem* items);
 	void fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);
 	void fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);
 	void fdmTranslate(HWND page, FdmTextItem* textItems);

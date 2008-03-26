@@ -29,8 +29,7 @@
 #define WidgetStatic_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
@@ -62,9 +61,9 @@ class WidgetCreator;
   */
 class WidgetStatic :
 	// Aspects
-	public AspectBackgroundColor< WidgetStatic >,
-	public AspectBorder< WidgetStatic >,
 	public AspectClickable< WidgetStatic >,
+	public AspectColor< WidgetStatic >,
+	public AspectColorCtlImpl<WidgetStatic>,
 	public AspectControl<WidgetStatic>,
 	public AspectDblClickable< WidgetStatic >,
 	public AspectFocus< WidgetStatic >,
@@ -91,9 +90,6 @@ public:
 
 	// Contract needed by AspectClickable Aspect class
 	Message getClickMessage();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	static const Message & getBackgroundColorMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
 	Message getDblClickMessage();
@@ -126,19 +122,9 @@ private:
 	void setBitmap( HBITMAP bitmap );
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 inline Message WidgetStatic::getClickMessage()
 {
 	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_CLICKED) );
-}
-
-inline const Message & WidgetStatic::getBackgroundColorMessage()
-{
-	static const Message retVal( WM_CTLCOLORSTATIC );
-	return retVal;
 }
 
 inline Message WidgetStatic::getDblClickMessage()

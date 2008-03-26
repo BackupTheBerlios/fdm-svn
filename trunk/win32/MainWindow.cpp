@@ -290,6 +290,7 @@ void MainWindow::initToolbar() {
 	
 	int image = 0;
 	toolbar->appendItem(IDC_PUBLIC_HUBS, image++, T_("Public Hubs"));
+	toolbar->appendSeparator();
 	toolbar->appendItem(IDC_RECONNECT, image++, T_("Reconnect"));
 	toolbar->appendItem(IDC_FOLLOW, image++, T_("Follow last redirect"));
 	toolbar->appendSeparator();
@@ -306,8 +307,12 @@ void MainWindow::initToolbar() {
 	toolbar->appendItem(IDC_SEARCH_SPY, image++, T_("Search Spy"));
 	toolbar->appendSeparator();
 	toolbar->appendItem(IDC_OPEN_FILE_LIST, image++, T_("Open file list..."));
+	toolbar->appendSeparator();
 	toolbar->appendItem(IDC_SETTINGS, image++, T_("Settings"));
 	toolbar->appendItem(IDC_NOTEPAD, image++, T_("Notepad"));
+	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_WHATS_THIS, image++, T_("\"What's this?\" help"), std::tr1::bind(&MainWindow::handleWhatsThis, this));
+
 	toolbar->appendSeparator();
 	toolbar->appendItem(IDC_AUTOSEARCH, image++, TSTRING(MENU_FDM_AUTOSEARCH_FRAME));
 	toolbar->appendItem(IDC_FDM_NOTEPAD, image++, TSTRING(MENU_FDM_NOTEPAD_FRAME));
@@ -383,7 +388,7 @@ void MainWindow::handleQuickConnect() {
 	}
 }
 
-bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
+void MainWindow::handleSized(const SmartWin::SizedEvent& sz) {
 	if(sz.isMinimized) {
 		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
@@ -402,8 +407,6 @@ bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 		}
 		layout();
 	}
-
-	return true;
 }
 
 LRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
@@ -1090,6 +1093,10 @@ void MainWindow::handleCloseWindows(unsigned id) {
 		SearchFrame::closeAll();
 		break;
 	}
+}
+
+void MainWindow::handleWhatsThis() {
+	sendMessage(WM_SYSCOMMAND, SC_CONTEXTHELP);
 }
 
 void MainWindow::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw() {

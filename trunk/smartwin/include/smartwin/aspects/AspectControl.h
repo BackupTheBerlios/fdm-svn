@@ -4,8 +4,10 @@
 #include "../Policies.h"
 #include "../xCeption.h"
 
+#include "AspectBorder.h"
 #include "AspectContextMenu.h"
 #include "AspectEnabled.h"
+#include "AspectHelp.h"
 #include "AspectKeyboard.h"
 #include "AspectMouse.h"
 #include "AspectRaw.h"
@@ -19,8 +21,10 @@ template<typename WidgetType >
 class AspectControl : 
 	public MessageMapPolicy< Policies::Subclassed >,
 
+	public AspectBorder<WidgetType>,
 	public AspectContextMenu<WidgetType>,
 	public AspectEnabled<WidgetType>,
+	public AspectHelp<WidgetType>,
 	public AspectKeyboard<WidgetType>,
 	public AspectMouse<WidgetType>,
 	public AspectRaw<WidgetType>,

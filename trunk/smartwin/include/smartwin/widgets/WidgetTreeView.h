@@ -31,9 +31,9 @@
 #include "../Widget.h"
 #include "../Rectangle.h"
 #include "../resources/ImageList.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
+#include "../aspects/AspectColor.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
@@ -62,15 +62,15 @@ class WidgetCreator;
 
 class WidgetTreeView :
 	// Aspects
-	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
 	public AspectCollection<WidgetTreeView, HTREEITEM>,
+	public AspectColor<WidgetTreeView>,
 	public AspectControl<WidgetTreeView>,
 	public AspectData<WidgetTreeView, HTREEITEM>,
 	public AspectDblClickable< WidgetTreeView >,
 	public AspectFocus< WidgetTreeView >,
 	public AspectFont< WidgetTreeView >,
-	public AspectSelection< WidgetTreeView >
+	public AspectSelection< WidgetTreeView, HTREEITEM >
 {
 protected:
 	struct Dispatcher
@@ -95,7 +95,9 @@ protected:
 
 	friend class WidgetCreator< WidgetTreeView >;
 	friend class AspectCollection<WidgetTreeView, HTREEITEM>;
+	friend class AspectColor<WidgetTreeView>;
 	friend class AspectData<WidgetTreeView, HTREEITEM>;
+	friend class AspectSelection<WidgetTreeView, HTREEITEM>;
 	
 public:
 	/// Seed class
@@ -139,18 +141,12 @@ public:
 	
 	HTREEITEM getParent(HTREEITEM node);
 	
-	HTREEITEM getSelection();
-	
 	HTREEITEM getRoot();
-	
-	void setColor(COLORREF text, COLORREF background);
 	
 	ScreenCoordinate getContextMenuPos();
 	
 	void expand(HTREEITEM node);
 	
-	void select(HTREEITEM item);
-
 	void select(const ScreenCoordinate& pt);
 	
 	HTREEITEM hitTest(const ScreenCoordinate& pt);
@@ -228,24 +224,6 @@ public:
 	  */
 	SmartUtil::tstring getText( HTREEITEM node );
 
-	/// Returns the param of the current selected node
-	/** The return value is a unique application defined unsigned number ( optionally
-	  * ) given when inserting nodes. <br>
-	  * Note! <br>
-	  * It is pointless calling this function if no param was given when inserting
-	  * the nodes. <br>
-	  * 0 is special case indicating failure
-	  */
-	virtual int getSelectedIndex() const;
-
-	/// Sets the currently selected node
-	/** The parameter given is the param given when inserting the nodes <br>
-	  * Note! <br>
-	  * It is pointless calling this function if no param was given when inserting
-	  * the nodes.
-	  */
-	virtual void setSelectedIndex( int idx );
-
 	/// \ingroup EventHandlersWidgetTreeView
 	/// Sets the event handler for what function to be called when a label is edited.
 	/** Event handler signature is must be "bool foo( WidgetTreeView *,
@@ -280,10 +258,6 @@ public:
 	  */
 	void create( const Seed & cs = Seed() );
 
-	static bool isValidSelectionChanged( LPARAM lPar )
-	{ return true;
-	}
-	
 protected:
 	// Constructor Taking pointer to parent
 	explicit WidgetTreeView( Widget * parent );
@@ -305,6 +279,14 @@ private:
 	void eraseImpl( HTREEITEM node );
 	void clearImpl();
 	size_t sizeImpl() const;
+	
+	// AspectColor
+	void setColorImpl(COLORREF text, COLORREF background);
+
+	// AspectSelection
+	HTREEITEM getSelectedImpl() const;
+	void setSelectedImpl( HTREEITEM item );
+	size_t countSelectedImpl() const;
 
 };
 
@@ -332,13 +314,9 @@ inline HTREEITEM WidgetTreeView::getRoot() {
 	return TreeView_GetRoot(this->handle());
 }
 
-inline void WidgetTreeView::setColor(COLORREF text, COLORREF background) {
+inline void WidgetTreeView::setColorImpl(COLORREF text, COLORREF background) {
 	TreeView_SetTextColor(this->handle(), text);
 	TreeView_SetBkColor(this->handle(), background);
-}
-
-inline void WidgetTreeView::select(HTREEITEM item) {
-	TreeView_SelectItem(this->handle(), item);
 }
 
 inline Rectangle WidgetTreeView::getItemRect(HTREEITEM item) {
@@ -351,10 +329,6 @@ inline HTREEITEM WidgetTreeView::hitTest(const ScreenCoordinate& pt) {
 	ClientCoordinate cc(pt, this);
 	TVHITTESTINFO tvhti = { cc.getPoint() };
 	return TreeView_HitTest(this->handle(), &tvhti);
-}
-
-inline HTREEITEM WidgetTreeView::getSelection() {
-	return TreeView_GetSelection(this->handle());
 }
 
 inline void WidgetTreeView::expand(HTREEITEM node) {
@@ -418,6 +392,19 @@ inline const Message & WidgetTreeView::getClickMessage() {
 inline const Message & WidgetTreeView::getDblClickMessage() {
 	static const Message retVal( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
+}
+
+inline HTREEITEM WidgetTreeView::getSelectedImpl() const {
+	return TreeView_GetSelection( this->handle() );
+}
+
+inline void WidgetTreeView::setSelectedImpl(HTREEITEM item) {
+	TreeView_SelectItem( this->handle(), item );
+	TreeView_EnsureVisible(this->handle(), item);
+}
+
+inline size_t WidgetTreeView::countSelectedImpl() const {
+	return getSelected() == NULL ? 0 : 1;
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )
