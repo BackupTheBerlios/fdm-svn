@@ -69,10 +69,10 @@ private:
 	void throttleSetup();
 	bool mThrottleEnable;
 	size_t mBytesSent,
-		   mBytesSpokenFor,
 		   mDownloadLimit,
 		   mCycleTime,
 		   mByteSlice; // download throttling
+	int    mBytesSpokenFor;
 
 	CriticalSection cs;
 	DownloadList downloads;

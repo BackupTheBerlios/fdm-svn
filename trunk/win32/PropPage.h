@@ -47,19 +47,20 @@ public:
 
 	struct TextItem {
 		WORD itemID;
-		const char* translatedString;
+		const char* stringToTranslate;
 	};
 
-	struct FdmItem
-	{
+	struct FdmItem {
 		WORD itemID;
 		int setting;
 		Type type;
 	};
+
 	struct FdmListItem {
 		int setting;
 		ResourceManager::Strings desc;
 	};
+
 	struct FdmTextItem {
 		WORD itemID;
 		ResourceManager::Strings translatedString;
@@ -70,7 +71,7 @@ protected:
 	void translate(HWND page, TextItem* items);
 	void fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);
 	void fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);
-	void fdmTranslate(HWND page, FdmTextItem* textItems);
+	void fdmTranslate(HWND page, FdmTextItem* items);
 };
 
 #endif // !defined(PROP_PAGE_H)

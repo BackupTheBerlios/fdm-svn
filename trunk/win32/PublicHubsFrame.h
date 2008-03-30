@@ -21,7 +21,7 @@
 
 #include "StaticFrame.h"
 
-#include "TypedListView.h"
+#include "TypedTable.h"
 
 #include <dcpp/HubEntry.h>
 #include <dcpp/FavoriteManagerListener.h>
@@ -92,17 +92,17 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListView<HubInfo> WidgetHubs;
+	typedef TypedTable<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
-	WidgetButtonPtr configure;
-	WidgetButtonPtr refresh;
-	WidgetButtonPtr lists;
-	WidgetButtonPtr filterDesc;
-	WidgetTextBoxPtr filter;
-	WidgetComboBoxPtr pubLists;
-	WidgetComboBoxPtr filterSel;
+	ButtonPtr configure;
+	ButtonPtr refresh;
+	ButtonPtr lists;
+	ButtonPtr filterDesc;
+	TextBoxPtr filter;
+	ComboBoxPtr pubLists;
+	ComboBoxPtr filterSel;
 
 	int visibleHubs;
 	int users;

@@ -47,22 +47,23 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	memset(perSecond, 0, sizeof(perSecond));
 
 	{
-		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_SINGLESEL;
-		searches = createListView(cs);
+		searches = createTable(cs);
 		addWidget(searches);
 
 		searches->createColumns(WinUtil::getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
-		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
+		searches->setSort(COLUMN_COUNT, SmartWin::Table::SORT_INT, false);
 		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
 		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
 	}
 
 	{
-		WidgetCheckBox::Seed cs(T_("Ignore TTH searches"));
+		CheckBox::Seed cs(T_("Ignore TTH searches"));
 		ignoreTTH = createCheckBox(cs);
+		ignoreTTH->setHelpId(IDH_SPY_IGNORE_TTH);
 		ignoreTTH->setChecked(bIgnoreTTH);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
 	}
@@ -79,11 +80,6 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	ClientManager::getInstance()->addListener(this);
 
 	initSecond();
-#if 0
-	// for testing purposes; adds 2 dummy lines into the list
-	postMessage(WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
-	postMessage(WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 2")));
-#endif
 }
 
 SpyFrame::~SpyFrame() {
@@ -170,9 +166,9 @@ void SpyFrame::handleColumnClick(int column) {
 			searches->setSort(searches->getSortColumn(), searches->getSortType(), false);
 	} else {
 		if(column == COLUMN_COUNT) {
-			searches->setSort(column, SmartWin::WidgetListView::SORT_INT);
+			searches->setSort(column, SmartWin::Table::SORT_INT);
 		} else {
-			searches->setSort(column, SmartWin::WidgetListView::SORT_STRING_NOCASE);
+			searches->setSort(column, SmartWin::Table::SORT_STRING_NOCASE);
 		}
 	}
 }

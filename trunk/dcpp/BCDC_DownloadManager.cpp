@@ -81,13 +81,13 @@ void DownloadManager::throttleSetup() {
 			mByteSlice = mDownloadLimit / (7 * num_transfers);
 			if (mByteSlice > INBUFSIZE)
 				mByteSlice = INBUFSIZE;
-			mCycleTime = 1000 / 10;
-		}
-		else {
+			mCycleTime = 500 / 10;
+		} else {
 			mByteSlice = INBUFSIZE;
-			mCycleTime = 1000 * INBUFSIZE / mDownloadLimit;
+			mCycleTime = 500 * INBUFSIZE / mDownloadLimit;
 		}
 	}
+	dcdebug("DM mByteSlice: %d; mCycleTime: %d\n", mByteSlice, mCycleTime);
 }
 
 } // namespace dcpp

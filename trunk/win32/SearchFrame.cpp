@@ -109,28 +109,32 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	droppedResults(0)
 {
 	{
-		WidgetStatic::Seed cs;
+		Label::Seed cs;
 		cs.exStyle = WS_EX_TRANSPARENT;
-		
+
+		cs.caption = T_("Search for");
 		searchLabel = createStatic(cs);
-		searchLabel->setText(T_("Search for"));
+		searchLabel->setHelpId(IDH_SEARCH_SEARCH_FOR);
 
+		cs.caption = T_("Size");
 		sizeLabel = createStatic(cs);
-		sizeLabel->setText(T_("Size"));
-		
+		sizeLabel->setHelpId(IDH_SEARCH_SIZE);
+
+		cs.caption = T_("File type");
 		typeLabel = createStatic(cs);
-		typeLabel->setText(T_("File type"));
+		typeLabel->setHelpId(IDH_SEARCH_TYPE);
 
-		optionLabel = createStatic();
-		optionLabel->setText(T_("Search options"));
+		cs.caption = T_("Search options");
+		optionLabel = createStatic(cs);
 
-		hubsLabel = createStatic();
-		hubsLabel->setText(T_("Hubs"));
-
+		cs.caption = T_("Hubs");
+		hubsLabel = createStatic(cs);
+		hubsLabel->setHelpId(IDH_SEARCH_HUBS);
 	}
 
 	{
 		searchBox = createComboBox(WinUtil::Seeds::comboBoxEdit);
+		searchBox->setHelpId(IDH_SEARCH_SEARCH_FOR);
 		addWidget(searchBox);
 		
 		for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
@@ -140,16 +144,22 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		Button::Seed cs = WinUtil::Seeds::button;
+		cs.caption = T_("Purge");
+		purge = createButton(cs);
+		purge->setHelpId(IDH_SEARCH_PURGE);
+		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
+
 		cs.style |= BS_DEFPUSHBUTTON;
 		cs.caption = T_("Search");
 		doSearch = createButton(cs);
-
+		doSearch->setHelpId(IDH_SEARCH_SEARCH);
 		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
 	}
 
 	{
 		mode = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		mode->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(mode);
 
 		mode->addValue(T_("Normal"));
@@ -158,14 +168,16 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL | ES_NUMBER;
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style |= ES_AUTOHSCROLL | ES_NUMBER;
 		size = createTextBox(cs);
+		size->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(size);
 	}
 
 	{
 		sizeMode = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		sizeMode->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(sizeMode);
 
 		sizeMode->addValue(T_("B"));
@@ -177,6 +189,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		fileType = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		fileType->setHelpId(IDH_SEARCH_TYPE);
 		addWidget(fileType);
 
 		fileType->addValue(T_("Any"));
@@ -191,18 +204,20 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetCheckBox::Seed cs(T_("Only users with free slots"));
+		CheckBox::Seed cs(T_("Only users with free slots"));
 		slots = createCheckBox(cs);
+		slots->setHelpId(IDH_SEARCH_SLOTS);
 		slots->setChecked(onlyFree);
 
 		slots->onClicked(std::tr1::bind(&SearchFrame::handleSlotsClicked, this)) ;
 	}
 
 	{
-		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_NOCOLUMNHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
+		hubs->setHelpId(IDH_SEARCH_HUBS);
 		addWidget(hubs);
 
 		TStringList dummy;
@@ -216,7 +231,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::listView);
+		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::Table);
 		addWidget(results);
 
 		results->createColumns(WinUtil::getStrings(columnNames));
@@ -231,16 +246,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
-		cs.caption = T_("Purge");
-		purge = createButton(cs);
-
-		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
-	}
-
-
-	{
-		WidgetCheckBox::Seed cs(_T("+/-"));
+		CheckBox::Seed cs(_T("+/-"));
 		showUI = createCheckBox(cs);
 		showUI->setChecked(bShowUI);
 
@@ -667,14 +673,14 @@ void SearchFrame::handleDownloadTo() {
 			}
 		} else {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-			if(WinUtil::browseDirectory(target, handle())) {
+			if(createFolderDialog().open(target)) {
 				WinUtil::addLastDir(target);
 				results->forEachSelectedT(SearchInfo::Download(target));
 			}
 		}
 	} else {
 		tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-		if(WinUtil::browseDirectory(target, handle())) {
+		if(createFolderDialog().open(target)) {
 			WinUtil::addLastDir(target);
 			results->forEachSelectedT(SearchInfo::Download(target));
 		}
@@ -710,7 +716,7 @@ void SearchFrame::handleDownloadWholeTarget(unsigned id) {
 
 void SearchFrame::handleDownloadDirTo() {
 	tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(target, handle())) {
+	if(createFolderDialog().open(target)) {
 		WinUtil::addLastDir(target);
 		results->forEachSelectedT(SearchInfo::DownloadWhole(target));
 	}

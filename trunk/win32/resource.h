@@ -49,6 +49,7 @@
 #define IDB_EXIT		171
 #define IDB_HUB			172
 #define IDB_DCPP		173
+#define IDB_HELP		174
 
 #define IDB_AUTOSEARCH				190
 

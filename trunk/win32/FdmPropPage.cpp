@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,20 +118,13 @@ void PropPage::fdmWrite(HWND page, FdmItem const* items, FdmListItem* listItems 
 		}
 	}
 
-	if(listItems) {
-		int i;
-		for(i = 0; listItems[i].setting != 0; i++) {
+	if(listItems)
+		for(size_t i = 0; listItems[i].setting != 0; ++i)
 			settings->set(SettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
-		}
-	}
 }
 
-void PropPage::fdmTranslate(HWND page, FdmTextItem* textItems)
-{
-	if (textItems != NULL) {
-		for(int i = 0; textItems[i].itemID != 0; i++) {
-			::SetDlgItemText(page, textItems[i].itemID,
-				CTSTRING_I(textItems[i].translatedString));
-		}
-	}
+void PropPage::fdmTranslate(HWND page, FdmTextItem* items) {
+	if(items)
+		for(size_t i = 0; items[i].itemID != 0; ++i)
+			::SetDlgItemText(page, items[i].itemID, CTSTRING_I(items[i].translatedString));
 }

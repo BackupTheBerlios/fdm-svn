@@ -194,6 +194,8 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 	for(UserList::iterator ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSource(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
+	
+	bcdcThrottleSetup();
 }
 
 void ConnectionManager::on(TimerManagerListener::Minute, uint32_t aTick) throw() {
@@ -677,6 +679,15 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 		}
 	}
 	putConnection(aSource);
+}
+
+void ConnectionManager::disconnect(const UserPtr& aUser) {
+	Lock l(cs);
+	for(UserConnectionList::iterator i = userConnections.begin(); i != userConnections.end(); ++i) {
+		UserConnection* uc = *i;
+		if(uc->getUser() == aUser)
+			uc->disconnect(true);
+	}
 }
 
 void ConnectionManager::disconnect(const UserPtr& aUser, int isDownload) {

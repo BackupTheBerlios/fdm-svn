@@ -23,7 +23,7 @@
 
 #include "StaticFrame.h"
 #include "WinUtil.h"
-#include "TypedListView.h"
+#include "TypedTable.h"
 
 #include "UserInfoBase.h"
 #include "resource.h"
@@ -91,7 +91,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedListView<UserInfo> WidgetUsers;
+	typedef TypedTable<UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 
@@ -104,10 +104,10 @@ private:
 	void updateUser(const UserPtr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 
-	void handleProperties();
+	void handleDescription();
 	void handleRemove();
 	bool handleKeyDown(int c);
-	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleItemChanged(LPARAM lParam);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 

@@ -37,17 +37,11 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// DEVELOPERS RENOTE!
-// This class is INTENTIONALLY inlined since some users might want to include this
-// class without including the whole library! This way you can use the
-// WidgetLoadFile && the WidgetSaveFile dialogs WITHOUT being forced to link
-// against the COMPLETE library!! DON'T put this class into a library .cpp file!!!
-
-/// Class for adding a filter to e.g. a WidgetLoadFile dialog.
+/// Class for adding a filter to e.g. a LoadDialog dialog.
 /** \ingroup AspectClasses
   * Class is an Aspect class which should be realized into classes that needs it.
   * <br>
-  * Help the WidgetLoadFile and the WidgetSaveFile to add up filters on which file
+  * Help the LoadDialog and the SaveDialog to add up filters on which file
   * types to look for!
   */
 class AspectFileFilter
@@ -90,30 +84,7 @@ public:
 		return itsActiveFilter + 1;
 	}
 
-protected:
-	AspectFileFilter()
-		: itsActiveFilter( 0 )
-	{}
-
-	SmartUtil::tstring filter() const
-	{
-		SmartUtil::tstring filter( itsFilter.begin(), itsFilter.end() );
-		return filter;
-	}
-
-private:
-	std::vector< TCHAR > itsFilter;
-	unsigned int itsActiveFilter;
-};
-
-// Class that contains common things between the different WidgetXXXXFile classes.
-// Among other things we have specializations that have lots of commonalities.
-/// Class containing commonalities between WidgetLoadFile and WidgetSaveFile Widgets.
-class WidgetFileCommon
-	: public virtual AspectFileFilter
-{
-public:
-	/// Sets the starting directory of the WidgetLoadFile or WidgetSaveFile Widget
+	/// Sets the starting directory of the LoadDialog or SaveDialog Widget
 	/** If given your dialog will try to start in the given directory, otherwise it
 	  * will use the working directory of the process.
 	  */
@@ -123,7 +94,7 @@ public:
 	}
 
 	/// Ensure filename meets OS expectations for path separators.
-	/** We want WidgetSaveFile and WidgetLoadFile to always return a pathname that
+	/** We want SaveDialog and LoadDialog to always return a pathname that
 	  * meets the OS expectations. <br>
 	  * Windows wants: C:\dir\dir\file.ext <br>
 	  * and UnixLinux: /dir/dir/file.ext <br>
@@ -155,31 +126,33 @@ public:
 #endif
 	}
 
+
 protected:
+	Widget * itsParent;
+	HWND getParentHandle() { return itsParent ? itsParent->handle() : NULL; }
+
+	AspectFileFilter(Widget* parent)
+		: itsParent(parent), itsActiveFilter( 0 )
+	{}
+
 	static const int PATH_BUFFER_SIZE = 32768; //really arbitrary, but 32K sounds reasonable. size in number of TCHARS!
 
 	// Fills out the common members of the OPENFILENAME struct.
-	// This is called for both WidgetLoadFile and for WidgetSaveFile Widgets
-	void fillOutCommonStructure( OPENFILENAME & ofn, HWND parent, int flags )
+	// This is called for both LoadDialog and for SaveDialog Widgets
+	void fillOFN( OPENFILENAME & ofn, HWND parent, int flags )
 	{
-		// Initialize OPENFILENAME
-		ZeroMemory( & ofn, sizeof( ofn ) );
-		ofn.lStructSize = sizeof( OPENFILENAME );
-
 		ofn.hwndOwner = parent;
-		ofn.hInstance = ::GetModuleHandle( 0 );
 
 		ofn.nMaxFile = PATH_BUFFER_SIZE;
-		itsFilter = this->filter(); // Remember that the filter needs to be accessible _after_ we return from this function...
 		ofn.lpstrFilter = itsFilter.c_str();
 		ofn.nFilterIndex = this->getActiveFilter();
-		ofn.lpstrFileTitle = NULL;
-		ofn.nMaxFileTitle = 259;
 		ofn.lpstrInitialDir = itsStartDir.c_str();
-		ofn.Flags = flags; // OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+		ofn.Flags = flags;
 	}
 
+
 private:
+	unsigned int itsActiveFilter;
 	SmartUtil::tstring itsStartDir;
 	SmartUtil::tstring itsFilter;
 };

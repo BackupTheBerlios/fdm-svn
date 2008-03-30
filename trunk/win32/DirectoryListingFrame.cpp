@@ -136,7 +136,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
 		addWidget(files);
 		paned->setSecond(files);
 
@@ -153,7 +153,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		Button::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = T_("Find");
 		find = createButton(cs);
@@ -482,7 +482,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 		ItemInfo* ii = dirs->getSelectedData();
 		if(ii) {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-			if(WinUtil::browseDirectory(target, handle())) {
+			if(createFolderDialog().open(target)) {
 				WinUtil::addLastDir(target);
 				download(ii, Text::fromT(target));
 			}
@@ -499,7 +499,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 					}
 				} else {
 					tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-					if(WinUtil::browseDirectory(target, handle())) {
+					if(createFolderDialog().open(target)) {
 						WinUtil::addLastDir(target);
 						dl->download(ii->dir, Text::fromT(target), WinUtil::isShift());
 					}
@@ -509,7 +509,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 			}
 		} else {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-			if(WinUtil::browseDirectory(target, handle())) {
+			if(createFolderDialog().open(target)) {
 				WinUtil::addLastDir(target);
 				downloadFiles(Text::fromT(target));
 			}

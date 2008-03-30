@@ -86,7 +86,7 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	attachButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
 
-	WidgetSpinnerPtr spinner = attachSpinner(IDC_SLOTSSPIN);
+	SpinnerPtr spinner = attachSpinner(IDC_SLOTSSPIN);
 	spinner->setRange(0, 100);
 
 	spinner = attachSpinner(IDC_SPEEDSPIN);
@@ -120,25 +120,25 @@ void DownloadPage::write()
 
 void DownloadPage::handleBrowseDir() {
 	tstring dir = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, handle()))
+	if(createFolderDialog().open(dir))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		::SetDlgItemText(handle(), IDC_DOWNLOADDIR, dir.c_str());
+		setItemText(IDC_DOWNLOADDIR, dir);
 	}
 }
 
 void DownloadPage::handleBrowseTempDir() {
 	tstring dir = Text::toT(SETTING(TEMP_DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, handle()))
+	if(createFolderDialog().open(dir))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		::SetDlgItemText(handle(), IDC_TEMP_DOWNLOAD_DIRECTORY, dir.c_str());
+		setItemText(IDC_TEMP_DOWNLOAD_DIRECTORY, dir);
 	}
 }
 

@@ -108,6 +108,7 @@ public:
 	void getDownloadConnection(const UserPtr& aUser);
 	void force(const UserPtr& aUser);
 
+	void disconnect(const UserPtr& aUser); // disconnect downloads and uploads
 	void disconnect(const UserPtr& aUser, int isDownload);
 
 	void shutdown();
@@ -172,6 +173,8 @@ private:
 	void putCQI(ConnectionQueueItem* cqi);
 
 	void accept(const Socket& sock, bool secure) throw();
+	
+	void bcdcThrottleSetup();
 
 	// UserConnectionListener
 	virtual void on(Connected, UserConnection*) throw();

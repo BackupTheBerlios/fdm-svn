@@ -60,13 +60,13 @@ bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
 
-const SmartWin::WidgetButton::Seed WinUtil::Seeds::button;
-const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
-const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
-const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
+const SmartWin::Button::Seed WinUtil::Seeds::button;
+const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
+const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
+const SmartWin::Table::Seed WinUtil::Seeds::Table;
 const SmartWin::WidgetMenu::Seed WinUtil::Seeds::menu;
-const SmartWin::WidgetTextBox::Seed WinUtil::Seeds::textBox;
-const SmartWin::WidgetTreeView::Seed WinUtil::Seeds::treeView;
+const SmartWin::TextBox::Seed WinUtil::Seeds::textBox;
+const SmartWin::Tree::Seed WinUtil::Seeds::treeView;
 
 void WinUtil::init() {
 
@@ -122,21 +122,21 @@ void WinUtil::init() {
 	}
 	
 	// Const so that noone else will change them after they've been initialized
-	//SmartWin::WidgetButton::Seed& xbutton = const_cast<SmartWin::WidgetButton::Seed&>(Seeds::button);
-	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
-	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
-	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);
+	//SmartWin::Button::Seed& xbutton = const_cast<SmartWin::Button::Seed&>(Seeds::button);
+	SmartWin::ComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxEdit);
+	SmartWin::ComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxStatic);
+	SmartWin::Table::Seed& xTable = const_cast<SmartWin::Table::Seed&>(Seeds::Table);
 	SmartWin::WidgetMenu::Seed& xmenu = const_cast<SmartWin::WidgetMenu::Seed&>(Seeds::menu);
-	SmartWin::WidgetTextBox::Seed& xtextBox = const_cast<SmartWin::WidgetTextBox::Seed&>(Seeds::textBox);
-	SmartWin::WidgetTreeView::Seed& xtreeView =  const_cast<SmartWin::WidgetTreeView::Seed&>(Seeds::treeView);
+	SmartWin::TextBox::Seed& xtextBox = const_cast<SmartWin::TextBox::Seed&>(Seeds::textBox);
+	SmartWin::Tree::Seed& xtreeView =  const_cast<SmartWin::Tree::Seed&>(Seeds::treeView);
 
 	xcomboBoxStatic.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
 	xcomboBoxEdit.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
 	
-	xlistView.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-	xlistView.exStyle = WS_EX_CLIENTEDGE;
-	xlistView.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
-	xlistView.font = font;
+	xTable.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+	xTable.exStyle = WS_EX_CLIENTEDGE;
+	xTable.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
+	xTable.font = font;
 
 	if(BOOLSETTING(OWNER_DRAWN_MENUS))
 		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
@@ -404,46 +404,6 @@ void WinUtil::addLastDir(const tstring& dir) {
 		lastDirs.erase(lastDirs.begin());
 	}
 	lastDirs.push_back(dir);
-}
-
-static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
-	switch(uMsg) {
-	case BFFM_INITIALIZED:
-		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
-		break;
-	}
-	return 0;
-}
-
-bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
-	TCHAR buf[MAX_PATH];
-	BROWSEINFO bi;
-	LPMALLOC ma;
-
-	ZeroMemory(&bi, sizeof(bi));
-
-	bi.hwndOwner = owner;
-	bi.pszDisplayName = buf;
-	tstring title = T_("Choose folder");
-	bi.lpszTitle = title.c_str();
-	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
-	bi.lParam = (LPARAM)target.c_str();
-	bi.lpfn = &browseCallbackProc;
-	LPITEMIDLIST pidl = ::SHBrowseForFolder(&bi);
-	if(pidl != NULL) {
-		::SHGetPathFromIDList(pidl, buf);
-		target = buf;
-
-		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
-			target+=_T('\\');
-
-		if(::SHGetMalloc(&ma) != E_FAIL) {
-			ma->Free(pidl);
-			ma->Release();
-		}
-		return true;
-	}
-	return false;
 }
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
@@ -1066,7 +1026,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-			SmartWin::WidgetMessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
+			SmartWin::MessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::MessageBox::BOX_OK, SmartWin::MessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }

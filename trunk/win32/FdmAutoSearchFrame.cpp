@@ -57,7 +57,6 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		items->setColumnOrder(WinUtil::splitTokens(SETTING(AUTO_SEARCH_FRAME_ORDER), columnIndexes));
 		items->setColumnWidths(WinUtil::splitTokens(SETTING(AUTO_SEARCH_FRAME_WIDTHS), columnSizes));
-		items->setColor(WinUtil::textColor, WinUtil::bgColor);
 
 		items->onDblClicked(std::tr1::bind(&AutoSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&AutoSearchFrame::handleKeyDown, this, _1));
@@ -164,8 +163,8 @@ void AutoSearchFrame::handleAdd() {
 		int index;
 
 		// Add new search to the end or if selected, just before
-		if(items->getSelectedCount() == 1) {
-			index = items->getSelectedIndex();
+		if(items->countSelected() == 1) {
+			index = items->getSelected();
 			collection.insert(collection.begin() + index, search);
 		} else {
 			index = -1;
@@ -178,7 +177,7 @@ void AutoSearchFrame::handleAdd() {
 
 void AutoSearchFrame::handleProperties() {
 	// Get selection info
-	std::vector<unsigned> selected = items->getSelected();
+	std::vector<unsigned> selected = items->getSelection();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		// Edit existing
 		AutoSearchManager::SearchCollection& collection = AutoSearchManager::getInstance()->collection;
@@ -202,7 +201,7 @@ void AutoSearchFrame::handleProperties() {
 void AutoSearchFrame::handleUp() {
 	AutoSearchManager::SearchCollection& collection = AutoSearchManager::getInstance()->collection;
 	HoldRedraw hold(items);
-	std::vector<unsigned> selected = items->getSelected();
+	std::vector<unsigned> selected = items->getSelection();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
 			AutoSearch search = collection[*i];
@@ -217,7 +216,7 @@ void AutoSearchFrame::handleUp() {
 void AutoSearchFrame::handleDown() {
 	AutoSearchManager::SearchCollection& collection = AutoSearchManager::getInstance()->collection;
 	HoldRedraw hold(items);
-	std::vector<unsigned> selected = items->getSelected();
+	std::vector<unsigned> selected = items->getSelection();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
 		if(*i < items->size() - 1) {
 			AutoSearch search = collection[*i];
@@ -239,7 +238,7 @@ void AutoSearchFrame::handleRemove() {
 }
 
 void AutoSearchFrame::handleDoubleClick() {
-	if(items->hasSelection()) {
+	if(items->hasSelected()) {
 		handleProperties();
 	} else {
 		handleAdd();
@@ -291,7 +290,7 @@ bool AutoSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&AutoSearchFrame::handleProperties, this));
 	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&AutoSearchFrame::handleRemove, this));
 
-	bool status = items->hasSelection();
+	bool status = items->hasSelected();
 	contextMenu->setItemEnabled(IDC_EDIT, false, status);
 	contextMenu->setItemEnabled(IDC_REMOVE, false, status);
 

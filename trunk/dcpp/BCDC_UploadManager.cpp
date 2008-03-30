@@ -71,16 +71,16 @@ void UploadManager::throttleSetup() {
 	mThrottleEnable = BOOLSETTING(THROTTLE_ENABLE) && (mUploadLimit > 0 && mUploadLimit != 1337) && (num_transfers > 0);
 	if (mThrottleEnable) {
 		if (mUploadLimit <= (INBUFSIZE * 10 * num_transfers)) {
-			mByteSlice = mUploadLimit / (5 * num_transfers);
+			mByteSlice = mUploadLimit / (7 * num_transfers);
 			if (mByteSlice > INBUFSIZE)
 				mByteSlice = INBUFSIZE;
-			mCycleTime = 1000 / 10;
-		}
-		else {
+			mCycleTime = 500 / 10;
+		} else {
 			mByteSlice = INBUFSIZE;
-			mCycleTime = 1000 * INBUFSIZE / mUploadLimit;
+			mCycleTime = 500 * INBUFSIZE / mUploadLimit;
 		}
 	}
+	dcdebug("UM mByteSlice: %d; mCycleTime: %d\n", mByteSlice, mCycleTime);
 }
 
 } // namespace dcpp

@@ -76,13 +76,13 @@ bool AutoSearchProperties::handleInitDialog() {
 	sourceType->addValue(T_("Video"));
 	sourceType->addValue(T_("Directory"));
 	sourceType->addValue(T_("TTH"));
-	sourceType->setSelectedIndex(search->sourceType);
+	sourceType->setSelected(search->sourceType);
 
 	sizeModes = attachComboBox(IDC_AUTOS_SIZE_MODES);
 	sizeModes->addValue(T_("Normal"));
 	sizeModes->addValue(T_("At least"));
 	sizeModes->addValue(T_("At most"));
-	sizeModes->setSelectedIndex(search->sizeModes);
+	sizeModes->setSelected(search->sizeModes);
 
 	sizeString = attachTextBox(IDC_AUTOS_FILE_SIZE);
 	sizeString->setText((search->size > 0) ? Text::toT(Util::toString(search->size)) : Util::emptyStringT);
@@ -92,7 +92,7 @@ bool AutoSearchProperties::handleInitDialog() {
 	sizeType->addValue(T_("KiB"));
 	sizeType->addValue(T_("MiB"));
 	sizeType->addValue(T_("GiB"));
-	sizeType->setSelectedIndex(search->typeFileSize);
+	sizeType->setSelected(search->typeFileSize);
 
 	onlyIfOp = attachCheckBox(IDC_AS_ONLY_IF_OP);
 	onlyIfOp->setText(TSTRING(ONLY_WHERE_OP));
@@ -122,7 +122,7 @@ bool AutoSearchProperties::handleInitDialog() {
 	resSizeType->addValue(T_("KiB"));
 	resSizeType->addValue(T_("MiB"));
 	resSizeType->addValue(T_("GiB"));
-	resSizeType->setSelectedIndex(search->resultsTypeFileSize);
+	resSizeType->setSelected(search->resultsTypeFileSize);
 
 	WidgetButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&AutoSearchProperties::handleOKClicked, this));
@@ -141,13 +141,13 @@ void AutoSearchProperties::handleFocus() {
 
 void AutoSearchProperties::handleOKClicked() {
 	search->searchString = Text::fromT(searchString->getText());
-	search->sourceType = AutoSearch::SourceType(sourceType->getSelectedIndex());
-	search->sizeModes = AutoSearch::SizeModes(sizeModes->getSelectedIndex());
+	search->sourceType = AutoSearch::SourceType(sourceType->getSelected());
+	search->sizeModes = AutoSearch::SizeModes(sizeModes->getSelected());
 
 	tstring searchSize = sizeString->getText();
 	search->size = searchSize.empty() ? -1 : Util::toInt64(Text::fromT(searchSize));
 
-	search->typeFileSize = AutoSearch::TypeFileSize(sizeType->getSelectedIndex());
+	search->typeFileSize = AutoSearch::TypeFileSize(sizeType->getSelected());
 	search->onlyIfOp = onlyIfOp->getChecked();
 	search->isActive = active->getChecked();
 
@@ -161,7 +161,7 @@ void AutoSearchProperties::handleOKClicked() {
 	tstring maxFileSize = maxSize->getText();
 	search->resultsMaxSize = maxFileSize.empty() ? -1 : Util::toInt64(Text::fromT(maxFileSize));
 	
-	search->resultsTypeFileSize = AutoSearch::TypeFileSize(resSizeType->getSelectedIndex());
+	search->resultsTypeFileSize = AutoSearch::TypeFileSize(resSizeType->getSelected());
 
 	endDialog(IDOK);
 }

@@ -20,8 +20,8 @@
 #define DCPLUSPLUS_WIN32_DIRECTORY_LISTING_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TypedListView.h"
-#include "TypedTreeView.h"
+#include "TypedTable.h"
+#include "TypedTree.h"
 #include "AspectUserCommand.h"
 
 #include <dcpp/forward.h>
@@ -128,19 +128,19 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedTreeView<ItemInfo> WidgetDirs;
+	typedef TypedTree<ItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
-	typedef TypedListView<ItemInfo> WidgetFiles;
+	typedef TypedTable<ItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;
 
-	WidgetButtonPtr find;
-	WidgetButtonPtr findNext;
-	WidgetButtonPtr listDiff;
-	WidgetButtonPtr matchQueue;
+	ButtonPtr find;
+	ButtonPtr findNext;
+	ButtonPtr listDiff;
+	ButtonPtr matchQueue;
 	
 	int64_t speed;		/**< Speed at which this file list was downloaded */
 

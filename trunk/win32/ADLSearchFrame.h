@@ -56,13 +56,13 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetListViewPtr items;
-	WidgetButtonPtr add;
-	WidgetButtonPtr properties;
-	WidgetButtonPtr up;
-	WidgetButtonPtr down;
-	WidgetButtonPtr remove;
-	WidgetButtonPtr help;
+	TablePtr items;
+	ButtonPtr add;
+	ButtonPtr properties;
+	ButtonPtr up;
+	ButtonPtr down;
+	ButtonPtr remove;
+	ButtonPtr help;
 
 	void handleAdd();
 	void handleProperties();
@@ -71,7 +71,7 @@ private:
 	void handleRemove();
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
-	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleItemChanged(LPARAM lParam);
 	bool handleContextMenu(SmartWin::ScreenCoordinate sc);
 
 	void addEntry(ADLSearch& search, int index = -1);

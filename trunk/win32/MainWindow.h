@@ -105,7 +105,7 @@ private:
 	WidgetHPanedPtr paned;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
-	WidgetToolbarPtr toolbar;
+	ToolBarPtr toolbar;
 	WidgetTabViewPtr tabs;
 	
 	/** Is the tray icon visible? */
@@ -184,8 +184,6 @@ private:
 	void saveWindowSettings();
 	void parseCommandLine(const tstring& cmdLine);
 	bool filter(MSG& msg);
-
-	void bcdcThrottleSetup();
 	
 	bool closing();
 	void handleRestore();

@@ -67,13 +67,13 @@ public:
 	static ImageMap fileIndexes;
 	
 	struct Seeds {
-		static const SmartWin::WidgetButton::Seed button;
-		static const SmartWin::WidgetComboBox::Seed comboBoxStatic;
-		static const SmartWin::WidgetComboBox::Seed comboBoxEdit;
-		static const SmartWin::WidgetListView::Seed listView;
+		static const SmartWin::Button::Seed button;
+		static const SmartWin::ComboBox::Seed comboBoxStatic;
+		static const SmartWin::ComboBox::Seed comboBoxEdit;
+		static const SmartWin::Table::Seed Table;
 		static const SmartWin::WidgetMenu::Seed menu;
-		static const SmartWin::WidgetTextBox::Seed textBox;
-		static const SmartWin::WidgetTreeView::Seed treeView;
+		static const SmartWin::TextBox::Seed textBox;
+		static const SmartWin::Tree::Seed treeView;
 	};
 
 	struct HelpItem {
@@ -155,7 +155,6 @@ public:
 
 	static void openLink(const tstring& url);
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
-	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
 	static int getOsMajor();
 	static int getOsMinor();

@@ -118,13 +118,8 @@ void LogPage::write() {
 
 void LogPage::handleBrowseClicked() {
 	tstring dir = Text::toT(SETTING(LOG_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, handle()))
-	{
-		// Adjust path string
-		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
-			dir += '\\';
-
-		::SetDlgItemText(handle(), IDC_LOG_DIRECTORY, dir.c_str());
+	if(createFolderDialog().open(dir)) {
+		setItemText(IDC_LOG_DIRECTORY, dir);
 	}
 }
 

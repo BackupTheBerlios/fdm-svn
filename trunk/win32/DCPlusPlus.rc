@@ -40,6 +40,7 @@ IDB_FINISHED_DL         BITMAP                  "res/menu/FinishedDL.bmp"
 IDB_FINISHED_UL         BITMAP                  "res/menu/FinishedUL.bmp"
 IDB_FOLDERS             BITMAP                  "res/folders.bmp"
 IDB_FOLLOW              BITMAP                  "res/menu/Follow.bmp"
+IDB_HELP                BITMAP                  "res/menu/Help.bmp"
 IDB_HUB                 BITMAP                  "res/menu/Hub.bmp"
 IDB_NETWORK_STATS       BITMAP                  "res/menu/NetworkStats.bmp"
 IDB_NOTEPAD             BITMAP                  "res/menu/Notepad.bmp"
@@ -399,7 +400,7 @@ BEGIN
 END
 
 IDD_ADLS_PROPERTIES DIALOGEX 0, 0, 190, 125
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ADLSearch Properties"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
@@ -435,7 +436,7 @@ BEGIN
 END
 
 IDD_FAVORITEHUB DIALOGEX 0, 0, 201, 163
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Favorite Hub Properties"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
@@ -478,7 +479,7 @@ BEGIN
 END
 
 IDD_HASH_PROGRESS DIALOGEX 0, 0, 430, 113
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Creating file index..."
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1028,12 +1029,11 @@ END
 
 IDR_FAVORITES ACCELERATORS 
 BEGIN
-    "N",            IDC_NEWFAV,             VIRTKEY, ALT, NOINVERT
+    "N",            IDC_NEWFAV,                VIRTKEY, ALT, NOINVERT
     "P",            IDC_EDIT,               VIRTKEY, ALT, NOINVERT
     "R",            IDC_REMOVE,             VIRTKEY, ALT, NOINVERT
     "U",            IDC_MOVE_UP,            VIRTKEY, ALT, NOINVERT
     "D",            IDC_MOVE_DOWN,          VIRTKEY, ALT, NOINVERT
     "C",            IDC_CONNECT,            VIRTKEY, ALT, NOINVERT
 END
-
 

@@ -82,7 +82,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	example->setColor(fg, bg);
 	example->setFont(font);
 
-	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
+	ButtonPtr button = attachButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
 	button = attachButton(IDC_SELTEXT);
@@ -116,37 +116,39 @@ void Appearance2Page::write() {
 }
 
 void Appearance2Page::handleBackgroundClicked() {
-	WidgetChooseColor::ColorParams initialColorParams(bg),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk()) {
+	ColorDialog::ColorParams colorParams(bg);
+	if(createColorDialog().open(colorParams)) {
 		bg = colorParams.getColor();
 		example->setColor(fg, bg);
+		example->invalidateWidget();
 	}
 }
 
 void Appearance2Page::handleTextClicked() {
 	LOGFONT logFont_ = logFont;
 	DWORD fg_ = fg;
-	if(createChooseFont().showDialog(CF_EFFECTS | CF_SCREENFONTS, &logFont_, fg_)) {
+	if(createFontDialog().open(CF_EFFECTS | CF_SCREENFONTS, logFont_, fg_)) {
 		logFont = logFont_;
 		fg = fg_;
 		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
+		example->setColor(fg, bg);
 		example->setFont(font);
+		example->invalidateWidget();
 	}
 }
 
 void Appearance2Page::handleULClicked() {
-	WidgetChooseColor::ColorParams initialColorParams(upBar),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(upBar);
+	if(createColorDialog().open(colorParams)) {
 		upBar = colorParams.getColor();
+	}
 }
 
 void Appearance2Page::handleDLClicked() {
-	WidgetChooseColor::ColorParams initialColorParams(downBar),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(downBar);
+	if(createColorDialog().open(colorParams)) {
 		downBar = colorParams.getColor();
+	}
 }
 
 void Appearance2Page::handleBrowseClicked() {
@@ -156,6 +158,6 @@ void Appearance2Page::handleBrowseClicked() {
 	tstring x = buf;
 
 	if(WinUtil::browseFile(x, handle(), false) == IDOK) {
-		::SetDlgItemText(handle(), IDC_BEEPFILE, x.c_str());
+		setItemText(IDC_BEEPFILE, x);
 	}
 }
