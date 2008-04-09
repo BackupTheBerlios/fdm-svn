@@ -61,7 +61,7 @@ FdmAppearancePage::FdmAppearancePage(SmartWin::Widget* parent) : PropPage(parent
 	iSpoke = SETTING(I_SPOKE_COLOUR);
 	myNickSpoken = SETTING(MY_NICK_SPOKEN_COLOUR);
 
-	WidgetButtonPtr button = attachButton(IDC_FDM_SETTINGS_BROWSE);
+	ButtonPtr button = attachButton(IDC_FDM_SETTINGS_BROWSE);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleBrowse, this));
 
 	button = attachButton(IDC_FDM_SETTINGS_OP_SPOKE);
@@ -109,29 +109,25 @@ void FdmAppearancePage::handleBrowse() {
 }
 
 void FdmAppearancePage::handleOpSpoke() {
-	WidgetChooseColor::ColorParams initialColorParams(opSpoke),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(opSpoke);
+	if(createColorDialog().open(colorParams))
 		opSpoke = colorParams.getColor();
 }
 
 void FdmAppearancePage::handleNotOpSpoke() {
-	WidgetChooseColor::ColorParams initialColorParams(notOpSpoke),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(notOpSpoke);
+	if(createColorDialog().open(colorParams))
 		notOpSpoke = colorParams.getColor();
 }
 
 void FdmAppearancePage::handleISpoke() {
-	WidgetChooseColor::ColorParams initialColorParams(iSpoke),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(iSpoke);
+	if(createColorDialog().open(colorParams))
 		iSpoke = colorParams.getColor();
 }
 
 void FdmAppearancePage::handleMyNickSpoken() {
-	WidgetChooseColor::ColorParams initialColorParams(myNickSpoken),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(myNickSpoken);
+	if(createColorDialog().open(colorParams))
 		myNickSpoken = colorParams.getColor();
 }

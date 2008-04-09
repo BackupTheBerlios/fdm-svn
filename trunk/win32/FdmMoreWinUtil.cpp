@@ -33,7 +33,7 @@
 #include <Ws2tcpip.h>
 
 bool MoreWinUtil::allowMoreInstances() {
-	if (::MessageBox(NULL, _T("There is already an instance of ") _T(FDMAPPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(FDMAPPNAME) _T(" ") _T(FDMVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
+	if (::MessageBox(NULL, _T("There is already an instance of ") _T(APPNAME) _T(" running.\nDo you want to launch another instance anyway?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 | MB_TOPMOST) == IDYES)
 		return true;
 	return false;
 }
@@ -46,9 +46,9 @@ tstring MoreWinUtil::commands = _T("\r\n /fdm \t or \t /fdm++ \t Fdm's spam,")
 bool MoreWinUtil::possibleCommand(tstring cmd, tstring param, tstring& message, tstring& status) {
 	if(Util::stricmp(cmd.c_str(), _T("fdm")) == 0 || Util::stricmp(cmd.c_str(), _T("fdm++")) == 0) {
 		string tmp = "\r\nSmile and be happy. :)\r\nhttp://fdm.berlios.de/ <";
-		tmp += FDMAPPNAME;
+		tmp += APPNAME;
 		tmp += " ";
-		tmp += FDMVERSIONSTRING;
+		tmp += VERSIONSTRING;
 		tmp += ">";
 		message = Text::toT(tmp);
 	} else if((Util::stricmp(cmd.c_str(), _T("winamp")) == 0) || (Util::stricmp(cmd.c_str(), _T("w")) == 0)) {

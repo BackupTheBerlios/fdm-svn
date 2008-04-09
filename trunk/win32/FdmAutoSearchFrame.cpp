@@ -49,9 +49,9 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	help(0)
 {
 	{
-		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		items = createListView(cs);
+		items = createTable(cs);
 		addWidget(items);
 
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -65,7 +65,7 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&New...");
 		add = createButton(cs);

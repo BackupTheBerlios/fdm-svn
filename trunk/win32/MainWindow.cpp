@@ -36,7 +36,7 @@
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ResourceManager.h>
-#include <dcpp/version.h>
+#include <dcpp/FdmVersion.h>
 #include <dcpp/DownloadManager.h>
 #include <dcpp/UploadManager.h>
 #include <dcpp/FavoriteManager.h>
@@ -107,7 +107,7 @@ MainWindow::MainWindow() :
 
 	c = new HttpConnection;
 	c->addListener(this);
-	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c->downloadFile("http://fdm.berlios.de/version.xml");
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();

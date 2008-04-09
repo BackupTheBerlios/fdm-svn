@@ -39,16 +39,16 @@ FdmAboutDlg::~FdmAboutDlg() {
 }
 
 bool FdmAboutDlg::handleInitDialog() {
-	setItemText(IDC_FDM_ABOUT_VERSION, Text::toT("Fdm v" FDMVERSIONSTRING " " FDMSVNVERSIONSTRING "\n(c) Copyright 2005-2008 Michael Jones\nFdm  is licenced under GPL\nhttp://fdm.berlios.de/"));
+	setItemText(IDC_FDM_ABOUT_VERSION, Text::toT("Fdm v" VERSIONSTRING " " SVNVERSIONSTRING "\n(c) Copyright 2005-2008 Michael Jones\nFdm  is licenced under GPL\nhttp://fdm.berlios.de/"));
 	setItemText(IDC_FDM_ABOUT_THANKS, Text::toT(fdmThanks));
-	setItemText(IDC_LATEST, T_("Downloading..."));
+	setItemText(IDC_FDM_ABOUT_LATEST, T_("Downloading..."));
 
 	attachButton(IDOK)->onClicked(std::tr1::bind(&FdmAboutDlg::endDialog, this, IDOK));
 
 	centerWindow();
 
 	c.addListener(this);
-	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c.downloadFile("http://fdm.berlios.de/version.xml");
 
 	return false;
 }
@@ -57,7 +57,7 @@ LRESULT FdmAboutDlg::handleSpeaker(WPARAM wParam, LPARAM lParam) {
  	switch(wParam) {
  	case SPEAK_VERSIONDATA: {
   		boost::scoped_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
-		setItemText(IDC_LATEST, *x);
+		setItemText(IDC_FDM_ABOUT_LATEST, *x);
 	} break;
  	}
 	return 0;

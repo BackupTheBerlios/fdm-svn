@@ -16,12 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
+#include "DCPlusPlus.h"
 
-#include "MainWindow.h"
+#include "ConnectionManager.h"
 
-#include <SettingsManager.h>
-#include <ConnectionManager.h>
+#include "SettingsManager.h"
+
+namespace dcpp {
 
 void ConnectionManager::bcdcThrottleSetup() {
 	//Govern upload rate && adjust it based on the time-based upload limit
@@ -48,3 +50,5 @@ void ConnectionManager::bcdcThrottleSetup() {
 		SettingsManager::getInstance()->set(SettingsManager::MAX_DOWNLOAD_SPEED_REAL_A_PARALLEL_LEVEL_OF_HOPEFULLY_USEFUL_INDIRECTION_IN_AN_ABSURDLY_LONG_IDENTIFIER, SETTING(MAX_DOWNLOAD_SPEED_REAL));
 	}
 }
+
+} // namespace dcpp

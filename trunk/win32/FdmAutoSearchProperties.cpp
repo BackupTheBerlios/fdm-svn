@@ -124,7 +124,7 @@ bool AutoSearchProperties::handleInitDialog() {
 	resSizeType->addValue(T_("GiB"));
 	resSizeType->setSelected(search->resultsTypeFileSize);
 
-	WidgetButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&AutoSearchProperties::handleOKClicked, this));
 
 	button = attachButton(IDCANCEL);

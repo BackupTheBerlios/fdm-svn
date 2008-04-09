@@ -30,19 +30,19 @@ public:
 
 	int run() { return createDialog(IDD_AUTOSEARCH_PROPERTIES); }
 private:
-	WidgetTextBoxPtr searchString;
-	WidgetTextBoxPtr sizeString;
-	WidgetTextBoxPtr matchString;
-	WidgetTextBoxPtr excludeString;
-	WidgetTextBoxPtr extensionString;
-	WidgetTextBoxPtr minSize;
-	WidgetTextBoxPtr maxSize;
-	WidgetComboBoxPtr sourceType;
-	WidgetComboBoxPtr sizeModes;
-	WidgetComboBoxPtr sizeType;
-	WidgetComboBoxPtr resSizeType;
-	WidgetCheckBoxPtr active;
-	WidgetCheckBoxPtr onlyIfOp;
+	TextBoxPtr searchString;
+	TextBoxPtr sizeString;
+	TextBoxPtr matchString;
+	TextBoxPtr excludeString;
+	TextBoxPtr extensionString;
+	TextBoxPtr minSize;
+	TextBoxPtr maxSize;
+	ComboBoxPtr sourceType;
+	ComboBoxPtr sizeModes;
+	ComboBoxPtr sizeType;
+	ComboBoxPtr resSizeType;
+	CheckBoxPtr active;
+	CheckBoxPtr onlyIfOp;
 
 	AutoSearch* search;
 

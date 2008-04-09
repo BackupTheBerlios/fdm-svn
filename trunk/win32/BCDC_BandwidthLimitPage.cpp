@@ -55,13 +55,13 @@ BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(pare
 	PropPage::fdmTranslate(handle(), texts);
 	PropPage::fdmRead(handle(), items, 0, 0);
 
-	WidgetCheckBoxPtr throttleTickBox = attachCheckBox(IDC_THROTTLE_ENABLE);
+	CheckBoxPtr throttleTickBox = attachCheckBox(IDC_THROTTLE_ENABLE);
 	throttleTickBox->onClicked(std::tr1::bind(&BandwidthLimitPage::handleThrottleEnableClicked, this));
 
 	throttleTickBox = attachCheckBox(IDC_TIME_BASED_BW_LIMITING);
 	throttleTickBox->onClicked(std::tr1::bind(&BandwidthLimitPage::handleThrottleEnableClicked, this));
 
-	WidgetSpinnerPtr spinner = attachSpinner(IDC_UPLOADSPEEDSPIN);
+	SpinnerPtr spinner = attachSpinner(IDC_UPLOADSPEEDSPIN);
 	spinner->setRange(0, 999);
 
 	spinner = attachSpinner(IDC_DOWNLOADSPEEDSPIN);
@@ -73,7 +73,7 @@ BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(pare
 	spinner = attachSpinner(IDC_DOWNLOADSPEEDSPIN_TIME);
 	spinner->setRange(0, 999);
 
-	WidgetComboBoxPtr times = attachComboBox(IDC_BW_START_TIME);
+	ComboBoxPtr times = attachComboBox(IDC_BW_START_TIME);
 	times->addValue(TSTRING(SETTINGS_BANDWIDTH_MIDNIGHT));
 
 	for (int i = 1; i < 12; ++i)
@@ -84,7 +84,7 @@ BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(pare
 	for (int i = 1; i < 12; ++i)
 		times->addValue(Text::toT(Util::toString(i) + " " + STRING(SETTINGS_BANDWIDTH_PM)));
 
-	times->setSelectedIndex(SETTING(BANDWIDTH_LIMIT_START));
+	times->setSelected(SETTING(BANDWIDTH_LIMIT_START));
 
 	times = attachComboBox(IDC_BW_END_TIME);
 	times->addValue(TSTRING(SETTINGS_BANDWIDTH_MIDNIGHT));
@@ -97,7 +97,7 @@ BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(pare
 	for (int i = 1; i < 12; ++i)
 		times->addValue(Text::toT(Util::toString(i) + " " + STRING(SETTINGS_BANDWIDTH_PM)));
 
-	times->setSelectedIndex(SETTING(BANDWIDTH_LIMIT_END));
+	times->setSelected(SETTING(BANDWIDTH_LIMIT_END));
 
 	setControlState();
 }

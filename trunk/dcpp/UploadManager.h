@@ -73,7 +73,6 @@ public:
 	size_t throttleGetSlice();
 	size_t throttleCycleTime();
 private:
-	int running;
 	void throttleZeroCounters();
 	void throttleBytesTransferred(uint32_t i);
 	void throttleSetup();

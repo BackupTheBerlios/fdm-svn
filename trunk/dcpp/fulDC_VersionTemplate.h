@@ -16,10 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define FDMAPPNAME "Fdm"
-#define FDMVERSIONSTRING "0.01"
-#define FDMVERSIONFLOAT 0.01
-#define FDMSVNVERSIONSTRING "svn$revision"
-#define FDMSVNVERSIONFLOAT $revision
+#define APPNAME "Fdm"
+#define VERSIONSTRING "0.00"
+#define VERSIONFLOAT 0.00
+#define SVNVERSIONSTRING "svn$revision"
+#define SVNVERSIONFLOAT $revision
 
 /* Update the .rc file as well... */
