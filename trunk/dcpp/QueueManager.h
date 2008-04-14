@@ -74,7 +74,7 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 public:
 	/** Add a file to the queue. */
 	void add(const string& aTarget, int64_t aSize, const TTHValue& root, const UserPtr& aUser, 
-		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
+		int aFlags = 0, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
 	void addList(const UserPtr& aUser, int aFlags, const string& aInitialDir = Util::emptyString) throw(QueueException, FileException);
 	/** Queue a partial file list download */
@@ -161,6 +161,8 @@ private:
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
 		void find(QueueItem::List& ql, const TTHValue& tth);
 
+		bool exists(const TTHValue& tth) const;
+
 		QueueItem* findAutoSearch(StringList& recent);
 		size_t getSize() { return queue.size(); }
 		QueueItem::StringMap& getQueue() { return queue; }
@@ -177,7 +179,7 @@ private:
 	public:
 		void add(QueueItem* qi);
 		void add(QueueItem* qi, const UserPtr& aUser);
-		QueueItem* getNext(const UserPtr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
+		QueueItem* getNext(const UserPtr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST, double lastSpeed = 0, int64_t lastSize = 0);
 		QueueItem* getRunning(const UserPtr& aUser);
 		void addDownload(QueueItem* qi, Download* d);
 		void removeDownload(QueueItem* qi, const UserPtr& d);

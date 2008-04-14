@@ -30,7 +30,11 @@
 #include <dcpp/TimerManager.h>
 
 template<class T, bool in_UL>
-class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {
+class FinishedFrameBase : 
+	public StaticFrame<T>, 
+	private FinishedManagerListener 
+{
+	typedef StaticFrame<T> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -41,23 +45,19 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<T> BaseType;
 	typedef MDIChildFrame<T> MDIChildType;
 	friend class StaticFrame<T>;
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase(SmartWin::WidgetTabView* mdiParent, const tstring& title, unsigned helpId, int icon) :
+	FinishedFrameBase(dwt::TabView* mdiParent, const tstring& title, unsigned helpId, int icon) :
 		BaseType(mdiParent, title, helpId, icon),
 		items(0),
 		totalBytes(0),
 		totalTime(0)
 	{
 		{
-			typename MDIChildType::Table::Seed cs;
-			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-			cs.exStyle = WS_EX_CLIENTEDGE;
-			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
+			items = static_cast<T*>(this)->addChild(typename WidgetItems::Seed());
 			items->setTableStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 			addWidget(items);
 
@@ -87,7 +87,7 @@ protected:
 	virtual ~FinishedFrameBase() { }
 
 	void layout() {
-		SmartWin::Rectangle r(this->getClientAreaSize());
+		dwt::Rectangle r(this->getClientAreaSize());
 
 		this->layoutStatus(r);
 		items->setBounds(r);
@@ -206,7 +206,7 @@ private:
 		return false;
 	}
 
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	bool handleContextMenu(dwt::ScreenCoordinate pt) {
 		if(items->hasSelected()) {
 			if(pt.x() == -1 && pt.y() == -1) {
 				pt = items->getContextMenuPos();
@@ -218,9 +218,9 @@ private:
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
-					typename T::WidgetMenu::Seed cs = WinUtil::Seeds::menu;
+					typename T::Menu::Seed cs = WinUtil::Seeds::menu;
 					cs.ownerDrawn = false;
-					typename T::WidgetMenuPtr pShellMenu = this->createMenu(cs);
+					typename T::MenuPtr pShellMenu = this->createMenu(cs);
 					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
 					pShellMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
 					pShellMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
@@ -236,7 +236,7 @@ private:
 				}
 			}
 
-			typename T::WidgetMenuPtr contextMenu = this->createMenu(WinUtil::Seeds::menu);
+			typename T::MenuPtr contextMenu = this->createMenu(WinUtil::Seeds::menu);
 			contextMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
 			contextMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
 			contextMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));

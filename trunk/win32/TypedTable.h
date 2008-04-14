@@ -19,22 +19,33 @@
 #ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 #define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 
-#include <dcpp/Util.h>
+#include "WinUtil.h"
 
 template<class ContentType, bool managed = true>
-class TypedTable : public SmartWin::Table
+class TypedTable : public dwt::Table
 {
-private:
-	typedef typename SmartWin::Table BaseType;
+	typedef typename dwt::Table BaseType;
 	typedef TypedTable<ContentType, managed> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedTable( SmartWin::Widget * parent ) : BaseType(parent) { 
+	explicit TypedTable( dwt::Widget * parent ) : BaseType(parent) { 
 		
 	}
-	
+
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
+		Seed() : BaseType::Seed() {
+			// @todo find a better way to directly use styles set in WinUtil...
+			style = WinUtil::Seeds::Table.style;
+			exStyle = WinUtil::Seeds::Table.exStyle;
+			lvStyle = WinUtil::Seeds::Table.lvStyle;
+			font = WinUtil::Seeds::Table.font;
+		}
+	};
+
 	~TypedTable() {
 		if(managed)
 			this->clear();
@@ -44,7 +55,7 @@ public:
 		BaseType::create(cs);
 		
 		this->addCallback(
-			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedTableDispatcher
+			dwt::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedTableDispatcher
 		);
 		this->onColumnClick(std::tr1::bind(&ThisType::handleColumnClick, this, _1));
 		this->onSortItems(std::tr1::bind(&ThisType::handleSort, this, _1, _2));

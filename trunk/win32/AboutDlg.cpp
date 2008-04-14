@@ -41,10 +41,10 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, "
 "krzysztof tyszecki, poison, mikejj, pur, bigmuscle, martin, jove, bart vullings, "
 "steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman, james ross,"
-"stanislav maslovski, david grundberg, pavel andreev, yakov suraev. "
+"stanislav maslovski, david grundberg, pavel andreev, yakov suraev, kulmegil, smir, emtee. "
 "Keep it coming!";
 
-AboutDlg::AboutDlg(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
+AboutDlg::AboutDlg(dwt::Widget* parent) : WidgetFactory<dwt::ModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&AboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&AboutDlg::handleSpeaker, this, _1, _2));
 }
@@ -56,9 +56,9 @@ bool AboutDlg::handleInitDialog() {
 	setText(T_("About DC++"));
 	
 	setItemText(IDC_VERSION, Text::toT(APPNAME " " VERSIONSTRING) + T_("\n(c) Copyright 2001-2008 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
-	attachTextBox(IDC_TTH)->setText(WinUtil::tth);
-	attachTextBox(IDC_THANKS)->setText(Text::toT(thanks));
-	setItemText(IDC_TOTALS, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));
+	attachChild<TextBox>(IDC_TTH)->setText(WinUtil::tth);
+	attachChild<TextBox>(IDC_THANKS)->setText(Text::toT(thanks));
+	setItemText(IDC_UPDOWN, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));
 	setItemText(IDC_GREETZ, T_("Greetz and Contributors"));
 	setItemText(IDC_TOTALS, T_("Totals"));
 	setItemText(IDC_LATEST_VERSION, T_("Latest stable version"));
@@ -70,7 +70,7 @@ bool AboutDlg::handleInitDialog() {
 	}
 	setItemText(IDC_LATEST, T_("Downloading..."));
 
-	attachButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
+	attachChild<Button>(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 
 	centerWindow();
 

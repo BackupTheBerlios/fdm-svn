@@ -25,6 +25,7 @@
 #include "resource.h"
 
 class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener {
+	typedef StaticFrame<SpyFrame> BaseType;
 public:
 	enum Status {
 		STATUS_IGNORE_TTH,
@@ -37,11 +38,10 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<SpyFrame> BaseType;
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 
-	SpyFrame(SmartWin::WidgetTabView* mdiParent);
+	SpyFrame(dwt::TabView* mdiParent);
 	virtual ~SpyFrame();
 
 	void layout();
@@ -80,7 +80,7 @@ private:
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	void handleColumnClick(int column);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 
 	void handleSearch(const tstring& searchString);
 

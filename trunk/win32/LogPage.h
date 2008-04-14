@@ -25,7 +25,7 @@
 class LogPage : public PropPage
 {
 public:
-	LogPage(SmartWin::Widget* parent);
+	LogPage(dwt::Widget* parent);
 	virtual ~LogPage();
 
 	virtual void write();
@@ -35,7 +35,7 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	TablePtr dataGrid;
+	TablePtr logOptions;
 	TextBoxPtr logFormat;
 	TextBoxPtr logFile;
 
@@ -47,7 +47,7 @@ private:
 	TStringPairList options;
 
 	void handleBrowseClicked();
-	LRESULT handleItemChanged();
+	void handleSelectionChanged();
 
 	void getValues();
 };

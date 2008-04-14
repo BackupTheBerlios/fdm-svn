@@ -23,15 +23,15 @@
 
 class TextFrame : public MDIChildFrame<TextFrame>
 {
+	typedef MDIChildFrame<TextFrame> BaseType;
 public:
-	TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName);
+	TextFrame(dwt::TabView* mdiParent, const string& fileName);
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST
 	};
 	
 private:
-	typedef MDIChildFrame<TextFrame> BaseType;
 	friend class MDIChildFrame<TextFrame>;
 
 	TextBoxPtr pad;

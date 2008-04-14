@@ -33,6 +33,7 @@ class QueueFrame :
 	public StaticFrame<QueueFrame>,
 	private QueueManagerListener
 {
+	typedef StaticFrame<QueueFrame> BaseType;
 public:
 	enum Status {
 		STATUS_SHOW_TREE,
@@ -45,7 +46,6 @@ public:
 	};
 
 private:
-	typedef StaticFrame<QueueFrame> BaseType;
 	friend class StaticFrame<QueueFrame>;
 	friend class MDIChildFrame<QueueFrame>;
 	
@@ -227,7 +227,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	QueueFrame(SmartWin::WidgetTabView* mdiParent);
+	QueueFrame(dwt::TabView* mdiParent);
 	virtual ~QueueFrame();
 	
 	void updateStatus();
@@ -262,17 +262,17 @@ private:
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
 	void changePriority(bool inc);
 
-	WidgetMenuPtr makeSingleMenu(QueueItemInfo* qii);
-	WidgetMenuPtr makeMultiMenu();
-	WidgetMenuPtr makeDirMenu();
+	MenuPtr makeSingleMenu(QueueItemInfo* qii);
+	MenuPtr makeMultiMenu();
+	MenuPtr makeDirMenu();
 	
-	void addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addPriorityMenu(const WidgetMenuPtr& parent);
-	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	bool addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
+	void addBrowseMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveAllMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addPMMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	void addPriorityMenu(const MenuPtr& parent);
+	void addReaddMenu(const MenuPtr& parent, QueueItemInfo* qii);
+	bool addUsers(const MenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
 
 	void layout();
 
@@ -291,8 +291,8 @@ private:
 	void handleReadd(const UserPtr& user);
 	bool handleKeyDownFiles(int c);
 	bool handleKeyDownDirs(int c);
-	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
-	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleFilesContextMenu(dwt::ScreenCoordinate pt);
+	bool handleDirsContextMenu(dwt::ScreenCoordinate pt);
 	
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }

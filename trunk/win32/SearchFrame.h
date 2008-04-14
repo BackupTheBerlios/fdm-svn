@@ -35,6 +35,7 @@ class SearchFrame :
 	public AspectUserInfo<SearchFrame>,
 	public AspectUserCommand<SearchFrame>
 {
+	typedef MDIChildFrame<SearchFrame> BaseType;
 public:
 	enum Status {
 		STATUS_SHOW_UI,
@@ -44,11 +45,10 @@ public:
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void openWindow(dwt::TabView* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 	static void closeAll();
 
 private:
-	typedef MDIChildFrame<SearchFrame> BaseType;
 	friend class MDIChildFrame<SearchFrame>;
 	friend class AspectUserInfo<SearchFrame>;
 	friend class AspectUserCommand<SearchFrame>;
@@ -157,6 +157,7 @@ private:
 	LabelPtr searchLabel;
 	ComboBoxPtr searchBox;
 	ButtonPtr purge;
+	ButtonPtr doSearch;
 
 	LabelPtr sizeLabel;
 	ComboBoxPtr mode;
@@ -170,12 +171,13 @@ private:
 	CheckBoxPtr slots;
 	bool onlyFree;
 
+	CheckBoxPtr filter;
+	bool filterShared;
+
 	LabelPtr hubsLabel;
 	typedef TypedTable<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
-
-	ButtonPtr doSearch;
 
 	typedef TypedTable<SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;
@@ -203,16 +205,17 @@ private:
 	
 	std::string token;
 
-	SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
+	SearchFrame(dwt::TabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
 
 	void handlePurgeClicked();
 	void handleSlotsClicked();
+	void handleFilterClicked();
 	void handleShowUIClicked();
 	LRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	void handleDownload();
 	void handleDownloadFavoriteDirs(unsigned id);
 	void handleDownloadTo();
@@ -239,9 +242,9 @@ private:
 
 	void runSearch();
 
-	WidgetMenuPtr makeMenu();
-	void addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
-	void addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs);
+	MenuPtr makeMenu();
+	void addTargetMenu(const MenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
+	void addTargetDirMenu(const MenuPtr& parent, const StringPairList& favoriteDirs);
 
 	WidgetResultsPtr getUserList() { return results; }
 	

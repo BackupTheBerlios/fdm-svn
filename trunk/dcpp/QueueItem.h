@@ -56,8 +56,6 @@ public:
 	enum FileFlags {
 		/** Normal download, no flags set */
 		FLAG_NORMAL = 0x00,
-		/** This download should be resumed if possible */
-		FLAG_RESUME = 0x01,
 		/** This is a user file listing download */
 		FLAG_USER_LIST = 0x02,
 		/** The file list is downloaded to use for directory download (used with USER_LIST) */
@@ -157,7 +155,7 @@ public:
 	DownloadList& getDownloads() { return downloads; }
 	
 	/** Next segment that is not done and not being downloaded, zero-sized segment returned if there is none is found */
-	Segment getNextSegment(int64_t blockSize) const;
+	Segment getNextSegment(int64_t blockSize, double lastSpeed, int64_t lastSize) const;
 	
 	void addSegment(const Segment& segment);
 	

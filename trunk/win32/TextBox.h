@@ -20,23 +20,29 @@
 #define DCPLUSPLUS_WIN32_TextBox_H_
 
 /** Our own flavour of text boxes that handle double clicks and have fancy menus */
-class TextBox : public SmartWin::TextBox {
-private:
-	typedef SmartWin::TextBox BaseType;
+class TextBox : public dwt::TextBox {
+	typedef dwt::TextBox BaseType;
+	friend class dwt::WidgetCreator<TextBox>;
 public:
 	typedef TextBox ThisType;
 	
 	typedef ThisType* ObjectType;
 
-	explicit TextBox( SmartWin::Widget * parent );
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
+		Seed(const tstring& caption = tstring());
+	};
+
+	explicit TextBox( dwt::Widget * parent );
 
 private:
-	void handleLeftDblClick(const SmartWin::MouseEventResult& ev);
+	void handleLeftDblClick(const dwt::MouseEvent& ev);
 
 	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
 	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);
 
-	SmartWin::WidgetMenu::ObjectType menu;
+	dwt::Menu::ObjectType menu;
 	bool menuOpened;
 };
 

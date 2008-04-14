@@ -23,6 +23,7 @@
 #include <dcpp/Util.h>
 #include <dcpp/forward.h>
 #include <dcpp/MerkleTree.h>
+#include "WidgetFactory.h"
 
 #ifdef PORT_ME
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
@@ -46,20 +47,20 @@ class WinUtil {
 public:
 	static tstring tth;
 
-	static SmartWin::BrushPtr bgBrush;
+	static dwt::BrushPtr bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
-	static SmartWin::FontPtr font;
-	static SmartWin::FontPtr monoFont;
+	static dwt::FontPtr font;
+	static dwt::FontPtr monoFont;
 	static tstring commands;
-	static SmartWin::ImageListPtr fileImages;
-	static SmartWin::ImageListPtr userImages;
+	static dwt::ImageListPtr fileImages;
+	static dwt::ImageListPtr userImages;
 	static int fileImageCount;
 	static int dirIconIndex;
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
 	static MainWindow* mainWindow;
-	//static SmartWin::WidgetTabView* mdiParent;
+	//static dwt::TabView* mdiParent;
 	static DWORD helpCookie;
 	
 	typedef unordered_map<string, int> ImageMap;
@@ -67,13 +68,13 @@ public:
 	static ImageMap fileIndexes;
 	
 	struct Seeds {
-		static const SmartWin::Button::Seed button;
-		static const SmartWin::ComboBox::Seed comboBoxStatic;
-		static const SmartWin::ComboBox::Seed comboBoxEdit;
-		static const SmartWin::Table::Seed Table;
-		static const SmartWin::WidgetMenu::Seed menu;
-		static const SmartWin::TextBox::Seed textBox;
-		static const SmartWin::Tree::Seed treeView;
+		static const dwt::Button::Seed button;
+		static const ComboBox::Seed comboBoxStatic;
+		static const ComboBox::Seed comboBoxEdit;
+		static const dwt::Menu::Seed menu;
+		static const dwt::Table::Seed Table;
+		static const TextBox::Seed textBox;
+		static const dwt::Tree::Seed treeView;
 	};
 
 	struct HelpItem {
@@ -88,7 +89,7 @@ public:
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 	template<typename A>
-	static void setHelpIds(SmartWin::AspectDialog<A>* dialog, const HelpItem* items) {
+	static void setHelpIds(dwt::AspectDialog<A>* dialog, const HelpItem* items) {
 		dcassert(dialog && items);
 		for(size_t i = 0; items[i].ctrlId != 0; ++i)
 			::SetWindowContextHelpId(dialog->getItem(items[i].ctrlId), items[i].helpId);
@@ -103,6 +104,8 @@ public:
 	 * @return True if the command was processed, false otherwise.
 	 */
 	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status, bool& thirdPerson);
+
+	static void playSound(int setting);
 
 	static void openFile(const tstring& file);
 	static void openFolder(const tstring& file);
@@ -146,7 +149,7 @@ public:
 	static pair<tstring, bool> getHubNames(const UserPtr& u);
 
 	// Hash related
-	static void addHashItems(const SmartWin::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
+	static void addHashItems(const dwt::Menu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
 	static void bitziLink(const TTHValue& /*aHash*/);
 	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
 	static void searchHash(const TTHValue& /*aHash*/);
@@ -154,14 +157,15 @@ public:
 	static void addLastDir(const tstring& dir);
 
 	static void openLink(const tstring& url);
-	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
-
+	static bool browseSaveFile(dwt::SaveDialog dialog, tstring& file);
+	static bool browseFileList(dwt::LoadDialog dialog, tstring& file);
+	
 	static int getOsMajor();
 	static int getOsMinor();
 
 	static void setClipboard(const tstring& str);
 
-	static bool getUCParams(SmartWin::Widget* parent, const UserCommand& cmd, StringMap& sm) throw();
+	static bool getUCParams(dwt::Widget* parent, const UserCommand& cmd, StringMap& sm) throw();
 	
 	static bool parseDBLClick(const tstring& aString);
 	static void parseDchubUrl(const tstring& /*aUrl*/);

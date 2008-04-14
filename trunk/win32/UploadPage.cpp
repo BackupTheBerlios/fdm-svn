@@ -29,6 +29,8 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 
+#include <dwt/widgets/Spinner.h>
+
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
 	{ IDC_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
@@ -70,7 +72,7 @@ PropPage::Item UploadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
+UploadPage::UploadPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UPLOADPAGE);
 	setHelpId(IDH_UPLOADPAGE);
 
@@ -78,7 +80,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	directories = attachList(IDC_DIRECTORIES);
+	attachChild(directories, IDC_DIRECTORIES);
 	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -101,33 +103,34 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	directories->onDblClicked(std::tr1::bind(&UploadPage::handleDoubleClick, this));
 	directories->onKeyDown(std::tr1::bind(&UploadPage::handleKeyDown, this, _1));
-	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 	onDragDrop(std::tr1::bind(&UploadPage::handleDragDrop, this, _1));
 
-	CheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
+	CheckBoxPtr shareHidden = attachChild<CheckBox>(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
-	total = attachStatic(IDC_TOTAL);
+	attachChild(total, IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
-	ButtonPtr button = attachButton(IDC_RENAME);
+	ButtonPtr button = attachChild<dwt::Button>(IDC_RENAME);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRenameClicked, this));
 
-	button = attachButton(IDC_REMOVE);
+	attachChild(button, IDC_REMOVE);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRemoveClicked, this));
 
-	button = attachButton(IDC_ADD);
+	attachChild(button, IDC_ADD);
 	button->onClicked(std::tr1::bind(&UploadPage::handleAddClicked, this));
 
-	SpinnerPtr spinner = attachSpinner(IDC_SLOTSPIN);
+	SpinnerPtr spinner;
+	attachChild(spinner, IDC_SLOTSPIN);
 	spinner->setRange(1, UD_MAXVAL);
 
-	spinner = attachSpinner(IDC_MIN_UPLOAD_SPIN);
+	attachChild(spinner, IDC_MIN_UPLOAD_SPIN);
 	spinner->setRange(0, UD_MAXVAL);
 
-	attachTextBox(IDC_MIN_UPLOAD_SPEED);
-	attachTextBox(IDC_SLOTS);
+	attachChild<TextBox>(IDC_MIN_UPLOAD_SPEED);
+	attachChild<TextBox>(IDC_SLOTS);
 }
 
 UploadPage::~UploadPage() {
@@ -253,17 +256,27 @@ void UploadPage::addDirectory(const tstring& aPath) {
 	if( path[ path.length() -1 ] != _T('\\') )
 		path += _T('\\');
 
+	ShareManager* sm = ShareManager::getInstance();
 	try {
-		LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
-		if(dlg.run() == IDOK) {
-			tstring line = dlg.getLine();
-			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));
-			TStringList row;
-			row.push_back(line);
-			row.push_back(path);
-			row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))));
-			directories->insert(row);
-			total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+		while(true) {
+			LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), Text::toT(sm->validateVirtual(Util::getLastDir(Text::fromT(path)))));
+			if(dlg.run() == IDOK) {
+				tstring line = dlg.getLine();
+				if(sm->hasVirtual(sm->validateVirtual(Text::fromT(line)))) {
+					if(createMessageBox().show(str(TF_("A virtual directory named %1% already exists, do you wish to merge the contents?") % line),
+						_T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_YESNO, MessageBox::BOX_ICONQUESTION) == IDNO) {
+						continue;
+					}
+				}
+				ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));
+				TStringList row;
+				row.push_back(line);
+				row.push_back(path);
+				row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))));
+				directories->insert(row);
+				total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+			}
+			break;
 		}
 	} catch(const ShareException& e) {
 		createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONSTOP);

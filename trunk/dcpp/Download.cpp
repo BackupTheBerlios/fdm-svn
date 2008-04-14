@@ -46,7 +46,7 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 	if(qi.getSize() != -1) {
 		if(HashManager::getInstance()->getTree(getTTH(), getTigerTree())) {
 			setTreeValid(true);
-			setSegment(qi.getNextSegment(getTigerTree().getBlockSize()));
+			setSegment(qi.getNextSegment(getTigerTree().getBlockSize(), conn.getSpeed(), conn.getChunkSize()));
 		} else if(supportsTrees && !qi.getSource(conn.getUser())->isSet(QueueItem::Source::FLAG_NO_TREE) && qi.getSize() > HashManager::MIN_BLOCK_SIZE) {
 			// Get the tree unless the file is small (for small files, we'd probably only get the root anyway)
 			setType(TYPE_TREE);
@@ -56,28 +56,11 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 			// Use the root as tree to get some sort of validation at least...
 			getTigerTree() = TigerTree(qi.getSize(), qi.getSize(), getTTH());
 			setTreeValid(true);
-			setSegment(qi.getNextSegment(getTigerTree().getBlockSize()));
+			setSegment(qi.getNextSegment(getTigerTree().getBlockSize(), 0, 0));
 		}
 		
-		if(qi.isSet(QueueItem::FLAG_RESUME)) {
-#ifdef PORT_ME
-			const string& target = (getTempTarget().empty() ? getPath() : getTempTarget());
-			int64_t start = File::getSize(target);
-
-			// Only use antifrag if we don't have a previous non-antifrag part
-			if( BOOLSETTING(ANTI_FRAG) && (start == -1) ) {
-				int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
-
-				if(aSize == d->getTotal()) {
-					start = d->getStartPos();
-				} else {
-					start = 0;
-				}
-				d->setFlag(Download::FLAG_ANTI_FRAG);
-			}
-#else
+		if(getType() == TYPE_FILE) {
 			setFlag(Download::FLAG_ANTI_FRAG);
-#endif
 		}
 	}
 }

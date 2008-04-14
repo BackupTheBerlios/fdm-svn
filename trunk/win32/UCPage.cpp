@@ -51,7 +51,7 @@ PropPage::Item UCPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
+UCPage::UCPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UCPAGE);
 	setHelpId(IDH_UCPAGE);
 
@@ -59,7 +59,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	commands = attachList(IDC_MENU_ITEMS);
+	attachChild(commands, IDC_MENU_ITEMS);
 	commands->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -81,15 +81,15 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	commands->onDblClicked(std::tr1::bind(&UCPage::handleDoubleClick, this));
 	commands->onKeyDown(std::tr1::bind(&UCPage::handleKeyDown, this, _1));
 
-	attachButton(IDC_ADD_MENU)->onClicked(std::tr1::bind(&UCPage::handleAddClicked, this));
+	attachChild<Button>(IDC_ADD_MENU)->onClicked(std::tr1::bind(&UCPage::handleAddClicked, this));
 
-	attachButton(IDC_CHANGE_MENU)->onClicked(std::tr1::bind(&UCPage::handleChangeClicked, this));
+	attachChild<Button>(IDC_CHANGE_MENU)->onClicked(std::tr1::bind(&UCPage::handleChangeClicked, this));
 
-	attachButton(IDC_MOVE_UP)->onClicked(std::tr1::bind(&UCPage::handleMoveUpClicked, this));
+	attachChild<Button>(IDC_MOVE_UP)->onClicked(std::tr1::bind(&UCPage::handleMoveUpClicked, this));
 
-	attachButton(IDC_MOVE_DOWN)->onClicked(std::tr1::bind(&UCPage::handleMoveDownClicked, this));
+	attachChild<Button>(IDC_MOVE_DOWN)->onClicked(std::tr1::bind(&UCPage::handleMoveDownClicked, this));
 
-	attachButton(IDC_REMOVE_MENU)->onClicked(std::tr1::bind(&UCPage::handleRemoveClicked, this));
+	attachChild<Button>(IDC_REMOVE_MENU)->onClicked(std::tr1::bind(&UCPage::handleRemoveClicked, this));
 }
 
 UCPage::~UCPage() {

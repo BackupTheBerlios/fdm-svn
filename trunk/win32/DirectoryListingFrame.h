@@ -33,6 +33,7 @@ class DirectoryListingFrame :
 	public MDIChildFrame<DirectoryListingFrame>,
 	public AspectUserCommand<DirectoryListingFrame>
 {
+	typedef MDIChildFrame<DirectoryListingFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -48,12 +49,11 @@ public:
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
-	static void openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
+	static void openWindow(dwt::TabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
+	static void openWindow(dwt::TabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
 	static void closeAll();
 
 protected:
-	typedef MDIChildFrame<DirectoryListingFrame> BaseType;
 	friend class MDIChildFrame<DirectoryListingFrame>;
 	friend class AspectUserCommand<DirectoryListingFrame>;
 	
@@ -171,17 +171,17 @@ private:
 
 	static UserMap lists;
 	
-	DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed);
+	DirectoryListingFrame(dwt::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
-	WidgetMenuPtr makeSingleMenu(ItemInfo* ii);
-	WidgetMenuPtr makeMultiMenu();
-	WidgetMenuPtr makeDirMenu();
+	MenuPtr makeSingleMenu(ItemInfo* ii);
+	MenuPtr makeMultiMenu();
+	MenuPtr makeDirMenu();
 	
 	void runUserCommand(const UserCommand& uc);
 		
-	void addTargets(const WidgetMenuPtr& menu, ItemInfo* ii = 0);
-	void addUserCommands(const WidgetMenuPtr& menu);
+	void addTargets(const MenuPtr& menu, ItemInfo* ii = 0);
+	void addUserCommands(const MenuPtr& menu);
 	
 	void handleFind();
 	void handleFindNext();
@@ -204,8 +204,8 @@ private:
 	void download(ItemInfo* ii, const string& aDir, bool view = false);
 	void downloadFiles(const string& aTarget, bool view = false);
 	
-	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
-	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleDirsContextMenu(dwt::ScreenCoordinate pt);
+	bool handleFilesContextMenu(dwt::ScreenCoordinate pt);
 	LRESULT handleXButtonUp(WPARAM wParam, LPARAM lParam);
 	
 	void changeDir(DirectoryListing::Directory* d);

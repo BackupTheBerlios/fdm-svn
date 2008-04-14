@@ -45,23 +45,21 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat",
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem",
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
-	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath", "BeepFile",
+	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath",
 	"Language", "DownloadsOrder", "DownloadsWidth",
-
-
-	"FdmLanguageFileLocation", "AutoSearchFrameOrder", "AutoSearchFrameWidths", "WinampFormat", 
+	"SoundMainChat", "SoundPM", "SoundPMWindow",
 	"SENTRY",
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"AutoSearch", "TimeStamps", "ConfirmExit", "PopupHubPms", "PopupBotPms", "IgnoreHubPms", "IgnoreBotPms",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
-	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
+	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState",
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", 
-	"MaxCompression", "AntiFrag", "NoAwayMsgToBots", "SkipZeroByte", "AdlsBreakOnFirst",
+	"MaxCompression", "NoAwayMsgToBots", "SkipZeroByte", "AdlsBreakOnFirst",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
@@ -79,8 +77,8 @@ const string SettingsManager::settingTags[] =
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
 	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
-	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu", "MinSegmentSize", "FollowLinks",
-	"SendBloom", "OwnerDrawnMenus", "Coral",
+	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu", "SegmentedDL", "FollowLinks",
+	"SendBloom", "OwnerDrawnMenus", "Coral", "SearchFilterShared",
 
 
 	"OpSpokeColour", "NotOpSpokeColour", "ISpokeColour", "MyNickSpokenColour", "IpInChats", "CCInChats",
@@ -158,8 +156,6 @@ SettingsManager::SettingsManager()
 	setDefault(STATUS_IN_CHAT, true);
 	setDefault(SHOW_JOINS, false);
 	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
-	setDefault(PRIVATE_MESSAGE_BEEP, false);
-	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
 	setDefault(USE_SYSTEM_ICONS, true);
 	setDefault(USE_OEM_MONOFONT, false);
 	setDefault(POPUP_PMS, true);
@@ -192,7 +188,6 @@ SettingsManager::SettingsManager()
 	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. State your business and I might answer later if you're lucky.");
 	setDefault(TIME_STAMPS_FORMAT, "%H:%M");
 	setDefault(MAX_COMPRESSION, 6);
-	setDefault(ANTI_FRAG, true);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
 	setDefault(ADLS_BREAK_ON_FIRST, false);
@@ -251,6 +246,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_NOTEPAD, false);
 	setDefault(NO_IP_OVERRIDE, false);
 	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
+	setDefault(SEARCH_FILTER_SHARED, true);
 	setDefault(LAST_SEARCH_TYPE, 0);
 	setDefault(SOCKET_IN_BUFFER, 64*1024);
 	setDefault(SOCKET_OUT_BUFFER, 64*1024);
@@ -281,7 +277,7 @@ SettingsManager::SettingsManager()
 	setDefault(FAST_HASH, true);
 	setDefault(SORT_FAVUSERS_FIRST, false);
 	setDefault(SHOW_SHELL_MENU, false);
-	setDefault(MIN_SEGMENT_SIZE, 1024);
+	setDefault(SEGMENTED_DL, true);
 	setDefault(FOLLOW_LINKS, false);
 	setDefault(SEND_BLOOM, true);
 	setDefault(OWNER_DRAWN_MENUS, true);

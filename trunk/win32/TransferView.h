@@ -36,7 +36,7 @@
 #include "UserInfoBase.h"
 
 class TransferView : 
-	public WidgetFactory<SmartWin::WidgetChildWindow>, 
+	public WidgetFactory<dwt::Container>, 
 	private DownloadManagerListener, 
 	private UploadManagerListener, 
 	private ConnectionManagerListener,
@@ -46,7 +46,7 @@ class TransferView :
 	public AspectUserCommand<TransferView>
 {
 public:
-	TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi);
+	TransferView(dwt::Widget* parent, dwt::TabView* mdi);
 
 	void prepareClose();
 
@@ -238,26 +238,26 @@ private:
 	typedef TypedTable<ConnectionInfo> WidgetConnections;
 	typedef WidgetConnections* WidgetConnectionsPtr;
 	WidgetConnectionsPtr connections;
-	WidgetChildWindowPtr connectionsWindow;
+	ContainerPtr connectionsWindow;
 	
 	typedef TypedTable<DownloadInfo> WidgetDownloads;
 	typedef WidgetDownloads* WidgetDownloadsPtr;
 	WidgetDownloadsPtr downloads;
-	WidgetChildWindowPtr downloadsWindow;
+	ContainerPtr downloadsWindow;
 
-	TabSheetPtr tabs;
+	TabViewPtr tabs;
 	
-	SmartWin::WidgetTabView* mdi;
-	SmartWin::ImageListPtr arrows;
+	TabViewPtr mdi;
+	dwt::ImageListPtr arrows;
 
 	bool startup;
 
 	TaskQueue tasks;
 	StringMap ucLineParams;
 
-	void handleSized(const SmartWin::SizedEvent& sz);
-	bool handleConnectionsMenu(SmartWin::ScreenCoordinate pt);
-	bool handleDownloadsMenu(SmartWin::ScreenCoordinate pt);
+	void handleSized(const dwt::SizedEvent& sz);
+	bool handleConnectionsMenu(dwt::ScreenCoordinate pt);
+	bool handleDownloadsMenu(dwt::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce();
@@ -266,9 +266,8 @@ private:
 	void runUserCommand(const UserCommand& uc);
 	bool handleKeyDown(int c);
 	void handleDblClicked();
-	void handleTabSelected();
 	
-	WidgetMenuPtr makeContextMenu(ConnectionInfo* ii);
+	MenuPtr makeContextMenu(ConnectionInfo* ii);
 
 	WidgetConnectionsPtr getUserList() { return connections; }
 	

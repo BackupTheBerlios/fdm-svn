@@ -21,15 +21,21 @@
 
 #include "TextBox.h"
 
-class ComboBox : public SmartWin::ComboBox {
-private:
-	typedef SmartWin::ComboBox BaseType;
+class ComboBox : public dwt::ComboBox {
+	typedef dwt::ComboBox BaseType;
+	friend class dwt::WidgetCreator<ComboBox>;
 public:
 	typedef ComboBox ThisType;
 	
 	typedef ThisType* ObjectType;
 
-	explicit ComboBox( SmartWin::Widget * parent );
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
+		Seed();
+	};
+
+	explicit ComboBox( dwt::Widget * parent );
 
 	typedef TextBox::ObjectType TextBoxPtr;
 	TextBoxPtr getTextBox();

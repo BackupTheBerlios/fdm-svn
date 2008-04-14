@@ -20,8 +20,8 @@
 
 #include "LineDlg.h"
 
-LineDlg::LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_, bool password_) : 
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent), 
+LineDlg::LineDlg(dwt::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_, bool password_) : 
+	WidgetFactory<dwt::ModalDialog>(parent), 
 	title(title_), 
 	desc(desc_), 
 	initial(initial_), 
@@ -32,11 +32,11 @@ LineDlg::LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring&
 }
 
 bool LineDlg::initDialog() {
-	attachButton(IDOK)->onClicked(std::tr1::bind(&LineDlg::okClicked, this));
-	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&LineDlg::cancelClicked, this));
-	attachStatic(IDC_DESCRIPTION)->setText(desc);
+	attachChild<Button>(IDOK)->onClicked(std::tr1::bind(&LineDlg::okClicked, this));
+	attachChild<Button>(IDCANCEL)->onClicked(std::tr1::bind(&LineDlg::cancelClicked, this));
+	attachChild<Label>(IDC_DESCRIPTION)->setText(desc);
 
-	line = attachTextBox(IDC_LINE);
+	line = attachChild<TextBox>(IDC_LINE);
 	line->setFocus();
 	line->setText(initial);
 	line->setSelection();

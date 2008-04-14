@@ -22,7 +22,10 @@
 #include "StaticFrame.h"
 #include <dcpp/ADLSearch.h>
 
-class ADLSearchFrame : public StaticFrame<ADLSearchFrame> {
+class ADLSearchFrame : 
+	public StaticFrame<ADLSearchFrame> 
+{
+	typedef StaticFrame<ADLSearchFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -30,11 +33,10 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<ADLSearchFrame> BaseType;
 	friend class StaticFrame<ADLSearchFrame>;
 	friend class MDIChildFrame<ADLSearchFrame>;
 
-	ADLSearchFrame(SmartWin::WidgetTabView* mdiParent);
+	ADLSearchFrame(dwt::TabView* mdiParent);
 	virtual ~ADLSearchFrame();
 
 	void layout();
@@ -72,7 +74,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(LPARAM lParam);
-	bool handleContextMenu(SmartWin::ScreenCoordinate sc);
+	bool handleContextMenu(dwt::ScreenCoordinate sc);
 
 	void addEntry(ADLSearch& search, int index = -1);
 };

@@ -25,6 +25,8 @@
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
 
+#include <dwt/widgets/Spinner.h>
+
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },
 	{ IDC_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },
@@ -60,9 +62,6 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER },
 	{ IDC_SOCKET_OUT_BUFFER, IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER },
 	{ IDC_SETTINGS_B3, IDH_SETTINGS_ADVANCED3_SOCKET_OUT_BUFFER },
-	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE },
-	{ IDC_MIN_SEGMENT_SIZE, IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE },
-	{ IDC_SETTINGS_KB3, IDH_SETTINGS_ADVANCED3_MIN_SEGMENT_SIZE },
 	{ 0, 0 }
 };
 
@@ -87,8 +86,6 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_B2, N_("B") },
 	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, N_("Socket write buffer") },
 	{ IDC_SETTINGS_B3, N_("B") },
-	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, N_("Min segment size") },
-	{ IDC_SETTINGS_KB3, N_("KiB") },
 	{ 0, 0 }
 };
 
@@ -105,11 +102,10 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_PRIVATE_ID, SettingsManager::PRIVATE_ID, PropPage::T_STR },
 	{ IDC_AUTO_REFRESH_TIME, SettingsManager::AUTO_REFRESH_TIME, PropPage::T_INT },
 	{ IDC_AUTO_SEARCH_LIMIT, SettingsManager::AUTO_SEARCH_LIMIT, PropPage::T_INT },
-	{ IDC_MIN_SEGMENT_SIZE, SettingsManager::MIN_SEGMENT_SIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
-Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
+Advanced3Page::Advanced3Page(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCED3PAGE);
 	setHelpId(IDH_ADVANCED3PAGE);
 
@@ -117,23 +113,22 @@ Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 
-	SpinnerPtr spinner = attachSpinner(IDC_SEARCH_HISTORY_SPIN);
+	SpinnerPtr spinner = attachChild<Spinner>(IDC_SEARCH_HISTORY_SPIN);
 	spinner->setRange(0, 100);
 
-	attachTextBox(IDC_ROLLBACK);
-	attachTextBox(IDC_MAX_HASH_SPEED);
-	attachTextBox(IDC_SHOW_LAST_LINES_LOG);
-	attachTextBox(IDC_SET_MINISLOT_SIZE);
-	attachTextBox(IDC_MAX_FILELIST_SIZE);
-	attachTextBox(IDC_PRIVATE_ID);
-	attachTextBox(IDC_AUTO_REFRESH_TIME);
-	attachTextBox(IDC_BUFFERSIZE);
-	attachTextBox(IDC_AUTO_SEARCH_LIMIT);
-	attachTextBox(IDC_SEARCH_HISTORY);
-	attachTextBox(IDC_BIND_ADDRESS);
-	attachTextBox(IDC_SOCKET_IN_BUFFER);
-	attachTextBox(IDC_SOCKET_OUT_BUFFER);
-	attachTextBox(IDC_MIN_SEGMENT_SIZE);
+	attachChild<TextBox>(IDC_ROLLBACK);
+	attachChild<TextBox>(IDC_MAX_HASH_SPEED);
+	attachChild<TextBox>(IDC_SHOW_LAST_LINES_LOG);
+	attachChild<TextBox>(IDC_SET_MINISLOT_SIZE);
+	attachChild<TextBox>(IDC_MAX_FILELIST_SIZE);
+	attachChild<TextBox>(IDC_PRIVATE_ID);
+	attachChild<TextBox>(IDC_AUTO_REFRESH_TIME);
+	attachChild<TextBox>(IDC_BUFFERSIZE);
+	attachChild<TextBox>(IDC_AUTO_SEARCH_LIMIT);
+	attachChild<TextBox>(IDC_SEARCH_HISTORY);
+	attachChild<TextBox>(IDC_BIND_ADDRESS);
+	attachChild<TextBox>(IDC_SOCKET_IN_BUFFER);
+	attachChild<TextBox>(IDC_SOCKET_OUT_BUFFER);
 }
 
 Advanced3Page::~Advanced3Page() {

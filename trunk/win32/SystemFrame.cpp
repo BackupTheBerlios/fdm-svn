@@ -22,14 +22,14 @@
 #include "HoldRedraw.h"
 #include "WinUtil.h"
 
-SystemFrame::SystemFrame(SmartWin::WidgetTabView* mdiParent) : 
+SystemFrame::SystemFrame(dwt::TabView* mdiParent) : 
 	BaseType(mdiParent, T_("System Log"), IDH_SYSTEM_LOG, IDR_MAINFRAME),
 	log(0) 
 {
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		log = createTextBox(cs);
+		cs.style |= WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		log = addChild(cs);
 		addWidget(log);
 	}
 
@@ -61,7 +61,7 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 		log->setSelection(0, log->lineIndex(log->lineFromChar(limit / 10)));
 		log->replaceSelection(_T(""));
 	}
-	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
+	log->addText(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
 
 	if(scroll)
 		log->sendMessage(WM_VSCROLL, SB_BOTTOM);
@@ -72,7 +72,7 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 void SystemFrame::layout() {
 	bool scroll = log->scrollIsAtEnd();
 
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 

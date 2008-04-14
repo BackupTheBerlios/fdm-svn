@@ -26,6 +26,8 @@
 #include "WinUtil.h"
 #include "HubListsDlg.h"
 
+#include <dwt/widgets/Spinner.h>
+
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
 	{ IDC_DOWNLOADDIR, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
@@ -72,7 +74,7 @@ PropPage::Item DownloadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
+DownloadPage::DownloadPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_DOWNLOADPAGE);
 	setHelpId(IDH_DOWNLOADPAGE);
 
@@ -80,23 +82,23 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	attachButton(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
+	attachChild<Button>(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
 
-	attachButton(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
+	attachChild<Button>(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
 
-	attachButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
+	attachChild<Button>(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
 
-	SpinnerPtr spinner = attachSpinner(IDC_SLOTSSPIN);
+	SpinnerPtr spinner = attachChild<Spinner>(IDC_SLOTSSPIN);
 	spinner->setRange(0, 100);
 
-	spinner = attachSpinner(IDC_SPEEDSPIN);
+	attachChild(spinner, IDC_SPEEDSPIN);
 	spinner->setRange(0, 10000);
 
-	attachTextBox(IDC_DOWNLOADDIR);
-	attachTextBox(IDC_TEMP_DOWNLOAD_DIRECTORY);
-	attachTextBox(IDC_DOWNLOADS);
-	attachTextBox(IDC_MAXSPEED);
-	attachTextBox(IDC_PROXY);
+	attachChild<TextBox>(IDC_DOWNLOADDIR);
+	attachChild<TextBox>(IDC_TEMP_DOWNLOAD_DIRECTORY);
+	attachChild<TextBox>(IDC_DOWNLOADS);
+	attachChild<TextBox>(IDC_MAXSPEED);
+	attachChild<TextBox>(IDC_PROXY);
 }
 
 DownloadPage::~DownloadPage() {

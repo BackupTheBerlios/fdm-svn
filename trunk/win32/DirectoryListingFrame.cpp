@@ -76,7 +76,7 @@ int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int 
 	}
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(dwt::TabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -94,7 +94,7 @@ void DirectoryListingFrame::closeAll(){
 		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(dwt::TabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -105,8 +105,8 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent, _T(""), IDH_DIRECTORY_LISTING, SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
+DirectoryListingFrame::DirectoryListingFrame(dwt::TabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
+	BaseType(mdiParent, _T(""), IDH_FILE_LIST, dwt::IconPtr(new dwt::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),
@@ -123,11 +123,11 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	updating(false),
 	searching(false)
 {
-	paned = createVPaned();
-	paned->setRelativePos(0.3);
+	paned = addChild(WidgetVPaned::Seed(0.3));
 
 	{
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
+		dirs = addChild(WidgetDirs::Seed());
+		dirs->setHelpId(IDH_FILE_LIST_DIRS);
 		addWidget(dirs);
 		paned->setFirst(dirs);
 		dirs->setNormalImageList(WinUtil::fileImages);
@@ -136,7 +136,8 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::Table);
+		files = addChild(WidgetFiles::Seed());
+		files->setHelpId(IDH_FILE_LIST_FILES);
 		addWidget(files);
 		paned->setSecond(files);
 
@@ -154,22 +155,26 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	
 	{
 		Button::Seed cs = WinUtil::Seeds::button;
-		
-		cs.caption = T_("Find");
-		find = createButton(cs);
-		find->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFind, this));
-		
-		cs.caption = T_("Next");
-		findNext = createButton(cs);
-		findNext->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFindNext, this));
+
+		cs.caption = T_("Subtract list");
+		listDiff = addChild(cs);
+		listDiff->setHelpId(IDH_FILE_LIST_SUBSTRACT);
+		listDiff->onClicked(std::tr1::bind(&DirectoryListingFrame::handleListDiff, this));
 
 		cs.caption = T_("Match queue");
-		matchQueue = createButton(cs);
+		matchQueue = addChild(cs);
+		matchQueue->setHelpId(IDH_FILE_LIST_MATCH_QUEUE);
 		matchQueue->onClicked(std::tr1::bind(&DirectoryListingFrame::handleMatchQueue, this));
-		
-		cs.caption = T_("Subtract list");
-		listDiff = createButton(cs);
-		listDiff->onClicked(std::tr1::bind(&DirectoryListingFrame::handleListDiff, this));
+
+		cs.caption = T_("Find");
+		find = addChild(cs);
+		find->setHelpId(IDH_FILE_LIST_FIND);
+		find->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFind, this));
+
+		cs.caption = T_("Next");
+		findNext = addChild(cs);
+		findNext->setHelpId(IDH_FILE_LIST_NEXT);
+		findNext->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFindNext, this));
 	}
 	
 	initStatus();
@@ -180,8 +185,8 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	setStatus(STATUS_FIND, T_("Find"));
 	setStatus(STATUS_NEXT, T_("Next"));
 
-	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
-	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
+	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), dwt::Message(WM_XBUTTONUP));
+	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), dwt::Message(WM_XBUTTONUP));
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
 	treeRoot = dirs->insert(NULL, new ItemInfo(Text::toT(nick), dl->getRoot()));
 
@@ -220,7 +225,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 }
 
 void DirectoryListingFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 
 	layoutStatus(r);
 
@@ -260,7 +265,7 @@ void DirectoryListingFrame::handleMatchQueue() {
 
 void DirectoryListingFrame::handleListDiff() {
 	tstring file;
-	if(WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), _T("File Lists\0*.xml.bz2\0All Files\0*.*\0"))) {
+	if(WinUtil::browseFileList(createLoadDialog(), file)) {
 		DirectoryListing dirList(dl->getUser());
 		try {
 			dirList.loadFile(Text::fromT(file));
@@ -303,8 +308,8 @@ void DirectoryListingFrame::setWindowTitle() {
 		setText(error);
 }
 
-DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+DirectoryListingFrame::MenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu, ii);
@@ -328,8 +333,8 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 	return menu;
 }
 
-DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+DirectoryListingFrame::MenuPtr DirectoryListingFrame::makeMultiMenu() {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
@@ -340,20 +345,20 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 	return menu;
 }
 
-DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeDirMenu() {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+DirectoryListingFrame::MenuPtr DirectoryListingFrame::makeDirMenu() {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
 	return menu;
 }
 
-void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
+void DirectoryListingFrame::addUserCommands(const MenuPtr& parent) {
 	prepareMenu(parent, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
 }
 
-void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download &to..."));
+void DirectoryListingFrame::addTargets(const MenuPtr& parent, ItemInfo* ii) {
+	MenuPtr menu = parent->appendPopup(T_("Download &to..."));
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 	size_t i = 0;
 	for(; i < spl.size(); ++i) {
@@ -387,8 +392,8 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 	}
 }
 
-bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
-	WidgetMenuPtr contextMenu;
+bool DirectoryListingFrame::handleFilesContextMenu(dwt::ScreenCoordinate pt) {
+	MenuPtr contextMenu;
 	if(files->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = files->getContextMenuPos();
@@ -404,9 +409,9 @@ bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt
 					// Ignore
 				}
 				if(!path.empty() && (File::getSize(path) != -1)) {
-					WidgetMenu::Seed cs = WinUtil::Seeds::menu;
+					Menu::Seed cs = WinUtil::Seeds::menu;
 					cs.ownerDrawn = false;
-					WidgetMenuPtr menu = createMenu(cs);
+					MenuPtr menu = createMenu(cs);
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 					shellMenu.ShowContextMenu(menu, pt);
@@ -425,7 +430,7 @@ bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt
 	return false;
 }
 
-bool DirectoryListingFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+bool DirectoryListingFrame::handleDirsContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = dirs->getContextMenuPos();
 	} else {
@@ -433,7 +438,7 @@ bool DirectoryListingFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt)
 	}
 	
 	if(dirs->getSelected()) {
-		WidgetMenuPtr contextMenu = makeDirMenu();
+		MenuPtr contextMenu = makeDirMenu();
 		usingDirMenu = true;
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
@@ -493,7 +498,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 			try {
 				if(ii->type == ItemInfo::FILE) {
 					tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + ii->getText(COLUMN_FILENAME);
-					if(WinUtil::browseFile(target, handle())) {
+					if(createSaveDialog().open(target)) {
 						WinUtil::addLastDir(Util::getFilePath(target));
 						dl->download(ii->file, Text::fromT(target), false, WinUtil::isShift());
 					}

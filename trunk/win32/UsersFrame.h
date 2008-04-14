@@ -33,6 +33,7 @@ class UsersFrame :
 	private FavoriteManagerListener,
 	public AspectUserInfo<UsersFrame>
 {
+	typedef StaticFrame<UsersFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -40,12 +41,11 @@ public:
 	};
 
 protected:
-	typedef StaticFrame<UsersFrame> BaseType;
 	friend class StaticFrame<UsersFrame>;
 	friend class MDIChildFrame<UsersFrame>;
 	friend class AspectUserInfo<UsersFrame>;
 
-	UsersFrame(SmartWin::WidgetTabView* mdiParent);
+	UsersFrame(dwt::TabView* mdiParent);
 	virtual ~UsersFrame();
 
 	void layout();
@@ -108,7 +108,7 @@ private:
 	void handleRemove();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(LPARAM lParam);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	WidgetUsersPtr getUserList() { return users; }

@@ -30,18 +30,18 @@ class WaitingUsersFrame :
 	public StaticFrame<WaitingUsersFrame>, 
 	public UploadManagerListener 
 {
+	typedef StaticFrame<WaitingUsersFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST
 	};
 protected:
-	typedef StaticFrame<WaitingUsersFrame> BaseType;
 	friend class StaticFrame<WaitingUsersFrame>;
 	friend class MDIChildFrame<WaitingUsersFrame>;
 
 	// Constructor
-	WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent);
+	WaitingUsersFrame(dwt::TabView* mdiParent);
 	virtual ~WaitingUsersFrame() { }
 
 	bool preClosing();
@@ -53,7 +53,7 @@ protected:
 	void onGetList();
 	void onCopyFilename();
 	void onRemove();
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool handleChar(int c);
 	void onPrivateMessage();

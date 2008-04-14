@@ -110,11 +110,10 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::SKIP_ZERO_BYTE, N_("Skip zero-byte files") },
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, N_("Don't download files already in share") },
 	{ SettingsManager::DONT_DL_ALREADY_QUEUED, N_("Don't download files already in the queue") },
-	{ SettingsManager::ANTI_FRAG, N_("Use antifragmentation method for downloads") },
 	{ 0, 0 }
 };
 
-QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
+QueuePage::QueuePage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_QUEUEPAGE);
 	setHelpId(IDH_QUEUEPAGE);
 
@@ -123,16 +122,16 @@ QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::read(handle(), items, 0, 0);
 	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));
 
-	attachTextBox(IDC_PRIO_HIGHEST_SIZE);
-	attachTextBox(IDC_PRIO_NORMAL_SIZE);
-	attachTextBox(IDC_PRIO_HIGH_SIZE);
-	attachTextBox(IDC_PRIO_LOW_SIZE);
-	attachTextBox(IDC_AUTODROP_SPEED);
-	attachTextBox(IDC_AUTODROP_ELAPSED);
-	attachTextBox(IDC_AUTODROP_MINSOURCES);
-	attachTextBox(IDC_AUTODROP_INTERVAL);
-	attachTextBox(IDC_AUTODROP_INACTIVITY);
-	attachTextBox(IDC_AUTODROP_FILESIZE);
+	attachChild<TextBox>(IDC_PRIO_HIGHEST_SIZE);
+	attachChild<TextBox>(IDC_PRIO_NORMAL_SIZE);
+	attachChild<TextBox>(IDC_PRIO_HIGH_SIZE);
+	attachChild<TextBox>(IDC_PRIO_LOW_SIZE);
+	attachChild<TextBox>(IDC_AUTODROP_SPEED);
+	attachChild<TextBox>(IDC_AUTODROP_ELAPSED);
+	attachChild<TextBox>(IDC_AUTODROP_MINSOURCES);
+	attachChild<TextBox>(IDC_AUTODROP_INTERVAL);
+	attachChild<TextBox>(IDC_AUTODROP_INACTIVITY);
+	attachChild<TextBox>(IDC_AUTODROP_FILESIZE);
 }
 
 QueuePage::~QueuePage() {

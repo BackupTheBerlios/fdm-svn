@@ -37,7 +37,7 @@ static const char* columnNames[] = {
 	N_("User Description")
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
+FavHubsFrame::FavHubsFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Favorite Hubs"), IDH_FAVORITE_HUBS, IDR_FAVORITES),
 	hubs(0),
 	connect(0),
@@ -52,7 +52,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.style |= LVS_NOSORTHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		hubs = createTable(cs);
+		hubs = addChild(cs);
 		addWidget(hubs);
 
 		hubs->createColumns(WinUtil::getStrings(columnNames));
@@ -61,7 +61,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		hubs->onDblClicked(std::tr1::bind(&FavHubsFrame::handleDoubleClick, this));
 		hubs->onKeyDown(std::tr1::bind(&FavHubsFrame::handleKeyDown, this, _1));
-		hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleItemChanged, this, _1, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 	}
 
@@ -69,37 +69,37 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&Connect");
-		connect = createButton(cs);
+		connect = addChild(cs);
 		connect->setHelpId(IDH_FAVORITE_HUBS_CONNECT);
 		connect->onClicked(std::tr1::bind(&FavHubsFrame::openSelected, this));
 		addWidget(connect);
 
 		cs.caption = T_("&New...");
-		add = createButton(cs);
+		add = addChild(cs);
 		add->setHelpId(IDH_FAVORITE_HUBS_NEW);
 		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
-		properties = createButton(cs);
+		properties = addChild(cs);
 		properties->setHelpId(IDH_FAVORITE_HUBS_PROPERTIES);
 		properties->onClicked(std::tr1::bind(&FavHubsFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
-		up = createButton(cs);
+		up = addChild(cs);
 		up->setHelpId(IDH_FAVORITE_HUBS_MOVE_UP);
 		up->onClicked(std::tr1::bind(&FavHubsFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
-		down = createButton(cs);
+		down = addChild(cs);
 		down->setHelpId(IDH_FAVORITE_HUBS_MOVE_DOWN);
 		down->onClicked(std::tr1::bind(&FavHubsFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
-		remove = createButton(cs);
+		remove = addChild(cs);
 		remove->setHelpId(IDH_FAVORITE_HUBS_REMOVE);
 		remove->onClicked(std::tr1::bind(&FavHubsFrame::handleRemove, this));
 		addWidget(remove);
@@ -121,7 +121,7 @@ FavHubsFrame::~FavHubsFrame() {
 }
 
 void FavHubsFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize());
+	dwt::Rectangle r(getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -130,7 +130,7 @@ void FavHubsFrame::layout() {
 	const int xbutton = 90;
 	const int xborder = 10;
 
-	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	dwt::Rectangle rb(r.getBottom(ybutton));
 	r.size.y -= ybutton;
 	hubs->setBounds(r);
 
@@ -274,15 +274,15 @@ LRESULT FavHubsFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool FavHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = hubs->getContextMenuPos();
 	}
 
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_NEWFAV, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
+	menu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
 	menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&FavHubsFrame::handleProperties, this));
 	menu->appendItem(IDC_MOVE_UP, T_("Move &Up"), std::tr1::bind(&FavHubsFrame::handleUp, this));
 	menu->appendItem(IDC_MOVE_DOWN, T_("Move &Down"), std::tr1::bind(&FavHubsFrame::handleDown, this));

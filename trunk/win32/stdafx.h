@@ -22,11 +22,28 @@
 #include <dcpp/stdinc.h>
 #include <dcpp/DCPlusPlus.h>
 
-#include <SmartWin.h>
 #include <shlobj.h>
 #include <malloc.h>
 #include <htmlhelp.h>
 #include <libintl.h>
+
+#include <dwt/WidgetFactory.h>
+#include <dwt/resources/Accelerator.h>
+#include <dwt/resources/Pen.h>
+#include <dwt/widgets/Button.h>
+#include <dwt/widgets/CheckBox.h>
+#include <dwt/widgets/ComboBox.h>
+#include <dwt/widgets/Container.h>
+#include <dwt/widgets/Label.h>
+#include <dwt/widgets/ModalDialog.h>
+#include <dwt/widgets/ModelessDialog.h>
+#include <dwt/widgets/RadioButton.h>
+#include <dwt/widgets/Table.h>
+#include <dwt/widgets/TabView.h>
+#include <dwt/widgets/TextBox.h>
+#include <dwt/widgets/Tree.h>
+#include <dwt/widgets/ToolTip.h>
+#include <dwt/widgets/Window.h>
 
 enum {
 	WM_SPEAKER  = WM_APP + 500
@@ -51,13 +68,13 @@ using std::tr1::placeholders::_2;
 #define N_(String) gettext_noop (String)
 #define T_(String) Text::toT(gettext(String))
 #define CT_(String) T_(String).c_str()
-#define F_(String) boost::format(gettext(String))
-#define FN_(String1,String2, N) boost::format(ngettext(String1, String2, N))
+#define F_(String) dcpp_fmt(gettext(String))
+#define FN_(String1,String2, N) dcpp_fmt(ngettext(String1, String2, N))
 #ifdef UNICODE
-#define TF_(String) boost::wformat(Text::toT(gettext(String)))
-#define TFN_(String1,String2, N) boost::wformat(Text::toT(ngettext(String1, String2, N)))
+#define TF_(String) dcpp_fmt(Text::toT(gettext(String)))
+#define TFN_(String1,String2, N) dcpp_fmt(Text::toT(ngettext(String1, String2, N)))
 #else
-#define TF_(String) boost::format(Text::toT(gettext(String)))
-#define TFN_(String1,String2, N) boost::format(Text::toT(ngettext(String1, String2, N)))
+#define TF_(String) dcpp_fmt(Text::toT(gettext(String)))
+#define TFN_(String1,String2, N) dcpp_fmt(Text::toT(ngettext(String1, String2, N)))
 #endif
 #endif

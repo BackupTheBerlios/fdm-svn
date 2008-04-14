@@ -59,7 +59,7 @@ PropPage::ListItem LogPage::listItems[] = {
 	{ 0, 0 }
 };
 
-LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
+LogPage::LogPage(dwt::Widget* parent) : PropPage(parent), oldSelection(-1) {
 	createDialog(IDD_LOGPAGE);
 	setHelpId(IDH_LOGPAGE);
 
@@ -74,20 +74,18 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 		options.push_back(pair);
 	}
 
-	attachTextBox(IDC_LOG_DIRECTORY);
+	attachChild<TextBox>(IDC_LOG_DIRECTORY);
 
-	attachButton(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
+	attachChild<Button>(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
-	dataGrid = attachList(IDC_LOG_OPTIONS);
-	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	attachChild(logOptions, IDC_LOG_OPTIONS);
+	logOptions->onSelectionChanged(std::tr1::bind(&LogPage::handleSelectionChanged, this));
 
-	logFormat = attachTextBox(IDC_LOG_FORMAT);
+	logFormat = attachChild<TextBox>(IDC_LOG_FORMAT);
 	logFormat->setEnabled(false);
 
-	logFile = attachTextBox(IDC_LOG_FILE);
+	logFile = attachChild<TextBox>(IDC_LOG_FILE);
 	logFile->setEnabled(false);
-
-	oldSelection = -1;
 }
 
 LogPage::~LogPage() {
@@ -123,13 +121,13 @@ void LogPage::handleBrowseClicked() {
 	}
 }
 
-LRESULT LogPage::handleItemChanged() {
+void LogPage::handleSelectionChanged() {
 	getValues();
 
-	int sel = dataGrid->getSelected();
+	int sel = logOptions->getSelected();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
-		bool checkState = dataGrid->isChecked(sel);
+		bool checkState = logOptions->isChecked(sel);
 		logFormat->setEnabled(checkState);
 		logFile->setEnabled(checkState);
 
@@ -145,8 +143,6 @@ LRESULT LogPage::handleItemChanged() {
 		logFile->setText(Util::emptyStringT);
 		logFormat->setText(Util::emptyStringT);
 	}
-
-	return 0;
 }
 
 void LogPage::getValues() {

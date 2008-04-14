@@ -19,31 +19,29 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETPANED_H_
 #define DCPLUSPLUS_WIN32_WIDGETPANED_H_
 
-#include <boost/scoped_ptr.hpp>
-
 template< bool horizontal >
 class WidgetPaned :
-	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
-	public SmartWin::AspectMouse< WidgetPaned< horizontal > >,
-	public SmartWin::AspectSizable< WidgetPaned< horizontal > >,
-	public SmartWin::AspectVisible< WidgetPaned< horizontal > >,
-	public SmartWin::AspectRaw< WidgetPaned< horizontal > >
+	public dwt::MessageMap< dwt::Policies::Normal >,
+	public dwt::AspectMouse< WidgetPaned< horizontal > >,
+	public dwt::AspectSizable< WidgetPaned< horizontal > >,
+	public dwt::AspectVisible< WidgetPaned< horizontal > >,
+	public dwt::AspectRaw< WidgetPaned< horizontal > >
 {
-	friend class SmartWin::WidgetCreator< WidgetPaned >;
+	typedef dwt::MessageMap< dwt::Policies::Normal > BaseType;
+	friend class dwt::WidgetCreator< WidgetPaned >;
 public:
 	/// Class type
 	typedef WidgetPaned< horizontal > ThisType;
 
-	typedef SmartWin::MessageMapPolicy< SmartWin::Policies::Normal > PolicyType;
-	
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	class Seed
-		: public Widget::Seed
-	{
-	public:
-		explicit Seed();
+	struct Seed : public BaseType::Seed {
+		typedef ThisType WidgetType;
+
+		double pos;
+
+		explicit Seed(double pos_ = 0.5);
 	};
 
 	void setRelativePos(double pos_) {
@@ -51,32 +49,32 @@ public:
 		resizeChildren();
 	}
 	
-	SmartWin::Widget* getFirst() {
+	dwt::Widget* getFirst() {
 		return children.first;
 	}
-	void setFirst(SmartWin::Widget* child) {
+	void setFirst(dwt::Widget* child) {
 		children.first = child;
 		resizeChildren();
 	}
 	
-	SmartWin::Widget* getSecond() {
+	dwt::Widget* getSecond() {
 		return children.second;
 	}
-	void setSecond(SmartWin::Widget* child) {
+	void setSecond(dwt::Widget* child) {
 		children.second = child;
 		resizeChildren();
 	}
 
 	void create( const Seed & cs = Seed() );
 
-	void setRect(SmartWin::Rectangle r) {
+	void setRect(dwt::Rectangle r) {
 		rect = r;
 		resizeChildren();
 	}
 	
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetPaned( SmartWin::Widget * parent );
+	explicit WidgetPaned( dwt::Widget * parent );
 
 	/// Protected to avoid direct instantiation, you can inherit and use
 	/// WidgetFactory class which is friend
@@ -84,52 +82,54 @@ protected:
 	{}
 
 private:
-	std::pair<SmartWin::Widget*, SmartWin::Widget*> children;
+	std::pair<dwt::Widget*, dwt::Widget*> children;
 	
 	double pos;
 	
 	bool moving;
 	
-	SmartWin::Rectangle rect;
+	dwt::Rectangle rect;
 	
-	SmartWin::Rectangle getSplitterRect();
+	dwt::Rectangle getSplitterRect();
 	void resizeChildren();
 	
-	void handleLButtonDown(const SmartWin::MouseEventResult&) {
+	void handleLButtonDown(const dwt::MouseEvent&) {
 		::SetCapture( this->handle() );
 		moving = true;
 	}
-	void handleMouseMove(const SmartWin::MouseEventResult& event) {
-		if ( event.ButtonPressed == SmartWin::MouseEventResult::LEFT && moving )
+	void handleMouseMove(const dwt::MouseEvent& event) {
+		if ( event.ButtonPressed == dwt::MouseEvent::LEFT && moving )
 		{
-			SmartWin::ClientCoordinate cc(event.pos, getParent());
+			dwt::ClientCoordinate cc(event.pos, getParent());
 			int x = horizontal ? cc.y() : cc.x();
 			int w = horizontal ? rect.size.y : rect.width();
 			pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
 			resizeChildren();
 		}
 	}
-	void handleLButtonUp(const SmartWin::MouseEventResult&) {
+	void handleLButtonUp(const dwt::MouseEvent&) {
 		::ReleaseCapture();
 		moving = false;
 	}
 	
-	static SmartWin::WindowClass windowClass; 
+	static dwt::WindowClass windowClass; 
 };
 
 template<bool horizontal>
-SmartWin::WindowClass WidgetPaned<horizontal>::windowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), 
+dwt::WindowClass WidgetPaned<horizontal>::windowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), 
 	&WidgetPaned<horizontal>::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), 
-	SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE ));
+	dwt::IconPtr(), dwt::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE ));
 
 template< bool horizontal >
-WidgetPaned< horizontal >::Seed::Seed() : SmartWin::Widget::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS)
+WidgetPaned< horizontal >::Seed::Seed(double pos_) :
+	BaseType::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS),
+	pos(pos_)
 {
 }
 
 template< bool horizontal >
-WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
-	: PolicyType( parent )
+WidgetPaned< horizontal >::WidgetPaned( dwt::Widget * parent )
+	: BaseType( parent )
 	, pos(0.5)
 	, moving(false)
 {
@@ -139,7 +139,8 @@ WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
 template< bool horizontal >
 void WidgetPaned< horizontal >::create( const Seed & cs )
 {
-	PolicyType::create(cs);
+	pos = cs.pos;
+	BaseType::create(cs);
 	
 	onLeftMouseDown(std::tr1::bind(&ThisType::handleLButtonDown, this, _1));
 	onMouseMove(std::tr1::bind(&ThisType::handleMouseMove, this, _1));
@@ -147,7 +148,7 @@ void WidgetPaned< horizontal >::create( const Seed & cs )
 }
 
 template< bool horizontal >
-SmartWin::Rectangle WidgetPaned< horizontal >::getSplitterRect()
+dwt::Rectangle WidgetPaned< horizontal >::getSplitterRect()
 {
 	// Sanity check
 	if(pos < 0.) {
@@ -156,7 +157,7 @@ SmartWin::Rectangle WidgetPaned< horizontal >::getSplitterRect()
 		pos = 1.0;
 	}
 	
-	SmartWin::Rectangle rc;
+	dwt::Rectangle rc;
 	if(!children.first || !children.second) {
 		return rc;
 	}
@@ -197,8 +198,8 @@ void WidgetPaned< horizontal >::resizeChildren( )
 		return;
 	}
 	
-	SmartWin::Rectangle left = rect, right = rect;
-	SmartWin::Rectangle rcSplit = getSplitterRect();
+	dwt::Rectangle left = rect, right = rect;
+	dwt::Rectangle rcSplit = getSplitterRect();
 	
 	if(horizontal) {
 		left.size.y = rcSplit.y() - left.y();

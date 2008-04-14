@@ -91,7 +91,7 @@ PropPage::Item NetworkPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
+NetworkPage::NetworkPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_NETWORKPAGE);
 	setHelpId(IDH_NETWORKPAGE);
 
@@ -121,7 +121,7 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	fixControls();
 
-#define RADIO_ATTACH(id) attachRadioButton(id)->onClicked((std::tr1::bind(&NetworkPage::fixControls, this)))
+#define RADIO_ATTACH(id) attachChild<RadioButton>(id)->onClicked((std::tr1::bind(&NetworkPage::fixControls, this)))
 	RADIO_ATTACH(IDC_DIRECT);
 	RADIO_ATTACH(IDC_FIREWALL_UPNP);
 	RADIO_ATTACH(IDC_FIREWALL_NAT);
@@ -130,17 +130,17 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 	RADIO_ATTACH(IDC_SOCKS5);
 #undef RADIO_ATTACH
 
-#define TEXTBOX_LIMIT(id) attachTextBox(id)->setTextLimit(250)
+#define TEXTBOX_LIMIT(id) attachChild<TextBox>(id)->setTextLimit(250)
 	TEXTBOX_LIMIT(IDC_SOCKS_SERVER);
 	TEXTBOX_LIMIT(IDC_SOCKS_PORT);
 	TEXTBOX_LIMIT(IDC_SOCKS_USER);
 	TEXTBOX_LIMIT(IDC_SOCKS_PASSWORD);
 #undef TEXTBOX_LIMIT
 
-	attachTextBox(IDC_PORT_TCP);
-	attachTextBox(IDC_PORT_UDP);
-	attachTextBox(IDC_PORT_TLS);
-	attachTextBox(IDC_EXTERNAL_IP);
+	attachChild<TextBox>(IDC_PORT_TCP);
+	attachChild<TextBox>(IDC_PORT_UDP);
+	attachChild<TextBox>(IDC_PORT_TLS);
+	attachChild<TextBox>(IDC_EXTERNAL_IP);
 }
 
 NetworkPage::~NetworkPage() {

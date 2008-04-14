@@ -46,8 +46,8 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ 0, 0 }
 };
 
-ADLSProperties::ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+ADLSProperties::ADLSProperties(dwt::Widget* parent, ADLSearch *_search) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	searchString(0),
 	searchType(0),
 	minSize(0),
@@ -79,44 +79,44 @@ bool ADLSProperties::handleInitDialog() {
 	setItemText(IDC_ADLSP_UNITS, T_("Size Type"));
 	setItemText(IDC_ADLSP_DESTINATION, T_("Destination Directory"));
 
-	searchString = attachTextBox(IDC_SEARCH_STRING);
+	searchString = attachChild<TextBox>(IDC_SEARCH_STRING);
 	searchString->setText(Text::toT(search->searchString));
 	searchString->setFocus();
 
-	searchType = attachComboBox(IDC_SOURCE_TYPE);
+	searchType = attachChild<ComboBox>(IDC_SOURCE_TYPE);
 	searchType->addValue(T_("Filename"));
 	searchType->addValue(T_("Directory"));
 	searchType->addValue(T_("Full Path"));
 	searchType->setSelected(search->sourceType);
 
-	minSize = attachTextBox(IDC_MIN_FILE_SIZE);
+	minSize = attachChild<TextBox>(IDC_MIN_FILE_SIZE);
 	minSize->setText((search->minFileSize > 0) ? Text::toT(Util::toString(search->minFileSize)) : Util::emptyStringT);
 
-	maxSize = attachTextBox(IDC_MAX_FILE_SIZE);
+	maxSize = attachChild<TextBox>(IDC_MAX_FILE_SIZE);
 	maxSize->setText((search->maxFileSize > 0) ? Text::toT(Util::toString(search->maxFileSize)) : Util::emptyStringT);
 
-	sizeType = attachComboBox(IDC_SIZE_TYPE);
+	sizeType = attachChild<ComboBox>(IDC_SIZE_TYPE);
 	sizeType->addValue(T_("B"));
 	sizeType->addValue(T_("KiB"));
 	sizeType->addValue(T_("MiB"));
 	sizeType->addValue(T_("GiB"));
 	sizeType->setSelected(search->typeFileSize);
 
-	destDir = attachTextBox(IDC_DEST_DIR);
+	destDir = attachChild<TextBox>(IDC_DEST_DIR);
 	destDir->setText(Text::toT(search->destDir));
 
-	active = attachCheckBox(IDC_IS_ACTIVE);
+	active = attachChild<CheckBox>(IDC_IS_ACTIVE);
 	active->setText(T_("Enabled"));
 	active->setChecked(search->isActive);
 
-	autoQueue = attachCheckBox(IDC_AUTOQUEUE);
+	autoQueue = attachChild<CheckBox>(IDC_AUTOQUEUE);
 	autoQueue->setText(T_("Download Matches"));
 	autoQueue->setChecked(search->isAutoQueue);
 
-	ButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachChild<Button>(IDOK);
 	button->onClicked(std::tr1::bind(&ADLSProperties::handleOKClicked, this));
 
-	button = attachButton(IDCANCEL);
+	button = attachChild<Button>(IDCANCEL);
 	button->onClicked(std::tr1::bind(&ADLSProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();

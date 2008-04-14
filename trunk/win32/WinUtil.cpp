@@ -43,13 +43,13 @@
 #include "FdmMoreWinUtil.h"
 
 tstring WinUtil::tth;
-SmartWin::BrushPtr WinUtil::bgBrush;
+dwt::BrushPtr WinUtil::bgBrush;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
-SmartWin::FontPtr WinUtil::font;
-SmartWin::FontPtr WinUtil::monoFont;
-SmartWin::ImageListPtr WinUtil::fileImages;
-SmartWin::ImageListPtr WinUtil::userImages;
+dwt::FontPtr WinUtil::font;
+dwt::FontPtr WinUtil::monoFont;
+dwt::ImageListPtr WinUtil::fileImages;
+dwt::ImageListPtr WinUtil::userImages;
 int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
@@ -60,13 +60,13 @@ bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
 
-const SmartWin::Button::Seed WinUtil::Seeds::button;
-const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
-const SmartWin::ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
-const SmartWin::Table::Seed WinUtil::Seeds::Table;
-const SmartWin::WidgetMenu::Seed WinUtil::Seeds::menu;
-const SmartWin::TextBox::Seed WinUtil::Seeds::textBox;
-const SmartWin::Tree::Seed WinUtil::Seeds::treeView;
+const dwt::Button::Seed WinUtil::Seeds::button;
+const ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
+const ComboBox::Seed WinUtil::Seeds::comboBoxEdit;
+const dwt::Menu::Seed WinUtil::Seeds::menu;
+const dwt::Table::Seed WinUtil::Seeds::Table;
+const TextBox::Seed WinUtil::Seeds::textBox;
+const dwt::Tree::Seed WinUtil::Seeds::treeView;
 
 void WinUtil::init() {
 
@@ -75,17 +75,17 @@ void WinUtil::init() {
 
 	textColor = SETTING(TEXT_COLOR);
 	bgColor = SETTING(BACKGROUND_COLOR);
-	bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bgColor));
+	bgBrush = dwt::BrushPtr(new dwt::Brush(bgColor));
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
 	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
 
-	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
-	monoFont = SmartWin::FontPtr(new SmartWin::Font((BOOLSETTING(USE_OEM_MONOFONT) ? SmartWin::OemFixedFont : SmartWin::AnsiFixedFont)));
+	font = dwt::FontPtr(new dwt::Font(::CreateFontIndirect(&lf), true));
+	monoFont = dwt::FontPtr(new dwt::Font((BOOLSETTING(USE_OEM_MONOFONT) ? dwt::OemFixedFont : dwt::AnsiFixedFont)));
 
-	fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+	fileImages = dwt::ImageListPtr(new dwt::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 
 	dirIconIndex = fileImageCount++;
 	dirMaskedIndex = fileImageCount++;
@@ -93,12 +93,12 @@ void WinUtil::init() {
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
 		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		SmartWin::Icon tmp(fi.hIcon);
+		dwt::Icon tmp(fi.hIcon);
 		fileImages->add(tmp);
 		// @todo This one should be masked further for the incomplete folder thing
 		fileImages->add(tmp);
 	} else {
-		SmartWin::Bitmap tmp(IDB_FOLDERS);
+		dwt::Bitmap tmp(IDB_FOLDERS);
 		fileImages->add(tmp, RGB(255, 0, 255));
 
 		// Unknown file
@@ -106,8 +106,8 @@ void WinUtil::init() {
 	}
 
 	{
-		userImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-		SmartWin::Bitmap tmp(IDB_USERS);
+		userImages = dwt::ImageListPtr(new dwt::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+		dwt::Bitmap tmp(IDB_USERS);
 		userImages->add(tmp, RGB(255, 0, 255));
 	}
 	
@@ -122,26 +122,32 @@ void WinUtil::init() {
 	}
 	
 	// Const so that noone else will change them after they've been initialized
-	//SmartWin::Button::Seed& xbutton = const_cast<SmartWin::Button::Seed&>(Seeds::button);
-	SmartWin::ComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxEdit);
-	SmartWin::ComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::ComboBox::Seed&>(Seeds::comboBoxStatic);
-	SmartWin::Table::Seed& xTable = const_cast<SmartWin::Table::Seed&>(Seeds::Table);
-	SmartWin::WidgetMenu::Seed& xmenu = const_cast<SmartWin::WidgetMenu::Seed&>(Seeds::menu);
-	SmartWin::TextBox::Seed& xtextBox = const_cast<SmartWin::TextBox::Seed&>(Seeds::textBox);
-	SmartWin::Tree::Seed& xtreeView =  const_cast<SmartWin::Tree::Seed&>(Seeds::treeView);
+	dwt::Button::Seed& xbutton = const_cast<dwt::Button::Seed&>(Seeds::button);
+	ComboBox::Seed& xcomboBoxEdit = const_cast<ComboBox::Seed&>(Seeds::comboBoxEdit);
+	ComboBox::Seed& xcomboBoxStatic = const_cast<ComboBox::Seed&>(Seeds::comboBoxStatic);
+	dwt::Menu::Seed& xmenu = const_cast<dwt::Menu::Seed&>(Seeds::menu);
+	dwt::Table::Seed& xTable = const_cast<dwt::Table::Seed&>(Seeds::Table);
+	TextBox::Seed& xtextBox = const_cast<TextBox::Seed&>(Seeds::textBox);
+	dwt::Tree::Seed& xtreeView =  const_cast<dwt::Tree::Seed&>(Seeds::treeView);
 
-	xcomboBoxStatic.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-	xcomboBoxEdit.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
-	
-	xTable.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+	xbutton.font = font;
+
+	xcomboBoxStatic.style |= CBS_DROPDOWNLIST;
+	xcomboBoxStatic.font = font;
+
+	xcomboBoxEdit.style |= CBS_DROPDOWN | CBS_AUTOHSCROLL;
+	xcomboBoxEdit.font = font;
+
+	if(BOOLSETTING(OWNER_DRAWN_MENUS)) {
+		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+		xmenu.font = font;
+	} else
+		xmenu.ownerDrawn = false;
+
+	xTable.style |= WS_HSCROLL | WS_VSCROLL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 	xTable.exStyle = WS_EX_CLIENTEDGE;
 	xTable.lvStyle = LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER;
 	xTable.font = font;
-
-	if(BOOLSETTING(OWNER_DRAWN_MENUS))
-		xmenu.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
-	else
-		xmenu.ownerDrawn = false;
 
 	xtextBox.exStyle = WS_EX_CLIENTEDGE;
 	xtextBox.font = font;
@@ -149,7 +155,6 @@ void WinUtil::init() {
 	xtreeView.style |= TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 	xtreeView.exStyle = WS_EX_CLIENTEDGE;
 	xtreeView.font = font;
-	
 
 	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 }
@@ -263,7 +268,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
-			SearchFrame::openWindow(mainWindow->getMDIParent(), param);
+			SearchFrame::openWindow(mainWindow->getTabView(), param);
 		} else {
 			status = T_("Specify a search string");
 		}
@@ -313,6 +318,16 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	return true;
 }
 
+void WinUtil::playSound(int setting) {
+	string sound = SettingsManager::getInstance()->get((SettingsManager::StrSetting)setting);
+	if(!sound.empty()) {
+		if(sound == "beep")
+			::MessageBeep(MB_OK);
+		else
+			::PlaySound(Text::toT(sound).c_str(), NULL, SND_FILENAME | SND_ASYNC);
+	}
+}
+
 void WinUtil::openFile(const tstring& file) {
 	::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
@@ -359,19 +374,19 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 			return 2;
 		}
 		try {
-			SmartWin::Icon tmp(fi.hIcon);
+			dwt::Icon tmp(fi.hIcon);
 			fileImages->add(tmp);
 
 			fileIndexes[x] = fileImageCount++;
 			return fileImageCount - 1;
-		} catch(const SmartWin::xCeption&) {
+		} catch(const dwt::xCeption&) {
 			return 2;
 		}
 	} else {
 		return 2;
 	}
 }
-void WinUtil::addHashItems(const SmartWin::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename) {
+void WinUtil::addHashItems(const dwt::Menu::ObjectType& menu, const TTHValue& tth, const tstring& filename) {
 	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&WinUtil::searchHash, tth));
 	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(WinUtil::bitziLink, tth));
 	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&WinUtil::copyMagnet, tth, filename));
@@ -392,7 +407,7 @@ void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
 }
 
 void WinUtil::searchHash(const TTHValue& aHash) {
-	SearchFrame::openWindow(mainWindow->getMDIParent(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
+	SearchFrame::openWindow(mainWindow->getTabView(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 }
 
 void WinUtil::addLastDir(const tstring& dir) {
@@ -406,31 +421,26 @@ void WinUtil::addLastDir(const tstring& dir) {
 	lastDirs.push_back(dir);
 }
 
-bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
-	TCHAR buf[MAX_PATH];
-	OPENFILENAME ofn = { 0 };		// common dialog box structure
-	target = Text::toT(Util::validateFileName(Text::fromT(target)));
-	_tcscpy(buf, target.c_str());
-	// Initialize OPENFILENAME
-	ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
-	ofn.hwndOwner = owner;
-	ofn.lpstrFile = buf;
-	ofn.lpstrFilter = types;
-	ofn.lpstrDefExt = defExt;
-	ofn.nFilterIndex = 1;
-
-	if(!initialDir.empty()) {
-		ofn.lpstrInitialDir = initialDir.c_str();
+bool WinUtil::browseSaveFile(dwt::SaveDialog dlg, tstring& file) {
+	tstring ext = Util::getFileExt(file);
+	tstring path = Util::getFilePath(file);
+	
+	if(!ext.empty()) {
+		ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
+		dlg.addFilter(str(TF_("%1% files") % ext), _T("*.") + ext);
+		dlg.setDefaultExtension(ext);
 	}
-	ofn.nMaxFile = sizeof(buf);
-	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
+	dlg.addFilter(T_("All files"), _T("*.*"));
+	dlg.setInitialDirectory(path);
+	
+	return dlg.open(file);
+}
 
-	// Display the Open dialog box.
-	if ( (save ? ::GetSaveFileName(&ofn) : ::GetOpenFileName(&ofn) ) ==TRUE) {
-		target = ofn.lpstrFile;
-		return true;
-	}
-	return false;
+bool WinUtil::browseFileList(dwt::LoadDialog dialog, tstring& file) {
+	return dialog.addFilter(T_("File Lists"), _T("*.xml.bz2"))
+		.addFilter(T_("All files"), _T("*.*"))
+		.setInitialDirectory(Text::toT(Util::getListPath()))
+		.open(file);
 }
 
 int WinUtil::getOsMajor() {
@@ -515,7 +525,7 @@ void WinUtil::setClipboard(const tstring& str) {
 	CloseClipboard();
 }
 
-bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, StringMap& sm) throw() {
+bool WinUtil::getUCParams(dwt::Widget* parent, const UserCommand& uc, StringMap& sm) throw() {
 	string::size_type i = 0;
 	StringMap done;
 
@@ -549,8 +559,7 @@ void WinUtil::help(HWND hWnd, unsigned id) {
 
 	if(id >= IDH_CSHELP_BEGIN && id <= IDH_CSHELP_END) {
 		// context-sensitive help; display a tooltip
-		HH_POPUP popup = { 0 };
-		popup.cbStruct = sizeof(HH_POPUP);
+		HH_POPUP popup = { sizeof(HH_POPUP) };
 		popup.idString = id;
 
 		RECT rect;
@@ -941,7 +950,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-		HubFrame::openWindow(mainWindow->getMDIParent(), server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getTabView(), server + ":" + Util::toString(port));
 	}
 	if(!file.empty()) {
 		if(file[0] == '/') // Remove any '/' in from of the file
@@ -962,7 +971,7 @@ void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
-		HubFrame::openWindow(mainWindow->getMDIParent(), "adc://" + server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getTabView(), "adc://" + server + ":" + Util::toString(port));
 	}
 }
 
@@ -1026,7 +1035,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-			SmartWin::MessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::MessageBox::BOX_OK, SmartWin::MessageBox::BOX_ICONEXCLAMATION);
+			dwt::MessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), dwt::MessageBox::BOX_OK, dwt::MessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }

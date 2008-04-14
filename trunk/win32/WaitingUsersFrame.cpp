@@ -29,14 +29,14 @@
 #include <dcpp/UploadManager.h>
 
 // Constructor
-WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
+WaitingUsersFrame::WaitingUsersFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Waiting Users"), IDH_WAITING_USERS, IDR_WAITING_USERS)
 {
 	UploadManager::getInstance()->addListener(this);
 
 	// Create tree control
 	{
-		queued = createTreeView(WinUtil::Seeds::treeView);
+		queued = addChild(WinUtil::Seeds::treeView);
 		addWidget(queued);
 		queued->onContextMenu(std::tr1::bind(&WaitingUsersFrame::handleContextMenu, this, _1));
 		queued->onChar(std::tr1::bind(&WaitingUsersFrame::handleChar, this, _1));
@@ -53,7 +53,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 
 // Recalculate frame control layout
 void WaitingUsersFrame::layout() {
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -71,11 +71,11 @@ void WaitingUsersFrame::postClosing() {
 	}
 }
 
-bool WaitingUsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool WaitingUsersFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 || pt.y() == -1) {
 		pt = queued->getContextMenuPos();
 	}
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	menu->appendItem(IDC_GETLIST, T_("&Get file list"), std::tr1::bind(&WaitingUsersFrame::onGetList, this));
 	menu->appendItem(IDC_COPY_FILENAME, T_("Copy Filename"), std::tr1::bind(&WaitingUsersFrame::onCopyFilename, this));
 	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&WaitingUsersFrame::onRemove, this));

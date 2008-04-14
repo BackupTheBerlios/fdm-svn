@@ -26,47 +26,47 @@
 
 #include "WinUtil.h"
 
-SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0) {
+SplashWindow::SplashWindow() : dwt::WidgetFactory<dwt::Window>(0) {
 	{
 		Seed cs;
 		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		cs.exStyle = WS_EX_STATICEDGE;
 		cs.caption = _T(APPNAME);
-		tmp = new SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0);
-		tmp->createWindow(cs);
+		tmp = new dwt::WidgetFactory<dwt::Window>(0);
+		tmp->create(cs);
 	}
 	{
 		Seed cs;
 		cs.style = WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		cs.exStyle = WS_EX_STATICEDGE;
 		cs.caption = _T(APPNAME);
-		createWindow(cs);
+		create(cs);
 	}
 	tstring caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 	{
 		TextBox::Seed cs;
 		cs.style = WS_CHILD | ES_CENTER | ES_READONLY;
 		cs.exStyle = WS_EX_STATICEDGE;
-		text = createTextBox(cs);
+		text = addChild(cs);
 	}
 
-	text->setFont(SmartWin::DefaultGuiFont);
+	text->setFont(dwt::DefaultGuiFont);
 	
-	SmartWin::Point textSize(text->getTextSize(caption));
-	SmartWin::Point desktopSize(getDesktopSize());
+	dwt::Point textSize(text->getTextSize(caption));
+	dwt::Point desktopSize(getDesktopSize());
 	int xmid = desktopSize.x / 2;
 	int ymid = desktopSize.y / 2;
 	int xtext = 300;
 	int ytext = textSize.y + 6;
 	
-	SmartWin::Rectangle r(xmid - xtext/2, ymid - ytext/2, xtext, ytext);
+	dwt::Rectangle r(xmid - xtext/2, ymid - ytext/2, xtext, ytext);
 	setBounds(r);
 	text->setBounds(0, 0, xtext, ytext);
 
 	::HideCaret(text->handle());
 	text->setVisible(true);
 	text->bringToFront();
-	text->updateWidget();
+	text->redraw(true);
 }
 
 SplashWindow::~SplashWindow() {
@@ -75,5 +75,5 @@ SplashWindow::~SplashWindow() {
 
 void SplashWindow::operator()(const string& status) {
 	text->setText(str(TF_("Loading DC++, please wait... (%1%)") % Text::toT(status) ));
-	text->updateWidget();
+	text->redraw(true);
 }

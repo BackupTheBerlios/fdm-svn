@@ -45,14 +45,14 @@ PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ 0, 0 }
 };
 
-FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) {
+FavoriteDirsPage::FavoriteDirsPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_FAVORITE_DIRSPAGE);
 	setHelpId(IDH_FAVORITE_DIRSPAGE);
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 
-	directories = attachList(IDC_FAVORITE_DIRECTORIES);
+	attachChild(directories, IDC_FAVORITE_DIRECTORIES);
 	directories->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -72,15 +72,15 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 
 	directories->onDblClicked(std::tr1::bind(&FavoriteDirsPage::handleDoubleClick, this));
 	directories->onKeyDown(std::tr1::bind(&FavoriteDirsPage::handleKeyDown, this, _1));
-	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleItemChanged, this, _1, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 	onDragDrop(std::tr1::bind(&FavoriteDirsPage::handleDragDrop, this, _1));
 
-	attachButton(IDC_RENAME)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRenameClicked, this));
+	attachChild<Button>(IDC_RENAME)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRenameClicked, this));
 
-	attachButton(IDC_REMOVE)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRemoveClicked, this));
+	attachChild<Button>(IDC_REMOVE)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRemoveClicked, this));
 
-	attachButton(IDC_ADD)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleAddClicked, this));
+	attachChild<Button>(IDC_ADD)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleAddClicked, this));
 }
 
 FavoriteDirsPage::~FavoriteDirsPage() {

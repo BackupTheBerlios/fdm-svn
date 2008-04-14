@@ -36,7 +36,7 @@
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
-void PrivateFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
+void PrivateFrame::openWindow(dwt::TabView* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
 	PrivateFrame* pf = 0;
 	FrameIter i = frames.find(replyTo_);
 	if(i == frames.end()) {
@@ -50,7 +50,7 @@ void PrivateFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr&
 	
 }
 
-void PrivateFrame::gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
+void PrivateFrame::gotMessage(dwt::TabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = 0;
 	const UserPtr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 
@@ -62,21 +62,10 @@ void PrivateFrame::gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr&
 			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
 				p->sendMessage(Text::toT(Util::getAwayMessage()));
 		}
-
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-			if (SETTING(BEEPFILE).empty())
-				MessageBeep(MB_OK);
-			else
-				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
-		}
+		WinUtil::playSound(SettingsManager::SOUND_PM_WINDOW);
 	} else {
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-			if (SETTING(BEEPFILE).empty())
-				MessageBeep(MB_OK);
-			else
-				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
-		}
 		i->second->addChat(aMessage);
+		WinUtil::playSound(SettingsManager::SOUND_PM);
 	}
 }
 
@@ -92,8 +81,8 @@ void PrivateFrame::closeAllOffline() {
 	}
 }
 
-PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
-	BaseType(mdiParent, _T(""), IDH_PM, SmartWin::IconPtr(new SmartWin::Icon(IDR_PRIVATE)), activate),
+PrivateFrame::PrivateFrame(dwt::TabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
+	BaseType(mdiParent, _T(""), IDH_PM, dwt::IconPtr(new dwt::Icon(IDR_PRIVATE)), activate),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)
@@ -101,7 +90,8 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		message = createTextBox(cs);
+		message = addChild(cs);
+		message->setHelpId(IDH_PM_MESSAGE);
 		addWidget(message, true);
 		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&PrivateFrame::handleChar, this, _1));
@@ -110,7 +100,8 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		chat = createTextBox(cs);
+		chat = addChild(cs);
+		chat->setHelpId(IDH_PM_CHAT);
 		chat->setTextLimit(0);
 		addWidget(chat);
 	}
@@ -229,12 +220,12 @@ void PrivateFrame::layout() {
 
 	const int border = 2;
 	
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 
 	layoutStatus(r);
 	
 	int ymessage = message->getTextSize(_T("A")).y + 10;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.width() , ymessage);
+	dwt::Rectangle rm(0, r.size.y - ymessage, r.width() , ymessage);
 	message->setBounds(rm);
 	
 	r.size.y -= rm.size.y + border;
@@ -374,8 +365,8 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 		speak(USER_UPDATED);
 }
 
-bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+bool PrivateFrame::handleTabContextMenu(const dwt::ScreenCoordinate& pt) {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 	
@@ -383,11 +374,11 @@ bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
 	menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
 	if(!FavoriteManager::getInstance()->isFavoriteUser(replyTo))
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_USERS)));
 
 	prepareMenu(menu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&PrivateFrame::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&PrivateFrame::close, this, true), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
 
 	menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;

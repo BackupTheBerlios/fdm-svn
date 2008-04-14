@@ -31,6 +31,7 @@ class PublicHubsFrame :
 	public StaticFrame<PublicHubsFrame>,
 	public FavoriteManagerListener
 {
+	typedef StaticFrame<PublicHubsFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -40,11 +41,10 @@ public:
 	};
 	
 private:
-	typedef StaticFrame<PublicHubsFrame> BaseType;
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
 
-	PublicHubsFrame(SmartWin::WidgetTabView* mdiParent);
+	PublicHubsFrame(dwt::TabView* mdiParent);
 	virtual ~PublicHubsFrame();
 
 	enum {
@@ -125,7 +125,7 @@ private:
 	void handleConnect();
 	void handleAdd();
 	void handleCopyHub();
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 	bool handleKeyDown(int c);
 	void handleListSelChanged();
 	bool handleFilterKeyDown(int c);

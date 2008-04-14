@@ -52,8 +52,8 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ 0, 0 }
 };
 
-CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+CommandDlg::CommandDlg(dwt::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	separator(0),
 	raw(0),
 	chat(0),
@@ -99,64 +99,64 @@ bool CommandDlg::handleInitDialog() {
 	setItemText(IDC_SETTINGS_TO, T_("To"));
 	setItemText(IDC_USER_CMD_PREVIEW, T_("Text sent to hub"));
 
-	separator = attachRadioButton(IDC_SETTINGS_SEPARATOR);
+	attachChild(separator, IDC_SETTINGS_SEPARATOR);
 	separator->setText(T_("Separator"));
 	separator->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	raw = attachRadioButton(IDC_SETTINGS_RAW);
+	attachChild(raw, IDC_SETTINGS_RAW);
 	raw->setText(T_("Raw"));
 	raw->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	chat = attachRadioButton(IDC_SETTINGS_CHAT);
+	attachChild(chat, IDC_SETTINGS_CHAT);
 	chat->setText(T_("Chat"));
 	chat->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	PM = attachRadioButton(IDC_SETTINGS_PM);
+	attachChild(PM, IDC_SETTINGS_PM);
 	PM->setText(T_("PM"));
 	PM->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	hubMenu = attachCheckBox(IDC_SETTINGS_HUB_MENU);
+	hubMenu = attachChild<CheckBox>(IDC_SETTINGS_HUB_MENU);
 	hubMenu->setText(T_("Hub Menu"));
 
-	userMenu = attachCheckBox(IDC_SETTINGS_USER_MENU);
+	userMenu = attachChild<CheckBox>(IDC_SETTINGS_USER_MENU);
 	userMenu->setText(T_("User Menu"));
 
-	searchMenu = attachCheckBox(IDC_SETTINGS_SEARCH_MENU);
+	searchMenu = attachChild<CheckBox>(IDC_SETTINGS_SEARCH_MENU);
 	searchMenu->setText(T_("Search Menu"));
 
-	fileListMenu = attachCheckBox(IDC_SETTINGS_FILELIST_MENU);
+	fileListMenu = attachChild<CheckBox>(IDC_SETTINGS_FILELIST_MENU);
 	fileListMenu->setText(T_( "Filelist Menu"));
 
-	nameBox = attachTextBox(IDC_NAME);
+	nameBox = attachChild<TextBox>(IDC_NAME);
 
-	commandBox = attachTextBox(IDC_COMMAND);
+	commandBox = attachChild<TextBox>(IDC_COMMAND);
 	commandBox->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
-	hubBox = attachTextBox(IDC_HUB);
+	hubBox = attachChild<TextBox>(IDC_HUB);
 
-	nick = attachTextBox(IDC_NICK);
+	nick = attachChild<TextBox>(IDC_NICK);
 	nick->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
-	once = attachCheckBox(IDC_SETTINGS_ONCE);
+	once = attachChild<CheckBox>(IDC_SETTINGS_ONCE);
 	once->setText(T_("Send once per nick"));
 
-	result = attachTextBox(IDC_RESULT);
+	result = attachChild<TextBox>(IDC_RESULT);
 
-	openHelp = attachCheckBox(IDC_USER_CMD_OPEN_HELP);
+	openHelp = attachChild<CheckBox>(IDC_USER_CMD_OPEN_HELP);
 	openHelp->setText(T_("Always open help file with this dialog"));
 	bool bOpenHelp = BOOLSETTING(OPEN_USER_CMD_HELP);
 	openHelp->setChecked(bOpenHelp);
 
 	{
-		ButtonPtr button = attachButton(IDOK);
+		ButtonPtr button = attachChild<Button>(IDOK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
 
-		button = attachButton(IDCANCEL);
+		button = attachChild<Button>(IDCANCEL);
 		button->setText(T_("Cancel"));
 		button->onClicked(std::tr1::bind(&CommandDlg::endDialog, this, IDCANCEL));
 
-		button = attachButton(IDHELP);
+		button = attachChild<Button>(IDHELP);
 		button->setText(T_("Help"));
 		button->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_USER_COMMAND));
 	}

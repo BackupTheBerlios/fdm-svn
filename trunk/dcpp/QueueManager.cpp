@@ -120,6 +120,13 @@ void QueueManager::FileQueue::find(QueueItem::List& ql, const TTHValue& tth) {
 	}
 }
 
+bool QueueManager::FileQueue::exists(const TTHValue& tth) const {
+	for(QueueItem::StringMap::const_iterator i = queue.begin(); i != queue.end(); ++i)
+		if(i->second->getTTH() == tth)
+			return true;
+	return false;
+}
+
 static QueueItem* findCandidate(QueueItem* cand, QueueItem::StringIter start, QueueItem::StringIter end, const StringList& recent) {
 	for(QueueItem::StringIter i = start; i != end; ++i) {
 		QueueItem* q = i->second;
@@ -185,7 +192,7 @@ void QueueManager::UserQueue::add(QueueItem* qi, const UserPtr& aUser) {
 	}
 }
 
-QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Priority minPrio) {
+QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Priority minPrio, double lastSpeed, int64_t lastSize) {
 	int p = QueueItem::LAST - 1;
 
 	do {
@@ -206,7 +213,7 @@ QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Pri
 					int64_t blockSize = HashManager::getInstance()->getBlockSize(qi->getTTH());
 					if(blockSize == 0)
 						blockSize = qi->getSize();
-					if(qi->getNextSegment(blockSize).getSize() == 0) {
+					if(qi->getNextSegment(blockSize, lastSpeed, lastSize).getSize() == 0) {
 						dcdebug("No segment for %s in %s, block " I64_FMT "\n", aUser->getCID().toBase32().c_str(), qi->getTarget().c_str(), blockSize);
 						continue;
 					}
@@ -427,7 +434,7 @@ void QueueManager::addPfs(const UserPtr& aUser, const string& aDir) throw(QueueE
 }
 
 void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& root, const UserPtr& aUser, 
-	int aFlags /* = QueueItem::FLAG_RESUME */, bool addBad /* = true */) throw(QueueException, FileException)
+	int aFlags /* = 0 */, bool addBad /* = true */) throw(QueueException, FileException)
 {
 	bool wantConnection = true;
 
@@ -457,14 +464,9 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 	{
 		Lock l(cs);
 
-		if(BOOLSETTING(DONT_DL_ALREADY_QUEUED) &&  (aFlags & QueueItem::FLAG_USER_LIST)) {
-			// This will be pretty slow on large queues...
-			QueueItem::List ql;
-			fileQueue.find(ql, root);
-			if(!ql.empty()) {
-				throw QueueException(_("This file is already queued"));
-			}
-		}
+		// This will be pretty slow on large queues...
+		if(BOOLSETTING(DONT_DL_ALREADY_QUEUED) && !(aFlags & QueueItem::FLAG_USER_LIST) && fileQueue.exists(root))
+			throw QueueException(_("This file is already queued"));
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
@@ -801,6 +803,11 @@ void QueueManager::setFile(Download* d) {
 		string target = d->getDownloadTarget();
 		File::ensureDirectory(target);
 		File* f = new File(target, File::WRITE, File::OPEN | File::CREATE | File::SHARED);
+		
+		if(d->isSet(Download::FLAG_ANTI_FRAG) && f->getSize() < qi->getSize()) {
+			f->setSize(qi->getSize());
+		}
+		
 		f->setPos(d->getSegment().getStart());
 		d->setFile(f);
 	} else if(d->getType() == Transfer::TYPE_FULL_LIST) {
@@ -1309,7 +1316,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 		inDownloads = true;
 	} else if(inDownloads) {
 		if(cur == NULL && name == sDownload) {
-			int flags = QueueItem::FLAG_RESUME;
+			int flags = 0;
 			int64_t size = Util::toInt64(getAttrib(attribs, sSize, 1));
 			if(size == 0)
 				return;

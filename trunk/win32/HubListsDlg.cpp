@@ -26,9 +26,23 @@
 #include <dcpp/StringTokenizer.h>
 #include "HoldRedraw.h"
 #include "LineDlg.h"
+#include "WinUtil.h"
 
-HubListsDlg::HubListsDlg(SmartWin::Widget* parent) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_LIST_EDIT_BOX, IDH_PUBLIC_HUB_LISTS_EDIT_BOX },
+	{ IDC_LIST_ADD, IDH_PUBLIC_HUB_LISTS_ADD },
+	{ IDC_LIST_LIST, IDH_PUBLIC_HUB_LISTS_LIST },
+	{ IDC_LIST_UP, IDH_PUBLIC_HUB_LISTS_MOVE_UP },
+	{ IDC_LIST_DOWN, IDH_PUBLIC_HUB_LISTS_MOVE_DOWN },
+	{ IDC_LIST_EDIT, IDH_PUBLIC_HUB_LISTS_EDIT },
+	{ IDC_LIST_REMOVE, IDH_PUBLIC_HUB_LISTS_REMOVE },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ 0, 0 }
+};
+
+HubListsDlg::HubListsDlg(dwt::Widget* parent) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	editBox(0),
 	hubLists(0)
 {
@@ -40,11 +54,15 @@ HubListsDlg::~HubListsDlg() {
 }
 
 bool HubListsDlg::handleInitDialog() {
+	setHelpId(IDH_PUBLIC_HUB_LISTS);
+
+	WinUtil::setHelpIds(this, helpItems);
+
 	setText(T_("Configured Public Hub Lists"));
 
-	editBox = attachTextBox(IDC_LIST_EDIT_BOX);
+	editBox = attachChild<TextBox>(IDC_LIST_EDIT_BOX);
 
-	hubLists = attachList(IDC_LIST_LIST);
+	attachChild(hubLists, IDC_LIST_LIST);
 	hubLists->setTableStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -59,29 +77,29 @@ bool HubListsDlg::handleInitDialog() {
 	hubLists->onDblClicked(std::tr1::bind(&HubListsDlg::handleDoubleClick, this));
 	hubLists->onKeyDown(std::tr1::bind(&HubListsDlg::handleKeyDown, this, _1));
 
-	ButtonPtr button = attachButton(IDC_LIST_ADD);
+	ButtonPtr button = attachChild<Button>(IDC_LIST_ADD);
 	button->setText(T_("&Add"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleAddClicked, this));
 
-	button = attachButton(IDC_LIST_UP);
+	button = attachChild<Button>(IDC_LIST_UP);
 	button->setText(T_("Move &Up"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveUpClicked, this));
 
-	button = attachButton(IDC_LIST_DOWN);
+	button = attachChild<Button>(IDC_LIST_DOWN);
 	button->setText(T_("Move &Down"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveDownClicked, this));
 
-	button = attachButton(IDC_LIST_EDIT);
+	button = attachChild<Button>(IDC_LIST_EDIT);
 	button->setText(T_("&Edit"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleEditClicked, this));
 
-	button = attachButton(IDC_LIST_REMOVE);
+	button = attachChild<Button>(IDC_LIST_REMOVE);
 	button->setText(T_("&Remove"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleRemoveClicked, this));
 
-	attachButton(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
+	attachChild<Button>(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
 
-	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
+	attachChild<Button>(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
 
 	centerWindow();
 	

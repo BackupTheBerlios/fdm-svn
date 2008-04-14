@@ -61,7 +61,7 @@ PropPage::ListItem CertificatesPage::listItems[] = {
 	{ 0, 0 }
 };
 
-CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) {
+CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_CERTIFICATESPAGE);
 	setHelpId(IDH_CERTIFICATESPAGE);
 
@@ -69,16 +69,16 @@ CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 
-	privateKeyFile = attachTextBox(IDC_TLS_PRIVATE_KEY_FILE);
-	attachButton(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
+	privateKeyFile = attachChild<TextBox>(IDC_TLS_PRIVATE_KEY_FILE);
+	attachChild<Button>(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
 
-	certificateFile = attachTextBox(IDC_TLS_CERTIFICATE_FILE);
-	attachButton(IDC_BROWSE_CERTIFICATE)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseCertificateClicked, this));
+	certificateFile = attachChild<TextBox>(IDC_TLS_CERTIFICATE_FILE);
+	attachChild<Button>(IDC_BROWSE_CERTIFICATE)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseCertificateClicked, this));
 
-	trustedCertificatesPath = attachTextBox(IDC_TLS_TRUSTED_CERTIFICATES_PATH);
-	attachButton(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
+	trustedCertificatesPath = attachChild<TextBox>(IDC_TLS_TRUSTED_CERTIFICATES_PATH);
+	attachChild<Button>(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
 
-	attachButton(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));
+	attachChild<Button>(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));
 }
 
 CertificatesPage::~CertificatesPage() {
@@ -90,13 +90,13 @@ void CertificatesPage::write() {
 
 void CertificatesPage::handleBrowsePrivateKeyClicked() {
 	tstring target = privateKeyFile->getText();
-	if(WinUtil::browseFile(target, handle(), false, target))
+	if(createLoadDialog().setInitialDirectory(target).open(target))
 		privateKeyFile->setText(target);
 }
 
 void CertificatesPage::handleBrowseCertificateClicked() {
 	tstring target = certificateFile->getText();
-	if(WinUtil::browseFile(target, handle(), false, target))
+	if(createLoadDialog().setInitialDirectory(target).open(target))
 		certificateFile->setText(target);
 }
 

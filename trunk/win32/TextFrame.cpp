@@ -25,14 +25,14 @@
 
 static const size_t MAX_TEXT_LEN = 64*1024;
 
-TextFrame::TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName) : 
+TextFrame::TextFrame(dwt::TabView* mdiParent, const string& fileName) : 
 	BaseType(mdiParent, Text::toT(Util::getFileName(fileName))),
 	pad(0) 
 {
 	TextBox::Seed cs = WinUtil::Seeds::textBox;
-	cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+	cs.style |= WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 	cs.font = WinUtil::monoFont;
-	pad = createTextBox(cs);
+	pad = addChild(cs);
 	addWidget(pad);
 
 	pad->setTextLimit(0);
@@ -47,7 +47,7 @@ TextFrame::TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName)
 }
 
 void TextFrame::layout() {
-	SmartWin::Rectangle r(this->getClientAreaSize());
+	dwt::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 

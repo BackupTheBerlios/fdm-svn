@@ -24,6 +24,7 @@
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
+#include <dcpp/ShareManager.h>
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH, COLUMN_CID };
@@ -71,7 +72,7 @@ int SearchFrame::SearchInfo::compareItems(SearchInfo* a, SearchInfo* b, int col)
 }
 
 
-void SearchFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+void SearchFrame::openWindow(dwt::TabView* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame(mdiParent, str, size, mode, type);
 	frames.insert(pChild);
 }
@@ -81,11 +82,12 @@ void SearchFrame::closeAll() {
 		(*i)->close(true);
 }
 
-SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent, T_("Search"), IDH_SEARCH, SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
+SearchFrame::SearchFrame(dwt::TabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
+	BaseType(mdiParent, T_("Search"), IDH_SEARCH, dwt::IconPtr(new dwt::Icon(IDR_SEARCH))),
 	searchLabel(0),
 	searchBox(0),
 	purge(0),
+	doSearch(0),
 	sizeLabel(0),
 	mode(0),
 	size(0),
@@ -95,9 +97,10 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	optionLabel(0),
 	slots(0),
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
+	filter(0),
+	filterShared(BOOLSETTING(SEARCH_FILTER_SHARED)),
 	hubsLabel(0),
 	hubs(0),
-	doSearch(0),
 	results(0),
 	showUI(0),
 	bShowUI(true),
@@ -113,27 +116,27 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		cs.exStyle = WS_EX_TRANSPARENT;
 
 		cs.caption = T_("Search for");
-		searchLabel = createStatic(cs);
+		searchLabel = addChild(cs);
 		searchLabel->setHelpId(IDH_SEARCH_SEARCH_FOR);
 
 		cs.caption = T_("Size");
-		sizeLabel = createStatic(cs);
+		sizeLabel = addChild(cs);
 		sizeLabel->setHelpId(IDH_SEARCH_SIZE);
 
 		cs.caption = T_("File type");
-		typeLabel = createStatic(cs);
+		typeLabel = addChild(cs);
 		typeLabel->setHelpId(IDH_SEARCH_TYPE);
 
 		cs.caption = T_("Search options");
-		optionLabel = createStatic(cs);
+		optionLabel = addChild(cs);
 
 		cs.caption = T_("Hubs");
-		hubsLabel = createStatic(cs);
+		hubsLabel = addChild(cs);
 		hubsLabel->setHelpId(IDH_SEARCH_HUBS);
 	}
 
 	{
-		searchBox = createComboBox(WinUtil::Seeds::comboBoxEdit);
+		searchBox = addChild(WinUtil::Seeds::comboBoxEdit);
 		searchBox->setHelpId(IDH_SEARCH_SEARCH_FOR);
 		addWidget(searchBox);
 		
@@ -146,19 +149,19 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	{
 		Button::Seed cs = WinUtil::Seeds::button;
 		cs.caption = T_("Purge");
-		purge = createButton(cs);
+		purge = addChild(cs);
 		purge->setHelpId(IDH_SEARCH_PURGE);
 		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
 
 		cs.style |= BS_DEFPUSHBUTTON;
 		cs.caption = T_("Search");
-		doSearch = createButton(cs);
+		doSearch = addChild(cs);
 		doSearch->setHelpId(IDH_SEARCH_SEARCH);
 		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
 	}
 
 	{
-		mode = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		mode = addChild(WinUtil::Seeds::comboBoxStatic);
 		mode->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(mode);
 
@@ -170,13 +173,13 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style |= ES_AUTOHSCROLL | ES_NUMBER;
-		size = createTextBox(cs);
+		size = addChild(cs);
 		size->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(size);
 	}
 
 	{
-		sizeMode = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		sizeMode = addChild(WinUtil::Seeds::comboBoxStatic);
 		sizeMode->setHelpId(IDH_SEARCH_SIZE);
 		addWidget(sizeMode);
 
@@ -188,7 +191,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		fileType = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		fileType = addChild(WinUtil::Seeds::comboBoxStatic);
 		fileType->setHelpId(IDH_SEARCH_TYPE);
 		addWidget(fileType);
 
@@ -205,7 +208,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		CheckBox::Seed cs(T_("Only users with free slots"));
-		slots = createCheckBox(cs);
+		slots = addChild(cs);
 		slots->setHelpId(IDH_SEARCH_SLOTS);
 		slots->setChecked(onlyFree);
 
@@ -213,10 +216,18 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		Table::Seed cs = WinUtil::Seeds::Table;
+		CheckBox::Seed cs(T_("Hide files already in share"));
+		filter = addChild(cs);
+		filter->setChecked(filterShared);
+
+		filter->onClicked(std::tr1::bind(&SearchFrame::handleFilterClicked, this)) ;
+	}
+
+	{
+		WidgetHubs::Seed cs;
 		cs.style |= LVS_NOCOLUMNHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
+		hubs = addChild(cs);
 		hubs->setHelpId(IDH_SEARCH_HUBS);
 		addWidget(hubs);
 
@@ -224,14 +235,14 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		dummy.push_back(Util::emptyStringT);
 		hubs->createColumns(dummy);
 
-		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 		hubs->insert(new HubInfo(Util::emptyStringT, T_("Only where I'm op"), false));
 		hubs->setChecked(0, false);
 	}
 
 	{
-		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::Table);
+		results = addChild(WidgetResults::Seed());
 		addWidget(results);
 
 		results->createColumns(WinUtil::getStrings(columnNames));
@@ -247,7 +258,8 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		CheckBox::Seed cs(_T("+/-"));
-		showUI = createCheckBox(cs);
+		cs.style &= ~WS_TABSTOP;
+		showUI = addChild(cs);
 		showUI->setChecked(bShowUI);
 
 		showUI->onClicked(std::tr1::bind(&SearchFrame::handleShowUIClicked, this));
@@ -297,7 +309,7 @@ SearchFrame::~SearchFrame() {
 }
 
 void SearchFrame::layout() {
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 	
 	layoutStatus(r);
 	mapWidget(STATUS_SHOW_UI, showUI);
@@ -306,7 +318,7 @@ void SearchFrame::layout() {
 
 		const long width = 220, labelH = 16, margin = 4, spacing = 2, groupSpacing = 4;
 		
-		SmartWin::Rectangle rect = r;
+		dwt::Rectangle rect = r;
 		
 		results->setBounds(rect.getRight(rect.width() - width));
 		
@@ -330,8 +342,8 @@ void SearchFrame::layout() {
 		
 		rect.pos.y += yedit + spacing;
 		
-		purge->setBounds(SmartWin::Rectangle(rect.x(), rect.y(), 75, yedit));
-		doSearch->setBounds(SmartWin::Rectangle(rect.right() - 100, rect.y(), 100, yedit));
+		purge->setBounds(dwt::Rectangle(rect.x(), rect.y(), 75, yedit));
+		doSearch->setBounds(dwt::Rectangle(rect.right() - 100, rect.y(), 100, yedit));
 		
 		rect.pos.y += yedit + groupSpacing;
 		
@@ -342,7 +354,7 @@ void SearchFrame::layout() {
 		
 		long w2 = rect.size.x - 2 * spacing;
 		
-		SmartWin::Rectangle third = rect;
+		dwt::Rectangle third = rect;
 		
 		third.size.y = comboH;
 		third.size.x = w2 / 3;
@@ -376,6 +388,10 @@ void SearchFrame::layout() {
 		rect.pos.y += rect.size.y + spacing;
 		rect.size.y = yedit;
 		slots->setBounds(rect);
+
+		rect.pos.y += rect.size.y + spacing;
+		rect.size.y = yedit;
+		filter->setBounds(rect);
 		
 		rect.pos.y += rect.size.y + groupSpacing;
 		rect.size.y = labelH;
@@ -386,19 +402,6 @@ void SearchFrame::layout() {
 		hubs->setBounds(rect);
 	} else {
 		results->setBounds(r);
-
-		SmartWin::Rectangle rNULL(0, 0, 0, 0);
-		searchBox->setBounds(rNULL);
-		mode->setBounds(rNULL);
-		purge->setBounds(rNULL);
-		size->setBounds(rNULL);
-		sizeMode->setBounds(rNULL);
-		fileType->setBounds(rNULL);
-		
-		sizeLabel->setBounds(rNULL);
-		typeLabel->setBounds(rNULL);
-		optionLabel->setBounds(rNULL);
-		hubsLabel->setBounds(rNULL);
 	}
 }
 
@@ -597,8 +600,28 @@ void SearchFrame::handleSlotsClicked() {
 	onlyFree = slots->getChecked();
 }
 
+void SearchFrame::handleFilterClicked() {
+	filterShared = filter->getChecked();
+}
+
 void SearchFrame::handleShowUIClicked() {
 	bShowUI = showUI->getChecked();
+
+	searchLabel->setVisible(bShowUI);
+	searchBox->setVisible(bShowUI);
+	purge->setVisible(bShowUI);
+	doSearch->setVisible(bShowUI);
+	sizeLabel->setVisible(bShowUI);
+	mode->setVisible(bShowUI);
+	size->setVisible(bShowUI);
+	sizeMode->setVisible(bShowUI);
+	typeLabel->setVisible(bShowUI);
+	fileType->setVisible(bShowUI);
+	optionLabel->setVisible(bShowUI);
+	slots->setVisible(bShowUI);
+	hubsLabel->setVisible(bShowUI);
+	hubs->setVisible(bShowUI);
+
 	layout();
 }
 
@@ -628,13 +651,13 @@ bool SearchFrame::handleKeyDown(int c) {
 	return false;
 }
 
-bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool SearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(results->countSelected() > 0) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = results->getContextMenuPos();
 		}
 
-		WidgetMenuPtr contextMenu = makeMenu();
+		MenuPtr contextMenu = makeMenu();
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
@@ -667,7 +690,7 @@ void SearchFrame::handleDownloadTo() {
 
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->columns[COLUMN_FILENAME];
-			if(WinUtil::browseFile(target, handle())) {
+			if(WinUtil::browseSaveFile(createSaveDialog(), target)) {
 				WinUtil::addLastDir(Util::getFilePath(target));
 				results->forEachSelectedT(SearchInfo::DownloadTarget(target));
 			}
@@ -733,8 +756,8 @@ void SearchFrame::handleRemove() {
 	}
 }
 
-SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+SearchFrame::MenuPtr SearchFrame::makeMenu() {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());
@@ -760,8 +783,8 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	return menu;
 }
 
-void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download to..."));
+void SearchFrame::addTargetMenu(const MenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
+	MenuPtr menu = parent->appendPopup(T_("Download to..."));
 
 	int n = 0;
 	if(favoriteDirs.size() > 0) {
@@ -790,8 +813,8 @@ void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairLis
 	}
 }
 
-void SearchFrame::addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download whole directory to..."));
+void SearchFrame::addTargetDirMenu(const MenuPtr& parent, const StringPairList& favoriteDirs) {
+	MenuPtr menu = parent->appendPopup(T_("Download whole directory to..."));
 
 	int n = 0;
 	if(favoriteDirs.size() > 0) {
@@ -842,6 +865,16 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 					return;
 				}
 			}
+		}
+	}
+
+	// Filter already shared files
+	if( filterShared ) {
+		const TTHValue& t = aResult->getTTH();
+		if( ShareManager::getInstance()->isTTHShared(t) ) {
+			droppedResults++;
+			speak(SPEAK_FILTER_RESULT);
+			return;
 		}
 	}
 
@@ -907,6 +940,8 @@ void SearchFrame::runSearch() {
 	// Change Default Settings If Changed
 	if (onlyFree != BOOLSETTING(SEARCH_ONLY_FREE_SLOTS))
 		SettingsManager::getInstance()->set(SettingsManager::SEARCH_ONLY_FREE_SLOTS, onlyFree);
+	if (filterShared != BOOLSETTING(SEARCH_FILTER_SHARED))
+		SettingsManager::getInstance()->set(SettingsManager::SEARCH_FILTER_SHARED, filterShared);
 	if (!initialType && fileType->getSelected() != SETTING(LAST_SEARCH_TYPE))
 		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, fileType->getSelected());
 

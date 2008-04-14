@@ -24,8 +24,8 @@
 
 #include "WinUtil.h"
 
-MagnetDlg::MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+MagnetDlg::MagnetDlg(dwt::Widget* parent, const tstring& aHash, const tstring& aFileName) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	//queue(0),
 	search(0),
 	doNothing(0),
@@ -44,34 +44,34 @@ bool MagnetDlg::handleInitDialog() {
 	setText(T_("MAGNET Link detected"));
 	setItemText(IDC_MAGNET_TEXT, T_("DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"));
 	setItemText(IDC_MAGNET_HASH, T_("File Hash:"));
-	attachTextBox(IDC_MAGNET_DISP_HASH)->setText(mHash.c_str());
+	attachChild<TextBox>(IDC_MAGNET_DISP_HASH)->setText(mHash.c_str());
 	setItemText(IDC_MAGNET_NAME, T_("Filename:"));
-	attachTextBox(IDC_MAGNET_DISP_NAME)->setText(mFileName);
+	attachChild<TextBox>(IDC_MAGNET_DISP_NAME)->setText(mFileName);
 
 	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);
 	//queue->setText(T_("Add this file to your download queue"));
 	//queue->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, queue));
 	::ShowWindow(getItem(IDC_MAGNET_1_QUEUE), false);
 
-	search = attachRadioButton(IDC_MAGNET_2_SEARCH);
+	attachChild(search, IDC_MAGNET_2_SEARCH);
 	search->setText(T_("Start a search for this file"));
 	search->setFocus();
 	//search->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, search));
 
-	doNothing = attachRadioButton(IDC_MAGNET_3_NOTHING);
+	attachChild(doNothing, IDC_MAGNET_3_NOTHING);
 	doNothing->setText(T_("Do nothing"));
 	//doNothing->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, doNothing));
 
-	//remember = attachCheckBox(IDC_MAGNET_REMEMBER);
+	//remember = attachChild<CheckBox>(IDC_MAGNET_REMEMBER);
 	//remember->setText(T_("Do the same action next time without asking"));
 	::ShowWindow(getItem(IDC_MAGNET_REMEMBER), false);
 
 	::CheckRadioButton(handle(), IDC_MAGNET_1_QUEUE, IDC_MAGNET_3_NOTHING, IDC_MAGNET_2_SEARCH);
 
-	ButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachChild<Button>(IDOK);
 	button->onClicked(std::tr1::bind(&MagnetDlg::handleOKClicked, this));
 
-	button = attachButton(IDCANCEL);
+	button = attachChild<Button>(IDCANCEL);
 	button->onClicked(std::tr1::bind(&MagnetDlg::endDialog, this, IDCANCEL));
 
 	centerWindow();

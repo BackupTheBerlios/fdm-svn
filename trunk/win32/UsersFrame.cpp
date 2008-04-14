@@ -34,15 +34,15 @@ static const char* columnNames[] = {
 	N_("CID")
 };
 
-UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) : 
+UsersFrame::UsersFrame(dwt::TabView* mdiParent) : 
 	BaseType(mdiParent, T_("Favorite Users"), IDH_FAVUSERS, IDR_USERS),
 	users(0),
 	startup(true)
 {
 	{
-		WidgetUsers::Seed cs = WinUtil::Seeds::Table;
+		WidgetUsers::Seed cs;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
+		users = addChild(cs);
 		addWidget(users);
 
 		users->createColumns(WinUtil::getStrings(columnNames));
@@ -52,7 +52,7 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		users->onDblClicked(std::tr1::bind(&UsersFrame::handleGetList, this));
 		users->onKeyDown(std::tr1::bind(&UsersFrame::handleKeyDown, this, _1));
-		users->onRaw(std::tr1::bind(&UsersFrame::handleItemChanged, this, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		users->onRaw(std::tr1::bind(&UsersFrame::handleItemChanged, this, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		users->onContextMenu(std::tr1::bind(&UsersFrame::handleContextMenu, this, _1));
 	}
 
@@ -76,7 +76,7 @@ UsersFrame::~UsersFrame() {
 }
 
 void UsersFrame::layout() {
-	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	dwt::Rectangle r(dwt::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -173,13 +173,13 @@ LRESULT UsersFrame::handleItemChanged(LPARAM lParam) {
 	return 0;
 }
 
-bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool UsersFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if (users->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_EDIT, T_("&Description"), std::tr1::bind(&UsersFrame::handleDescription, this));

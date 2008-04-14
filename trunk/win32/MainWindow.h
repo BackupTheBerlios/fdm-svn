@@ -34,7 +34,7 @@ class UPnP;
 class TransferView;
 
 class MainWindow : 
-	public WidgetFactory<SmartWin::WidgetWindow>, 
+	public WidgetFactory<dwt::Window>, 
 	public AspectSpeaker<MainWindow>,
 	private HttpConnectionListener, 
 	private QueueManagerListener, 
@@ -55,8 +55,7 @@ public:
 		STATUS_LAST
 	};
 
-	/// @deprecated
-	WidgetTabView* getMDIParent() { return tabs; }
+	dwt::TabViewPtr getTabView() { return tabs; }
 
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 
@@ -103,10 +102,10 @@ private:
 	} links;
 
 	WidgetHPanedPtr paned;
-	WidgetMenuPtr mainMenu;
+	MenuPtr mainMenu;
 	TransferView* transfers;
 	ToolBarPtr toolbar;
-	WidgetTabViewPtr tabs;
+	dwt::TabViewPtr tabs;
 	
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -123,8 +122,8 @@ private:
 	int64_t lastDown;
 	uint64_t lastTick;
 
-	SmartWin::Application::FilterIter filterIter;
-	SmartWin::AcceleratorPtr accel;
+	dwt::Application::FilterIter filterIter;
+	dwt::AcceleratorPtr accel;
 
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
@@ -160,18 +159,19 @@ private:
 	void handleWhatsThis();
 	void handleSize();
 	void handleActivate(bool active);
+	void handleForward(WPARAM wParam);
 	LRESULT handleEndSession();
 	LRESULT handleTrayIcon(LPARAM lParam);
 	
 	// Other events
-	void handleSized(const SmartWin::SizedEvent& sz);
+	void handleSized(const dwt::SizedEvent& sz);
 	
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	LRESULT handleTrayMessage();
 	LRESULT handleCopyData(LPARAM lParam);
 	LRESULT handleWhereAreYou();
 
-	void handleTabsTitleChanged(const SmartUtil::tstring& title);
+	void handleTabsTitleChanged(const tstring& title);
 	
 	void layout();
 	bool eachSecond();

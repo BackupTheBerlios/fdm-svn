@@ -28,6 +28,7 @@ class FavHubsFrame :
 	public StaticFrame<FavHubsFrame>, 
 	private FavoriteManagerListener 
 {
+	typedef StaticFrame<FavHubsFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -35,11 +36,10 @@ public:
 	};
 	
 protected:
-	typedef StaticFrame<FavHubsFrame> BaseType;
 	friend class StaticFrame<FavHubsFrame>;
 	friend class MDIChildFrame<FavHubsFrame>;
 	
-	FavHubsFrame(SmartWin::WidgetTabView* mdiParent);
+	FavHubsFrame(dwt::TabView* mdiParent);
 	virtual ~FavHubsFrame();
 
 	void layout();
@@ -80,7 +80,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleContextMenu(dwt::ScreenCoordinate pt);
 
 	void addEntry(const FavoriteHubEntryPtr entry, int index = -1);
 	void openSelected();

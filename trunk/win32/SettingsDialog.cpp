@@ -40,6 +40,7 @@
 #include "CertificatesPage.h"
 #include "FdmAppearancePage.h"
 #include "BCDC_BandwidthLimitPage.h"
+#include "FdmSpamPage.h"
 
 static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_PAGES, IDH_SETTINGS_TREE },
@@ -49,10 +50,7 @@ static const WinUtil::HelpItem helpItems[] = {
 	{ 0, 0 }
 };
 
-static const TCHAR SEPARATOR = _T('\\');
-static const size_t MAX_NAME_LENGTH = 256;
-
-SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent), currentPage(0) {
+SettingsDialog::SettingsDialog(dwt::Widget* parent) : WidgetFactory<dwt::ModalDialog>(parent), currentPage(0) {
 	onInitDialog(std::tr1::bind(&SettingsDialog::initDialog, this));
 	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this, _1, _2));
 }
@@ -72,42 +70,65 @@ bool SettingsDialog::initDialog() {
 
 	setText(T_("Settings"));
 
-	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
-	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
+	attachChild(pageTree, IDC_SETTINGS_PAGES);
+	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::handleSelectionChanged, this));
 
 	{
-		ButtonPtr button = attachButton(IDOK);
+		ButtonPtr button = attachChild<Button>(IDOK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 
-		button = attachButton(IDCANCEL);
+		button = attachChild<Button>(IDCANCEL);
 		button->setText(T_("Cancel"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
 
-		button = attachButton(IDHELP);
+		button = attachChild<Button>(IDHELP);
 		button->setText(T_("Help"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, handle(), IDH_STARTPAGE));
 	}
 
 	addPage(T_("Personal information"), new GeneralPage(this));
+
 	addPage(T_("Connection settings"), new NetworkPage(this));
-	addPage(T_("Downloads"), new DownloadPage(this));
-	addPage(T_("Downloads\\Favorites"), new FavoriteDirsPage(this));
-	addPage(T_("Downloads\\Queue"), new QueuePage(this));
+
+	{
+		HTREEITEM item = addPage(T_("Downloads"), new DownloadPage(this));
+		addPage(T_("Favorites"), new FavoriteDirsPage(this), item);
+		addPage(T_("Queue"), new QueuePage(this), item);
+	}
+
 	addPage(T_("Sharing"), new UploadPage(this));
-	addPage(T_("Appearance"), new AppearancePage(this));
-	addPage(T_("Appearance\\Colors and sounds"), new Appearance2Page(this));
-	addPage(T_("Appearance\\Tabs"), new TabsPage(this));
-	addPage(T_("Appearance\\Windows"), new WindowsPage(this));
-	addPage(T_("Advanced"), new AdvancedPage(this));
-	addPage(T_("Advanced\\Logs"), new LogPage(this));
-	addPage(T_("Advanced\\Experts only"), new Advanced3Page(this));
-	addPage(T_("Advanced\\User Commands"), new UCPage(this));
-	addPage(T_("Advanced\\Security Certificates"), new CertificatesPage(this));
+
+	{
+		HTREEITEM item = addPage(T_("Appearance"), new AppearancePage(this));
+		addPage(T_("Colors and sounds"), new Appearance2Page(this), item);
+		addPage(T_("Tabs"), new TabsPage(this), item);
+		addPage(T_("Windows"), new WindowsPage(this), item);
+	}
+
+	{
+		HTREEITEM item = addPage(T_("Advanced"), new AdvancedPage(this));
+		addPage(T_("Logs"), new LogPage(this), item);
+		addPage(T_("Experts only"), new Advanced3Page(this), item);
+		addPage(T_("User Commands"), new UCPage(this), item);
+		addPage(T_("Security Certificates"), new CertificatesPage(this), item);
+	}
+
 	addPage(TSTRING(SETTINGS_APPEARANCE_PAGE), new FdmAppearancePage(this));
 	addPage(TSTRING(SETTINGS_BANDWIDTH), new BandwidthLimitPage(this));
-	
+	addPage(TSTRING(SETTINGS_SPAM), new FdmSpamPage(this));
+
+	updateTitle();
+
 	return false;
+}
+
+HTREEITEM SettingsDialog::addPage(const tstring& title, PropPage* page, HTREEITEM parent) {
+	pages.push_back(page);
+
+	HTREEITEM item = pageTree->insert(title, parent, reinterpret_cast<LPARAM>(page));
+	pageTree->expand(parent);
+	return item;
 }
 
 void SettingsDialog::handleHelp(HWND hWnd, unsigned id) {
@@ -116,9 +137,19 @@ void SettingsDialog::handleHelp(HWND hWnd, unsigned id) {
 	WinUtil::help(hWnd, id);
 }
 
-void SettingsDialog::addPage(const tstring& title, PropPage* page) {
-	pages.push_back(page);
-	createTree(title, TVI_ROOT, page);
+void SettingsDialog::handleSelectionChanged() {
+	PropPage* page = reinterpret_cast<PropPage*>(pageTree->getData(pageTree->getSelected()));
+	if(page) {
+		if(currentPage) {
+			currentPage->setVisible(false);
+			currentPage = 0;
+		}
+
+		page->setVisible(true);
+		currentPage = page;
+
+		updateTitle();
+	}
 }
 
 void SettingsDialog::handleOKClicked() {
@@ -126,81 +157,9 @@ void SettingsDialog::handleOKClicked() {
 	endDialog(IDOK);
 }
 
-void SettingsDialog::selectionChanged() {
-	HTREEITEM item = TreeView_GetSelection(pageTree->handle());
-	if(item == NULL) {
-		showPage(0);
-	} else {
-		TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
-		tvitem.hItem = item;
-		if(!TreeView_GetItem(pageTree->handle(), &tvitem)) {
-			showPage(0);
-		} else {
-			showPage(reinterpret_cast<PropPage*>(tvitem.lParam));
-		}
-	}
-}
-
-void SettingsDialog::showPage(PropPage* page) {
-	if(currentPage) {
-		::ShowWindow(dynamic_cast<SmartWin::Widget*>(currentPage)->handle(), SW_HIDE);
-		currentPage = 0;
-	}
-	if(page) {
-		::ShowWindow(dynamic_cast<SmartWin::Widget*>(page)->handle(), SW_SHOW);
-		currentPage = page;
-	}
-}
-
-HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropPage* page) {
-	TVINSERTSTRUCT tvi;
-	tvi.hInsertAfter = TVI_LAST;
-	tvi.hParent = parent;
-
-	HTREEITEM first = (parent == TVI_ROOT) ? TreeView_GetRoot(pageTree->handle()) : TreeView_GetChild(pageTree->handle(), parent);
-
-	string::size_type i = str.find(SEPARATOR);
-	if(i == string::npos) {
-		// Last dir, the actual page
-		HTREEITEM item = find(str, first);
-		if(item == NULL) {
-			// Doesn't exist, add
-			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
-			tvi.item.pszText = const_cast<LPTSTR>(str.c_str());
-			tvi.item.lParam = reinterpret_cast<LPARAM>(page);
-			item = TreeView_InsertItem(pageTree->handle(), &tvi);
-			TreeView_Expand(pageTree->handle(), parent, TVE_EXPAND);
-			return item;
-		} else {
-			// Update page
-			if(pageTree->getData(item) == 0)
-				pageTree->setData(item, reinterpret_cast<LPARAM>(page));
-			return item;
-		}
-	} else {
-		tstring name = str.substr(0, i);
-		HTREEITEM item = find(name, first);
-		if(item == NULL) {
-			// Doesn't exist, add...
-			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
-			tvi.item.lParam = 0;
-			tvi.item.pszText = const_cast<LPTSTR>(name.c_str());
-			item = TreeView_InsertItem(pageTree->handle(), &tvi);
-		}
-		TreeView_Expand(pageTree->handle(), parent, TVE_EXPAND);
-		// Recurse...
-		return createTree(str.substr(i+1), item, page);
-	}
-}
-
-HTREEITEM SettingsDialog::find(const tstring& str, HTREEITEM start) {
-	while(start != NULL) {
-		if(pageTree->getText(start) == str) {
-			return start;
-		}
-		start = TreeView_GetNextSibling(pageTree->handle(), start);
-	}
-	return start;
+void SettingsDialog::updateTitle() {
+	tstring title = pageTree->getSelectedText();
+	setText(title.empty() ? T_("Settings") : T_("Settings") + _T(" - [") + title + _T("]"));
 }
 
 void SettingsDialog::write() {
@@ -208,3 +167,4 @@ void SettingsDialog::write() {
 		(*i)->write();
 	}
 }
+

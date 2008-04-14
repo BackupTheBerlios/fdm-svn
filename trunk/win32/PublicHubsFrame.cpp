@@ -89,7 +89,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 	}
 }
 
-PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
+PublicHubsFrame::PublicHubsFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Public Hubs"), IDH_PUBLIC_HUBS, IDR_PUBLICHUBS),
 	hubs(0),
 	configure(0),
@@ -103,9 +103,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	users(0)
 {
 	{
-		Table::Seed cs = WinUtil::Seeds::Table;
+		WidgetHubs::Seed cs;
 		cs.style |= LVS_SINGLESEL;
-		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
+		hubs = addChild(cs);
 		addWidget(hubs);
 		
 		hubs->createColumns(WinUtil::getStrings(columnNames));
@@ -120,15 +120,15 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
-		filter = createTextBox(cs);
+		cs.style |= ES_AUTOHSCROLL;
+		filter = addChild(cs);
 		filter->setHelpId(IDH_PUBLIC_HUBS_FILTER);
 		addWidget(filter);
 		filter->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleFilterKeyDown, this, _1));
 	}
 
 	{
-		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		filterSel = addChild(WinUtil::Seeds::comboBoxStatic);
 		filterSel->setHelpId(IDH_PUBLIC_HUBS_FILTER);
 		addWidget(filterSel);
 
@@ -140,7 +140,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		filterSel->setSelected(COLUMN_LAST);
 		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
 
-		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		pubLists = addChild(WinUtil::Seeds::comboBoxStatic);
 		pubLists->setHelpId(IDH_PUBLIC_HUBS_LISTS);
 		addWidget(pubLists);
 		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
@@ -150,16 +150,14 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		Button::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = T_("&Configure");
-		configure = createButton(cs);
+		configure = addChild(cs);
 		configure->setHelpId(IDH_PUBLIC_HUBS_LISTS);
-		configure->setFont(WinUtil::font);
 		addWidget(configure);
 		configure->onClicked(std::tr1::bind(&PublicHubsFrame::handleConfigure, this));
 		
 		cs.caption = T_("&Refresh");
-		refresh = createButton(cs);
+		refresh = addChild(cs);
 		refresh->setHelpId(IDH_PUBLIC_HUBS_REFRESH);
-		refresh->setFont(WinUtil::font);
 		addWidget(refresh);
 		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 
@@ -167,14 +165,12 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		cs.exStyle = WS_EX_TRANSPARENT;
 
 		cs.caption = T_("F&ilter");
-		filterDesc = createButton(cs);
+		filterDesc = addChild(cs);
 		filterDesc->setHelpId(IDH_PUBLIC_HUBS_FILTER);
-		filterDesc->setFont(WinUtil::font);
 
 		cs.caption = T_("Configured Public Hub Lists");
-		lists = createButton(cs);
+		lists = addChild(cs);
 		lists->setHelpId(IDH_PUBLIC_HUBS_LISTS);
-		lists->setFont(WinUtil::font);
 	}
 
 	initStatus();
@@ -215,7 +211,7 @@ void PublicHubsFrame::postClosing() {
 void PublicHubsFrame::layout() {
 	const int border = 2;
 
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 	
 	layoutStatus(r);
 
@@ -234,7 +230,7 @@ void PublicHubsFrame::layout() {
 	r.size.x = (r.width() - 100 - border * 2) / 2 ;
 	filterDesc->setBounds(r);
 
-	SmartWin::Rectangle rc = r;
+	dwt::Rectangle rc = r;
 	// filter edit
 	rc.pos.y += ymessage - 4;
 	rc.size.y = ymessage;
@@ -285,10 +281,12 @@ void PublicHubsFrame::updateDropDown() {
 	for(StringList::iterator idx = lists.begin(); idx != lists.end(); ++idx) {
 		pubLists->addValue(Text::toT(*idx).c_str());
 	}
-	pubLists->setSelected(FavoriteManager::getInstance()->getSelectedHubList());
+	pubLists->setSelected((FavoriteManager::getInstance()->getSelectedHubList()) % lists.size());
 }
 
 void PublicHubsFrame::updateList() {
+	dcdebug("PublicHubsFrame::updateList\n");
+
 	hubs->clear();
 	users = 0;
 	visibleHubs = 0;
@@ -445,15 +443,15 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	return insert;
 }
 
-bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool PublicHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(hubs->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = hubs->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
-		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
+		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
 		menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 		menu->setDefaultItem(IDC_CONNECT);
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

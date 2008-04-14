@@ -36,7 +36,7 @@ static const char* columnNames[] = {
 	N_("Max Size")
 };
 
-ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
+ADLSearchFrame::ADLSearchFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDH_ADL_SEARCH, IDR_ADLSEARCH),
 	add(0),
 	properties(0),
@@ -48,7 +48,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		items = createTable(cs);
+		items = addChild(cs);
 		addWidget(items);
 
 		items->createColumns(WinUtil::getStrings(columnNames));
@@ -57,7 +57,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		items->onDblClicked(std::tr1::bind(&ADLSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&ADLSearchFrame::handleKeyDown, this, _1));
-		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		items->onContextMenu(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1));
 	}
 
@@ -65,37 +65,37 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&New...");
-		add = createButton(cs);
+		add = addChild(cs);
 		add->setHelpId(IDH_ADLS_NEW);
 		add->onClicked(std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
-		properties = createButton(cs);
+		properties = addChild(cs);
 		properties->setHelpId(IDH_ADLS_PROPERTIES);
 		properties->onClicked(std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
-		up = createButton(cs);
+		up = addChild(cs);
 		up->setHelpId(IDH_ADLS_MOVE_UP);
 		up->onClicked(std::tr1::bind(&ADLSearchFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
-		down = createButton(cs);
+		down = addChild(cs);
 		down->setHelpId(IDH_ADLS_MOVE_DOWN);
 		down->onClicked(std::tr1::bind(&ADLSearchFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
-		remove = createButton(cs);
+		remove = addChild(cs);
 		remove->setHelpId(IDH_ADLS_REMOVE);
 		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 		addWidget(remove);
 
 		cs.caption = T_("&Help");
-		help = createButton(cs);
+		help = addChild(cs);
 		help->setHelpId(IDH_DCPP_HELP);
 		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_ADL_SEARCH));
 		addWidget(help);
@@ -115,7 +115,7 @@ ADLSearchFrame::~ADLSearchFrame() {
 }
 
 void ADLSearchFrame::layout() {
-	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	dwt::Rectangle r(dwt::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -124,7 +124,7 @@ void ADLSearchFrame::layout() {
 	const int xbutton = 90;
 	const int xborder = 10;
 
-	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	dwt::Rectangle rb(r.getBottom(ybutton));
 	r.size.y -= ybutton;
 	items->setBounds(r);
 
@@ -283,12 +283,12 @@ LRESULT ADLSearchFrame::handleItemChanged(LPARAM lParam) {
 	return 0;
 }
 
-bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool ADLSearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = items->getContextMenuPos();
 	}
 
-	WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
 	contextMenu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ADLSearchFrame::handleRemove, this));

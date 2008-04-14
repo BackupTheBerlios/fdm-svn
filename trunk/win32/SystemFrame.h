@@ -27,6 +27,7 @@
 class SystemFrame : public StaticFrame<SystemFrame>,
 	private LogManagerListener
 {
+	typedef StaticFrame<SystemFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -34,13 +35,12 @@ public:
 	};
 	
 private:
-	typedef StaticFrame<SystemFrame> BaseType;
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;
 	
 	TextBoxPtr log;
 	
-	SystemFrame(SmartWin::WidgetTabView* mdiParent);
+	SystemFrame(dwt::TabView* mdiParent);
 	virtual ~SystemFrame();
 
 	void layout();

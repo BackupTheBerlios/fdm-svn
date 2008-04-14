@@ -24,10 +24,10 @@
 #include <dcpp/ResourceManager.h>
 #include "WidgetFactory.h"
 
-class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
+class PropPage : public WidgetFactory<dwt::ModelessDialog>
 {
 public:
-	PropPage(SmartWin::Widget* parent);
+	PropPage(dwt::Widget* parent);
 	virtual ~PropPage();
 
 	virtual void write() = 0;
@@ -67,6 +67,7 @@ public:
 	};
 protected:
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
+	void initList(HWND list);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void translate(HWND page, TextItem* items);
 	void fdmRead(HWND page, FdmItem const* items, FdmListItem* listItems = NULL, HWND list = NULL);

@@ -57,7 +57,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url) {
+void HubFrame::openWindow(dwt::TabView* mdiParent, const string& url) {
 	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
 		HubFrame* frame = *i;
 		if(frame->url == url) {
@@ -69,8 +69,8 @@ void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url)
 	new HubFrame(mdiParent, url);
 }
 
-HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), IDH_HUB, SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
+HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) : 
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, dwt::IconPtr(new dwt::Icon(IDR_HUB))),
 	chat(0),
 	message(0),
 	filter(0),
@@ -90,29 +90,32 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	inTabMenu(false),
 	inTabComplete(false)
 {
-	paned = createVPaned();
-	paned->setRelativePos(0.7);
+	paned = addChild(WidgetVPaned::Seed(0.7));
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		message = createTextBox(cs);
+		cs.style |= WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		message = addChild(cs);
+		message->setHelpId(IDH_HUB_MESSAGE);
 		addWidget(message, true, false);
-		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), SmartWin::Message(WM_GETDLGCODE));
+		message->onRaw(std::tr1::bind(&HubFrame::handleMessageGetDlgCode, this), dwt::Message(WM_GETDLGCODE));
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
+		message->onSysKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
 	}
 
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
-		filter = createTextBox(cs);
+		cs.style |= ES_AUTOHSCROLL;
+		filter = addChild(cs);
+		filter->setHelpId(IDH_HUB_FILTER);
 		addWidget(filter);
 		filter->onKeyUp(std::tr1::bind(&HubFrame::handleFilterKey, this, _1));
 	}
 
 	{
-		filterType = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		filterType = addChild(WinUtil::Seeds::comboBoxStatic);
+		filterType->setHelpId(IDH_HUB_FILTER);
 		addWidget(filterType);
 		
 		for(int j=0; j<COLUMN_LAST; j++) {
@@ -124,17 +127,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 
 	{
-		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		chat = createTextBox(cs);
-		chat->setTextLimit(0);
-		addWidget(chat);
-		paned->setFirst(chat);
-		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
-	}
-
-	{
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::Table);
+		users = addChild(WidgetUsers::Seed());
 		addWidget(users);
 		paned->setSecond(users);
 		
@@ -149,11 +142,22 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		users->onKeyDown(std::tr1::bind(&HubFrame::handleUsersKeyDown, this, _1));
 		users->onContextMenu(std::tr1::bind(&HubFrame::handleUsersContextMenu, this, _1));
 	}
+
+	{
+		TextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style |= WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		chat = addChild(cs);
+		chat->setHelpId(IDH_HUB_CHAT);
+		chat->setTextLimit(0);
+		addWidget(chat);
+		paned->setFirst(chat);
+		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
+	}
 	
 	{
 		CheckBox::Seed cs(_T("+/-"));
 		cs.style &= ~WS_TABSTOP;
-		showUsers = createCheckBox(cs);
+		showUsers = addChild(cs);
 		showUsers->setChecked(BOOLSETTING(GET_USER_INFO));
 	}
 
@@ -209,14 +213,14 @@ void HubFrame::layout() {
 
 	const int border = 2;
 	
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	dwt::Rectangle r(getClientAreaSize()); 
 
 	layoutStatus(r);
 	mapWidget(STATUS_SHOW_USERS, showUsers);
 	
 	int ymessage = message->getTextSize(_T("A")).y + 10;
 	int xfilter = showUsers->getChecked() ? std::min(r.width() / 4, 200l) : 0;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.width() - xfilter, ymessage);
+	dwt::Rectangle rm(0, r.size.y - ymessage, r.width() - xfilter, ymessage);
 	message->setBounds(rm);
 
 	r.size.y -= rm.size.y + border;
@@ -446,6 +450,7 @@ void HubFrame::addChat(const tstring& aLine) {
 	if(scroll)
 		chat->sendMessage(WM_VSCROLL, SB_BOTTOM);
 
+	WinUtil::playSound(SettingsManager::SOUND_MAIN_CHAT);
 	setDirty(SettingsManager::BOLD_HUB);
 }
 
@@ -672,15 +677,12 @@ void HubFrame::removeUser(const UserPtr& aUser) {
 }
 
 bool HubFrame::historyActive() {
-	return isAltPressed() || (isControlPressed() && BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY));
+	return isAltPressed() || (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) && isControlPressed());
 }
 
 bool HubFrame::handleUsersKeyDown(int c) {
-	if(c == VK_RETURN) {
-		int item = users->getNext(-1, LVNI_FOCUSED);
-		if(item != -1) {
-			users->getData(item)->getList();
-		}
+	if(c == VK_RETURN && users->hasSelected()) {
+		handleGetList();
 		return true;
 	}
 	return false;
@@ -1145,7 +1147,7 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
-bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
+bool HubFrame::handleChatContextMenu(dwt::ScreenCoordinate pt) {
 	bool doMenu = false;
 
 	if(pt.x() == -1 || pt.y() == -1) {
@@ -1168,13 +1170,13 @@ bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
 	return doMenu ? handleUsersContextMenu(pt) : false;
 }
 
-bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
+bool HubFrame::handleUsersContextMenu(dwt::ScreenCoordinate pt) {
 	if(users->hasSelected()) {
 		if(pt.x() == -1 || pt.y() == -1) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		
 		menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
@@ -1189,21 +1191,21 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 	return false;
 }
 
-bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+bool HubFrame::handleTabContextMenu(const dwt::ScreenCoordinate& pt) {
+	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_FAVORITE_HUBS)));
 	}
 	
-	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
+	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this), dwt::BitmapPtr(new dwt::Bitmap(IDB_RECONNECT)));
 	menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&HubFrame::handleCopyHub, this));
 
 	prepareMenu(menu, UserCommand::CONTEXT_HUB, url);
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
 
 	inTabMenu = true;
 	
