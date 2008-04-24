@@ -83,7 +83,7 @@ void SearchFrame::closeAll() {
 }
 
 SearchFrame::SearchFrame(dwt::TabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent, T_("Search"), IDH_SEARCH, dwt::IconPtr(new dwt::Icon(IDR_SEARCH))),
+	BaseType(mdiParent, T_("Search"), IDH_SEARCH, IDR_SEARCH),
 	searchLabel(0),
 	searchBox(0),
 	purge(0),
@@ -211,15 +211,12 @@ SearchFrame::SearchFrame(dwt::TabView* mdiParent, const tstring& initialString_,
 		slots = addChild(cs);
 		slots->setHelpId(IDH_SEARCH_SLOTS);
 		slots->setChecked(onlyFree);
-
 		slots->onClicked(std::tr1::bind(&SearchFrame::handleSlotsClicked, this)) ;
-	}
 
-	{
-		CheckBox::Seed cs(T_("Hide files already in share"));
+		cs.caption = T_("Hide files already in share");
 		filter = addChild(cs);
+		filter->setHelpId(IDH_SEARCH_SHARE);
 		filter->setChecked(filterShared);
-
 		filter->onClicked(std::tr1::bind(&SearchFrame::handleFilterClicked, this)) ;
 	}
 
@@ -757,7 +754,7 @@ void SearchFrame::handleRemove() {
 }
 
 SearchFrame::MenuPtr SearchFrame::makeMenu() {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());

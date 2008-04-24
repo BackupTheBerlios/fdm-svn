@@ -75,6 +75,10 @@ protected:
 
 		this->initStatus();
 
+		setStatusHelpId(STATUS_COUNT, in_UL ? IDH_FINISHED_UL_COUNT : IDH_FINISHED_DL_COUNT);
+		setStatusHelpId(STATUS_BYTES, in_UL ? IDH_FINISHED_UL_BYTES : IDH_FINISHED_DL_BYTES);
+		setStatusHelpId(STATUS_SPEED, in_UL ? IDH_FINISHED_UL_SPEED : IDH_FINISHED_DL_SPEED);
+
 		layout();
 
 		onSpeaker(std::tr1::bind(&ThisType::handleSpeaker, this, _1, _2));
@@ -220,7 +224,7 @@ private:
 
 					typename T::Menu::Seed cs = WinUtil::Seeds::menu;
 					cs.ownerDrawn = false;
-					typename T::MenuPtr pShellMenu = this->createMenu(cs);
+					typename T::MenuPtr pShellMenu = this->addChild(cs);
 					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
 					pShellMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
 					pShellMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
@@ -236,7 +240,7 @@ private:
 				}
 			}
 
-			typename T::MenuPtr contextMenu = this->createMenu(WinUtil::Seeds::menu);
+			typename T::MenuPtr contextMenu = this->addChild(WinUtil::Seeds::menu);
 			contextMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
 			contextMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
 			contextMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));

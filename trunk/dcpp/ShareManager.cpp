@@ -294,6 +294,9 @@ void ShareManager::load(SimpleXML& aXml) {
 			const string& virtualName = aXml.getChildAttrib("Virtual");
 			string vName = validateVirtual(virtualName.empty() ? Util::getLastDir(realPath) : virtualName);
 			shares.insert(std::make_pair(realPath, vName));
+			if(getByVirtual(vName) == directories.end()) {
+				directories.push_back(new Directory(vName, 0));
+			}
 		}
 		aXml.stepOut();
 	}
@@ -378,7 +381,8 @@ bool ShareManager::loadCache() throw() {
 		SimpleXMLReader(&loader).fromXML(txt);
 
 		for(DirList::const_iterator i = directories.begin(); i != directories.end(); ++i) {
-			updateIndices(**i);
+			Directory* d = *i;
+			updateIndices(*d);
 		}
 
 		return true;
@@ -501,7 +505,7 @@ void ShareManager::removeDirectory(const string& realPath) {
 		return;
 	}
 	
-	const std::string& vName = i->second;
+	std::string vName = i->second;
 	for(DirList::iterator j = directories.begin(); j != directories.end(); ) {
 		if(Util::stricmp((*j)->getName(), vName) == 0) {
 			delete *j;
@@ -512,6 +516,15 @@ void ShareManager::removeDirectory(const string& realPath) {
 	}
 	
 	shares.erase(i);
+	
+	// Readd all directories with the same vName
+	for(i = shares.begin(); i != shares.end(); ++i) {
+		if(Util::stricmp(i->second, vName) == 0) {
+			Directory* dp = buildTree(i->first, 0);
+			dp->setName(i->second);
+			merge(dp);
+		}
+	}
 
 	rebuildIndices();
 	setDirty();

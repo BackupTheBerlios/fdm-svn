@@ -35,6 +35,7 @@
 #include <dwt/widgets/ToolTip.h>
 #include <dwt/WidgetCreator.h>
 #include <dwt/util/StringUtils.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -111,7 +112,7 @@ void TabView::create(const Seed & cs) {
 	}
 }
 
-void TabView::add(Container* w, const IconPtr& icon) {
+void TabView::add(ContainerPtr w, const IconPtr& icon) {
 	int image = addIcon(icon);
 	size_t tabs = size();
 	TabInfo* ti = new TabInfo(w);
@@ -128,10 +129,8 @@ void TabView::add(Container* w, const IconPtr& icon) {
 	}
 	
 	int newIdx = TabCtrl_InsertItem( handle(), tabs, &item );
-	if ( newIdx == - 1 )
-	{
-		xCeption x( _T( "Error while trying to add page into Tab Sheet" ) );
-		throw x;
+	if ( newIdx == - 1 ) {
+		throw Win32Exception("Error while trying to add page into Tab Sheet");
 	}
 
 	viewOrder.push_front(w);
@@ -150,44 +149,64 @@ void TabView::add(Container* w, const IconPtr& icon) {
 	w->onTextChanging(std::tr1::bind(&TabView::handleTextChanging, this, w, _1));
 }
 
-Container* TabView::getActive() {
+ContainerPtr TabView::getActive() {
 	TabInfo* ti = getTabInfo(getSelected());
 	return ti ? ti->w : 0;
 }
 
-void TabView::remove(Container* w) {
-	if(viewOrder.size() > 1 && viewOrder.back() == w) {
-		setActive(*(--(--viewOrder.end())));
+void TabView::remove(ContainerPtr w) {
+	int i = findTab(w);
+	if(i == -1) {
+		return;
 	}
 	
-	Container* cur = getTabInfo(getSelected())->w;
+	int cur = getSelected();
+	
+	if(viewOrder.size() > 1 && i == cur) {
+		next();
+	}
 	
 	viewOrder.remove(w);
 
 	if(w == dragging)
 		dragging = 0;
 
-	int i = findTab(w);
-	if(i != -1) {
-		delete getTabInfo(i);
-		erase(i);
-		layout();
+	delete getTabInfo(i);
+	erase(i);
+	
+	if(size() == 0) {
+		active = -1;
+		if(titleChangedFunction)
+			titleChangedFunction(tstring());
+	} else {
+		if(i < cur) {
+			active--;
+		}
 	}
-	active = findTab(cur);
 
-	// when no tab is opened
-	if(titleChangedFunction && (active == -1))
-		titleChangedFunction(tstring());
+	layout();
 }
 
-tstring TabView::getTabText(Container* w) {
+void TabView::setTabIcon(ContainerPtr w, const IconPtr& icon) {
+	int i = findTab(w);
+	if(i != -1) {
+		int image = addIcon(icon);
+		if(image != -1) {
+			TCITEM item = { TCIF_IMAGE };
+			item.iImage = image;
+			TabCtrl_SetItem(this->handle(), i, &item);
+		}
+	}
+}
+
+tstring TabView::getTabText(ContainerPtr w) {
 	int i = findTab(w);
 	if(i != -1)
 		return getText(i);
 	return tstring();
 }
 
-void TabView::onTabContextMenu(Container* w, const ContextMenuFunction& f) {
+void TabView::onTabContextMenu(ContainerPtr w, const ContextMenuFunction& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
 		ti->handleContextMenu = f;
@@ -202,7 +221,7 @@ void TabView::setActive(int i) {
 	handleTabSelected();
 }
 
-void TabView::swapWidgets(Container* oldW, Container* newW) {
+void TabView::swapWidgets(ContainerPtr oldW, ContainerPtr newW) {
 	newW->setBounds(clientSize, false);
 	newW->setVisible(true);
 	if(oldW) {
@@ -237,14 +256,14 @@ void TabView::handleTabSelected() {
 		titleChangedFunction(ti->w->getText());
 }
 
-void TabView::mark(Container* w) {
+void TabView::mark(ContainerPtr w) {
 	int i = findTab(w);
 	if(i != -1 && i != getSelected()) {
 		TabCtrl_HighlightItem(handle(), i, TRUE);
 	}
 }
 
-int TabView::findTab(Container* w) {
+int TabView::findTab(ContainerPtr w) {
 	for(size_t i = 0; i < size(); ++i) {
 		if(getTabInfo(i)->w == w) {
 			return static_cast<int>(i);
@@ -253,7 +272,7 @@ int TabView::findTab(Container* w) {
 	return -1;
 }
 
-TabView::TabInfo* TabView::getTabInfo(Container* w) {
+TabView::TabInfo* TabView::getTabInfo(ContainerPtr w) {
 	return getTabInfo(findTab(w));
 }
 
@@ -266,7 +285,7 @@ TabView::TabInfo* TabView::getTabInfo(int i) {
 	return 0;
 }
 
-bool TabView::handleTextChanging(Container* w, const tstring& newText) {
+bool TabView::handleTextChanging(ContainerPtr w, const tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
 		setText(i, formatTitle(newText));
@@ -303,7 +322,7 @@ void TabView::next(bool reverse) {
 	if(viewOrder.size() < 2) {
 		return;
 	}
-	Container* wnd = getActive();
+	ContainerPtr wnd = getActive();
 	if(!wnd) {
 		return;
 	}
@@ -338,7 +357,7 @@ void TabView::next(bool reverse) {
 	return;
 }
 
-void TabView::setTop(Container* wnd) {
+void TabView::setTop(ContainerPtr wnd) {
 	WindowIter i = std::find(viewOrder.begin(), viewOrder.end(), wnd);
 	if(i != viewOrder.end() && i != --viewOrder.end()) {
 		viewOrder.erase(i);
@@ -504,7 +523,7 @@ tstring TabView::getText(unsigned idx) const
 	item.pszText = buffer;
 	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
 	{
-		throw xCeption( _T( "Couldn't retrieve text in TabView::getText." ) );
+		throw Win32Exception("Couldn't retrieve text in TabView::getText.");
 	}
 	return buffer;
 }
@@ -532,7 +551,6 @@ const ImageListPtr& TabView::getImageList() const {
 
 int TabView::hitTest(const ScreenCoordinate& pt) {
 	TCHITTESTINFO tci = { ClientCoordinate(pt, this).getPoint() };
-		
 	return TabCtrl_HitTest(handle(), &tci);
 }
 
@@ -548,6 +566,12 @@ bool TabView::tryFire( const MSG & msg, LRESULT & retVal ) {
 		
 		return true;
 	}
+	
+	if(!handled && msg.message == WM_COMMAND && getActive()) {
+		// Forward commands to the active tab
+		handled = getActive()->tryFire(msg, retVal);
+	}
+
 	return handled;
 }
 

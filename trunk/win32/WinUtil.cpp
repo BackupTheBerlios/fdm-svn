@@ -40,6 +40,8 @@
 #include "SearchFrame.h"
 #include "MainWindow.h"
 
+#include <dwt/DWTException.h>
+
 #include "FdmMoreWinUtil.h"
 
 tstring WinUtil::tth;
@@ -59,6 +61,7 @@ bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
+HWND WinUtil::helpPopup = 0;
 
 const dwt::Button::Seed WinUtil::Seeds::button;
 const ComboBox::Seed WinUtil::Seeds::comboBoxStatic;
@@ -379,7 +382,7 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 
 			fileIndexes[x] = fileImageCount++;
 			return fileImageCount - 1;
-		} catch(const dwt::xCeption&) {
+		} catch(const dwt::DWTException&) {
 			return 2;
 		}
 	} else {
@@ -552,6 +555,10 @@ bool WinUtil::getUCParams(dwt::Widget* parent, const UserCommand& uc, StringMap&
 void WinUtil::help(HWND hWnd, unsigned id) {
 	dcdebug("WinUtil::help; hWnd: %p; id: %u\n", hWnd, id);
 
+	// make sure no further help is requested when a help popup is already opened...
+	if(helpPopup && hWnd == helpPopup)
+		return;
+
 	string path = Util::getDataPath() + "DCPlusPlus.chm";
 	if(File::getSize(path) == -1)
 		return;
@@ -572,7 +579,7 @@ void WinUtil::help(HWND hWnd, unsigned id) {
 		popup.rcMargins.right = 5;
 		popup.rcMargins.bottom = 5;
 
-		::HtmlHelp(hWnd, helpFile.c_str(), HH_DISPLAY_TEXT_POPUP, reinterpret_cast<DWORD_PTR>(&popup));
+		helpPopup = ::HtmlHelp(hWnd, helpFile.c_str(), HH_DISPLAY_TEXT_POPUP, reinterpret_cast<DWORD_PTR>(&popup));
 	} else
 		::HtmlHelp(hWnd, helpFile.c_str(), id ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, id);
 }
@@ -594,6 +601,19 @@ bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
 
 #define COMPILE_MULTIMON_STUBS 1
 #include <MultiMon.h>
+
+void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
+	StringTokenizer<string> t(tokens, _T(','));
+	StringList& l = t.getTokens();
+	if(maxItems == -1)
+		maxItems = l.size();
+
+	int k = 0;
+	for(StringList::const_iterator i = l.begin(); i != l.end() && k < maxItems; ++i, ++k) {
+		array[k] = Util::toInt(*i);
+	}
+}
+#endif
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -620,7 +640,7 @@ HLSCOLOR RGB2HLS (COLORREF rgb) {
 	return HLS ((hue*255)/360, luminance*255, saturation*255);
 }
 
-static BYTE _ToRGB (float rm1, float rm2, float rh) {
+static inline BYTE _ToRGB (float rm1, float rm2, float rh) {
 	if		(rh > 360.0f) rh -= 360.0f;
 	else if (rh <   0.0f) rh += 360.0f;
 
@@ -669,19 +689,6 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 	}
 	return HLS2RGB (HLS(h, l, s));
 }
-
-void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
-	StringTokenizer<string> t(tokens, _T(','));
-	StringList& l = t.getTokens();
-	if(maxItems == -1)
-		maxItems = l.size();
-
-	int k = 0;
-	for(StringList::const_iterator i = l.begin(); i != l.end() && k < maxItems; ++i, ++k) {
-		array[k] = Util::toInt(*i);
-	}
-}
-#endif
 
 void WinUtil::registerDchubHandler() {
 	HKEY hk;

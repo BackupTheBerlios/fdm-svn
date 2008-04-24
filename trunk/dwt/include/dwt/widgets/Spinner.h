@@ -36,7 +36,7 @@
 #ifndef DWT_Spinner_h
 #define DWT_Spinner_h
 
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectScrollable.h"
 #include "Control.h"
@@ -57,7 +57,7 @@ namespace dwt {
 class Spinner :
 	public CommonControl,
 	// Aspects
-	public AspectFocus< Spinner >,
+	public AspectKeyboard< Spinner >,
 	public AspectPainting< Spinner >,
 	public AspectScrollable< Spinner >
 {
@@ -152,8 +152,7 @@ inline int Spinner::getValue()
 	LRESULT retVal = ::SendMessage( this->handle(), UDM_GETPOS, 0, 0 );
 	if ( HIWORD( retVal ) != 0 )
 	{
-		xCeption err( _T( " Something went wrong while trying to retrieve value if Spinner" ) );
-		throw err;
+		dwtWin32DebugFail(" Something went wrong while trying to retrieve value if Spinner");
 	}
 	return LOWORD( retVal );
 #else

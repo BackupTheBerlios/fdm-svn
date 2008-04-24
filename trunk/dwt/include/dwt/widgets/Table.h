@@ -44,7 +44,7 @@
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
@@ -76,7 +76,7 @@ class Table :
 	public AspectColor<Table>,
 	public AspectData<Table, int>,
 	public AspectDblClickable< Table >,
-	public AspectFocus< Table >,
+	public AspectKeyboard< Table >,
 	public AspectFont< Table >,
 	public AspectScrollable< Table >,
 	public AspectSelection< Table, int >
@@ -448,7 +448,9 @@ public:
 	ScreenCoordinate getContextMenuPos();
 	
 	void ensureVisible(int i, bool partial = false);
-	
+
+	int hitTest(const ScreenCoordinate& pt);
+
 	/// Actually creates the Data Grid Control
 	/** You should call WidgetFactory::createTable if you instantiate class
 	  * directly. <br>
@@ -731,15 +733,13 @@ inline void Table::setAlwaysShowSelection( bool value ) {
 }
 
 inline void Table::eraseColumn( unsigned columnNo ) {
-	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
+	dwtassert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
 	ListView_DeleteColumn( this->handle(), columnNo );
 }
 
 inline void Table::setColumnWidth( unsigned columnNo, int width ) {
-	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
-	{
-		xCeption x( _T( "Couldn't resize columns of Table" ) );
-		throw x;
+	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE ) {
+		dwtWin32DebugFail("Couldn't resize columns of Table");
 	}
 }
 

@@ -82,7 +82,7 @@ void PrivateFrame::closeAllOffline() {
 }
 
 PrivateFrame::PrivateFrame(dwt::TabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
-	BaseType(mdiParent, _T(""), IDH_PM, dwt::IconPtr(new dwt::Icon(IDR_PRIVATE)), activate),
+	BaseType(mdiParent, _T(""), IDH_PM, IDR_PRIVATE, activate),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)
@@ -179,39 +179,39 @@ bool PrivateFrame::preClosing() {
 }
 
 void PrivateFrame::readLog() {
-	StringMap params;
+	if(SETTING(SHOW_LAST_LINES_LOG) == 0)
+		return;
 
+	StringMap params;
 	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	params["userCID"] = replyTo->getCID().toBase32();
 	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-
 	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
 
+	StringList lines;
+
 	try {
-		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
-			File f(path, File::READ, File::OPEN);
-
-			int64_t size = f.getSize();
-
-			if(size > 32*1024) {
-				f.setPos(size - 32*1024);
-			}
-
-			StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
-
-			int linesCount = lines.size();
-
-			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
-
-			for(; i < (linesCount - 1); ++i){
-				addStatus(_T("- ") + Text::toT(lines[i]));
-			}
-
-			f.close();
+		File f(path, File::READ, File::OPEN);
+		if(f.getSize() > 32*1024) {
+			f.setEndPos(- 32*1024 + 1);
 		}
-	} catch(const FileException&){
+
+		lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
+
+		f.close();
+	} catch(const FileException&) { }
+
+	if(lines.empty())
+		return;
+
+	// the last line in the log file is an empty line; remove it
+	lines.pop_back();
+
+	size_t linesCount = lines.size();
+	for(size_t i = std::max(static_cast<int>(linesCount) - SETTING(SHOW_LAST_LINES_LOG), 0); i < linesCount; ++i) {
+		addStatus(_T("- ") + Text::toT(lines[i]));
 	}
 }
 
@@ -237,14 +237,8 @@ void PrivateFrame::layout() {
 
 void PrivateFrame::updateTitle() {
 	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
-#ifdef PORT_ME
-	if(hubs.second) {
-		setTabColor(RGB(0, 255, 255));
-	} else {
-		setTabColor(RGB(255, 0, 0));
-	}
-#endif 
 	setText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first));
+	setIcon(hubs.second ? IDR_PRIVATE : IDR_PRIVATE_OFF);
 }
 
 bool PrivateFrame::handleChar(int c) {
@@ -366,7 +360,7 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 }
 
 bool PrivateFrame::handleTabContextMenu(const dwt::ScreenCoordinate& pt) {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 	

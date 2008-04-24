@@ -35,7 +35,7 @@
 #include "../resources/ImageList.h"
 #include "../Rectangle.h"
 #include "../aspects/AspectCollection.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
@@ -53,7 +53,7 @@ class TabView :
 	public CommonControl,
 	// Aspects
 	private AspectCollection<TabView, int>,
-	public AspectFocus< TabView >,
+	public AspectKeyboard< TabView >,
 	public AspectFont< TabView >,
 	public AspectPainting< TabView >,
 	public AspectSelection< TabView, int >,
@@ -84,7 +84,7 @@ public:
 		Seed(bool toggleActive_ = false);
 	};
 
-	void add(ContainerPtr w, const IconPtr& icon);
+	void add(ContainerPtr w, const IconPtr& icon = IconPtr());
 
 	void mark(ContainerPtr w);
 	
@@ -94,6 +94,8 @@ public:
 	
 	ContainerPtr getActive();
 	void setActive(ContainerPtr w) { setActive(findTab(w)); }
+
+	void setTabIcon(ContainerPtr w, const IconPtr& icon);
 
 	tstring getTabText(ContainerPtr w);
 

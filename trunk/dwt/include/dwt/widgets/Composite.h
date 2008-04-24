@@ -36,7 +36,7 @@
 #include "../aspects/AspectCommand.h"
 #include "../aspects/AspectDragDrop.h"
 #include "../aspects/AspectEraseBackground.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectText.h"
@@ -58,7 +58,7 @@ class Composite :
 	public AspectCommand< Composite< Policy > >,
 	public AspectDragDrop< Composite< Policy > >,
 	public AspectEraseBackground< Composite< Policy > >,
-	public AspectFocus< Composite< Policy > >,
+	public AspectKeyboard< Composite< Policy > >,
 	public AspectFont< Composite< Policy > >,
 	public AspectPainting< Composite< Policy > >,
 	public AspectText< Composite< Policy > >
@@ -72,7 +72,7 @@ public:
 	
 	// TODO Maybe move this to a separate class?
 	// This brings these classes into the namespace of classes that inherit from Composite
-	// Note; only child windows should be here...
+	// Note; only widgets that can be created with addChild should be here
 	typedef dwt::Button Button;
 	typedef dwt::ButtonPtr ButtonPtr;
 	typedef dwt::CheckBox CheckBox;
@@ -89,6 +89,8 @@ public:
 	typedef dwt::GroupBoxPtr GroupBoxPtr;
 	typedef dwt::Label Label;
 	typedef dwt::LabelPtr LabelPtr;
+	typedef dwt::Menu Menu;
+	typedef dwt::MenuPtr MenuPtr;
 	typedef dwt::ProgressBar ProgressBar;
 	typedef dwt::ProgressBarPtr ProgressBarPtr;
 	typedef dwt::RadioButton RadioButton;

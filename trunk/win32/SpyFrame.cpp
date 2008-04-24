@@ -71,6 +71,11 @@ SpyFrame::SpyFrame(dwt::TabView* mdiParent) :
 	initStatus();
 	statusSizes[STATUS_IGNORE_TTH] = 150; ///@todo get real checkbox + text width
 
+	setStatusHelpId(STATUS_TOTAL, IDH_SPY_TOTAL);
+	setStatusHelpId(STATUS_AVG_PER_SECOND, IDH_SPY_AVG_PER_SECOND);
+	setStatusHelpId(STATUS_HITS, IDH_SPY_HITS);
+	setStatusHelpId(STATUS_HIT_RATIO, IDH_SPY_HIT_RATIO);
+
 	layout();
 
 	onSpeaker(std::tr1::bind(&SpyFrame::handleSpeaker, this, _1, _2)) ;
@@ -179,7 +184,7 @@ bool SpyFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 			pt = searches->getContextMenuPos();
 		}
 
-		MenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr contextMenu = addChild(WinUtil::Seeds::menu);
 		contextMenu->appendItem<Menu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelected(), COLUMN_STRING)), dwt::BitmapPtr(new dwt::Bitmap(IDB_SEARCH)));
 
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

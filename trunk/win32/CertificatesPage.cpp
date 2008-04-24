@@ -55,9 +55,9 @@ PropPage::Item CertificatesPage::items[] = {
 };
 
 PropPage::ListItem CertificatesPage::listItems[] = {
-	{ SettingsManager::USE_TLS, N_("Use TLS when remote client supports it") },
-	{ SettingsManager::ALLOW_UNTRUSTED_HUBS, N_("Allow TLS connections to hubs without trusted certificate") },
-	{ SettingsManager::ALLOW_UNTRUSTED_CLIENTS, N_("Allow TLS connections to clients without trusted certificate") },
+	{ SettingsManager::USE_TLS, N_("Use TLS when remote client supports it"), IDH_SETTINGS_CERTIFICATES_USE_TLS },
+	{ SettingsManager::ALLOW_UNTRUSTED_HUBS, N_("Allow TLS connections to hubs without trusted certificate"), IDH_SETTINGS_CERTIFICATES_ALLOW_UNTRUSTED_HUBS },
+	{ SettingsManager::ALLOW_UNTRUSTED_CLIENTS, N_("Allow TLS connections to clients without trusted certificate"), IDH_SETTINGS_CERTIFICATES_ALLOW_UNTRUSTED_CLIENTS },
 	{ 0, 0 }
 };
 
@@ -67,7 +67,7 @@ CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 
 	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
-	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
+	PropPage::read(handle(), items);
 
 	privateKeyFile = attachChild<TextBox>(IDC_TLS_PRIVATE_KEY_FILE);
 	attachChild<Button>(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
@@ -79,13 +79,17 @@ CertificatesPage::CertificatesPage(dwt::Widget* parent) : PropPage(parent) {
 	attachChild<Button>(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
 
 	attachChild<Button>(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));
+
+	attachChild(options, IDC_TLS_OPTIONS);
+	PropPage::read(listItems, options);
 }
 
 CertificatesPage::~CertificatesPage() {
 }
 
 void CertificatesPage::write() {
-	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
+	PropPage::write(handle(), items);
+	PropPage::write(listItems, options);
 }
 
 void CertificatesPage::handleBrowsePrivateKeyClicked() {

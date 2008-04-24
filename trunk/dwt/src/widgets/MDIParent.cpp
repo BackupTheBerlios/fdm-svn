@@ -30,7 +30,7 @@
 */
 
 #include <dwt/widgets/MDIParent.h>
-#include <dwt/Application.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -54,12 +54,12 @@ void MDIParent::create( const Seed & cs )
 		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		this->getParent() ? this->getParent()->handle() : 0,
 		NULL,
-		Application::instance().getAppHandle(),
+		::GetModuleHandle(NULL),
 		reinterpret_cast< LPVOID >( &ccs ) );
-	if ( !wnd )
-	{
+	
+	if (wnd == NULL) {
 		// The most common error is to forget WS_CHILD in the styles
-		throw xCeption( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
+		throw Win32Exception("CreateWindowEx failed");
 	}
 }
 

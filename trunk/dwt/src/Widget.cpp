@@ -47,9 +47,8 @@
 
 #include <dwt/Widget.h>
 
-#include <dwt/Threads.h>
-#include <dwt/Application.h>
-#include <dwt/xCeption.h>
+#include <dwt/DWTException.h>
+#include <dwt/util/check.h>
 
 namespace dwt {
 
@@ -60,10 +59,10 @@ Widget::~Widget() {
 // Subclasses a dialog item inside a dialog, usually used in combination with Dialog resources.
 void Widget::attach( unsigned id ) {
 	if ( !itsParent )
-		throw xCeption( _T( "Can't attach a Widget without a parent..." ) );
+		throw DWTException("Can't attach a Widget without a parent...");
 	HWND hWnd = ::GetDlgItem( itsParent->handle(), id );
 	if ( !hWnd )
-		throw xCeption( _T( "GetDlgItem failed." ) );
+		throw Win32Exception("GetDlgItem failed.");
 	setHandle(hWnd);
 }
 
@@ -79,22 +78,27 @@ HWND Widget::create( const Seed & cs ) {
 		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		itsParent ? itsParent->handle() : 0,
 		cs.menuHandle,
-		Application::instance().getAppHandle(),
+		::GetModuleHandle(NULL),
 		reinterpret_cast< LPVOID >( this ) 
 	);
 	if (!hWnd) {
 		// The most common error is to forget WS_CHILD in the styles
-		throw xCeption( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
+		throw Win32Exception( "CreateWindowEx in Widget::create fizzled ...");
 	}
 	return hWnd;
 }
 
 void Widget::setHandle(HWND hwnd) {
 	if(itsHandle) {
-		throw xCeption(_T("You may not attach to a widget that's already attached"));
+		throw DWTException("You may not attach to a widget that's already attached");
 	}
 	itsHandle = hwnd;
-	::SetProp(hwnd, propAtom, reinterpret_cast<HANDLE>(this) );
+	dwtassert((::GetWindowLongPtr(hwnd, GWLP_USERDATA) == 0), "Userdata already set");
+	::SetLastError(0);
+	LONG_PTR ret = ::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+	if(ret == 0 && ::GetLastError() != 0) {
+		throw Win32Exception("Error while setting pointer");
+	}
 }
 
 void Widget::addRemoveStyle( DWORD addStyle, bool add )
@@ -144,8 +148,6 @@ void Widget::addRemoveExStyle( DWORD addStyle, bool add )
 			SWP_NOZORDER | SWP_FRAMECHANGED );
 	}
 }
-
-GlobalAtom Widget::propAtom(_T("dwt::Widget*"));
 
 void Widget::addCallback( const Message& msg, const CallbackType& callback ) {
 	itsCallbacks[msg].push_back(callback);

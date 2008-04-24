@@ -30,8 +30,7 @@
 */
 
 #include <dwt/widgets/MDIChild.h>
-
-#include <dwt/Application.h>
+#include <dwt/DWTException.h>
 
 namespace dwt {
 
@@ -51,20 +50,19 @@ void MDIChild::createMDIChild( const Seed& cs ) {
 		cs.style,
 		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		getParent()->handle(),
-		Application::instance().getAppHandle(),
+		::GetModuleHandle(NULL),
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
-	
+
+	if (wnd == NULL) {
+		throw Win32Exception("CreateMDIWindow failed");
+	}
+
 	if(active) {
 		getParent()->sendMessage(WM_MDIACTIVATE, (WPARAM)active);
 	}
 	
 	getParent()->sendMessage(WM_SETREDRAW, TRUE);
 	redraw();
-	if ( !wnd )
-	{
-		xCeption x( _T( "CreateWindowEx in MDIChild::createMDIChild fizzled..." ) );
-		throw x;
-	}
 }
 
 bool MDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
@@ -77,7 +75,7 @@ bool MDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
 
 		    if(msg.message == WM_SIZE) // client area
 		    {
-			    if((msg.wParam == SIZE_MAXIMIZED || msg.wParam == SIZE_RESTORED) && getParent()->getActive() == handle()) // active and maximized
+			    if((msg.wParam == SIZE_MAXIMIZED || msg.wParam == SIZE_RESTORED) && getParent()->getActive() == this) // active and maximized
 			    	return BaseType::tryFire(msg, retVal);
 
 			    sendMessage(WM_SETREDRAW, FALSE);
@@ -91,8 +89,8 @@ bool MDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
 }
 
 void MDIChild::activate() {
-	HWND prev = getParent()->getActive();
-	if(prev == handle())
+	Widget* prev = getParent()->getActive();
+	if(prev == this)
 		return;
 	
 	if(::IsIconic(handle())) {

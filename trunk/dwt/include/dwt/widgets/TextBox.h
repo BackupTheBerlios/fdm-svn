@@ -37,7 +37,7 @@
 #define DWT_TextBox_h
 
 #include "../aspects/AspectColor.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectText.h"
@@ -69,7 +69,7 @@ class TextBoxBase :
 	// Aspect classes
 	public AspectColor< TextBoxBase >,
 	public AspectColorCtlImpl<TextBoxBase>,
-	public AspectFocus< TextBoxBase >,
+	public AspectKeyboard< TextBoxBase >,
 	public AspectFont< TextBoxBase >,
 	public AspectScrollable< TextBoxBase >,
 	public AspectText< TextBoxBase >,
@@ -371,7 +371,7 @@ inline TextBoxBase::TextBoxBase( Widget * parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
+	dwtassert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
 inline TextBox::TextBox( Widget * parent )

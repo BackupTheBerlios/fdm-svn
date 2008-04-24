@@ -34,8 +34,8 @@
 */
 
 #include <dwt/resources/ImageList.h>
-#include <dwt/Application.h>
-#include <dwt/xCeption.h>
+#include <dwt/DWTException.h>
+#include <dwt/util/check.h>
 
 namespace dwt {
 
@@ -46,36 +46,34 @@ ImageList::ImageList( HIMAGELIST imageList, bool own )
 ImageList::ImageList( int width, int height, unsigned flags )
 	: ResourceType(ImageList_Create(width, height, flags, 0, 1))
 {
-	if( handle() == NULL )
-	{
-		xCeption x( _T( "Couldn't create ImageList" ) );
-		throw x;
+	if( handle() == NULL ) {
+		throw Win32Exception("Couldn't create ImageList");
 	}
 }
 
 void ImageList::add( const Bitmap & bitmap )
 {
 	if(ImageList_Add( handle(), bitmap.handle(), NULL ) == -1) {
-		throw xCeption(_T("Add failed"));
+		dwtWin32DebugFail("Add failed");
 	}
 }
 
 void ImageList::add( const Bitmap & bitmap, const Bitmap & mask )
 {
 	if(ImageList_Add( handle(), bitmap.handle(), mask.handle() ) == -1) {
-		throw xCeption(_T("Add masked failed"));
+		dwtWin32DebugFail("Add masked failed");
 	}
 }
 
 void ImageList::add( const Bitmap& bitmap, COLORREF mask) {
 	if(ImageList_AddMasked(handle(), bitmap.handle(), mask) == -1) {
-		throw xCeption(_T("Add colormasked failed"));
+		dwtWin32DebugFail("Add colormasked failed");
 	}
 }
 
 void ImageList::add( const Icon & icon ) {
 	if(ImageList_AddIcon( handle(), icon.handle() ) == -1) {
-		throw xCeption(_T("Add icon failed"));
+		dwtWin32DebugFail("Add icon failed");
 	}
 }
 
@@ -102,10 +100,8 @@ Point ImageList::getImageSize() const
 {
 	int x, y;
 	BOOL success = ImageList_GetIconSize( handle(), & x, & y );
-	if ( !success )
-	{
-		xCeption x( _T( "Couldn't get the ImageList image size" ) );
-		throw x;
+	if ( !success ) {
+		throw Win32Exception("Couldn't get the ImageList image size");
 	}
 	return Point( x, y );
 }
@@ -130,10 +126,8 @@ COLORREF ImageList::getBkColor() const {
 void ImageList::resize( unsigned newSize )
 {
 	BOOL success = ::ImageList_SetImageCount( handle(), newSize );
-	if ( !success )
-	{
-		xCeption x( _T( "Couldn't resize ImageList" ) );
-		throw x;
+	if ( !success ) {
+		throw Win32Exception("Couldn't resize ImageList");
 	}
 }
 

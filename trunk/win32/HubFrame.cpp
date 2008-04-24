@@ -70,7 +70,7 @@ void HubFrame::openWindow(dwt::TabView* mdiParent, const string& url) {
 }
 
 HubFrame::HubFrame(dwt::TabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), IDH_HUB, dwt::IconPtr(new dwt::Icon(IDR_HUB))),
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, IDR_HUB_OFF),
 	chat(0),
 	message(0),
 	filter(0),
@@ -503,14 +503,10 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			}
 		} else if(i->first == CONNECTED) {
 			addStatus(T_("Connected"));
-#ifdef PORT_ME
-			setTabColor(GREEN);
-#endif
+			setIcon(IDR_HUB);
 		} else if(i->first == DISCONNECTED) {
 			clearUserList();
-#ifdef PORT_ME
-			setTabColor(RED);
-#endif
+			setIcon(IDR_HUB_OFF);
 		} else if(i->first == ADD_CHAT_LINE) {
 			if (SETTING(SHOW_IPS_IN_CHAT) || SETTING(SHOW_CC_IN_CHAT)) {
 				UserInfo* ui = findUser(Text::toT(MoreWinUtil::findNickInString(static_cast<StringTask*>(i->second)->str)));
@@ -1176,7 +1172,7 @@ bool HubFrame::handleUsersContextMenu(dwt::ScreenCoordinate pt) {
 			pt = users->getContextMenuPos();
 		}
 
-		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = addChild(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		
 		menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
@@ -1192,7 +1188,7 @@ bool HubFrame::handleUsersContextMenu(dwt::ScreenCoordinate pt) {
 }
 
 bool HubFrame::handleTabContextMenu(const dwt::ScreenCoordinate& pt) {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 

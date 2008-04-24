@@ -89,13 +89,13 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 		cs.location = tabs->getClientSize();
 		connectionsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		connectionsWindow->setHelpId(IDH_CONNECTIONS);
-		tabs->add(connectionsWindow, dwt::IconPtr());
+		tabs->add(connectionsWindow);
 
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
 		downloadsWindow = dwt::WidgetCreator<Container>::create(tabs, cs);
 		downloadsWindow->setHelpId(IDH_DOWNLOADS);
-		tabs->add(downloadsWindow, dwt::IconPtr());
+		tabs->add(downloadsWindow);
 	}
 	
 	{
@@ -115,6 +115,7 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 		connections->onContextMenu(std::tr1::bind(&TransferView::handleConnectionsMenu, this, _1));
 		connections->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
 		connections->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
+		connections->onRaw(std::tr1::bind(&TransferView::handleCustomDraw, this, _1, _2), dwt::Message(WM_NOTIFY, NM_CUSTOMDRAW));
 	}
 	
 	{
@@ -128,6 +129,7 @@ TransferView::TransferView(dwt::Widget* parent, dwt::TabView* mdi_) :
 		downloads->setSmallImageList(WinUtil::fileImages);
 
 		downloads->onContextMenu(std::tr1::bind(&TransferView::handleDownloadsMenu, this, _1));
+		downloads->onRaw(std::tr1::bind(&TransferView::handleCustomDraw, this, _1, _2), dwt::Message(WM_NOTIFY, NM_CUSTOMDRAW));
 	}
 	
 	connectionsWindow->onSized(std::tr1::bind(&fills, connectionsWindow, connections));
@@ -176,7 +178,7 @@ HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 }
 
 TransferView::MenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 	
 	appendUserItems(mdi, menu);
 	menu->appendSeparatorItem();
@@ -211,7 +213,7 @@ bool TransferView::handleDownloadsMenu(dwt::ScreenCoordinate pt) {
 			pt = downloads->getContextMenuPos();
 		}
 
-		MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+		MenuPtr menu = addChild(WinUtil::Seeds::menu);
 		DownloadInfo* di = downloads->getSelectedData();
 		WinUtil::addHashItems(menu, di->tth, di->columns[DOWNLOAD_COLUMN_FILE]);
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
@@ -283,16 +285,84 @@ void TransferView::handleCopyNick() {
 	}
 }
 
-#ifdef PORT_ME
-LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
-	if(!BOOLSETTING(SHOW_PROGRESS_BARS)) {
-		bHandled = FALSE;
-		return 0;
+static inline void drawProgress(HDC hdc, const dwt::Rectangle& rcItem, int item, int column, const tstring& text, double pos, COLORREF fgColor) {
+	// draw something nice...
+	COLORREF barBase = fgColor;
+	COLORREF bgBase = WinUtil::bgColor;
+	int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
+	
+	// Dark, medium and light shades
+	COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
+	
+	// Two shades of the background color
+	COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
+
+	dwt::Rectangle rc = rcItem;
+
+	// draw background
+	HGDIOBJ oldbr = ::SelectObject(hdc, ::CreateSolidBrush(bgPal[1]));
+	HGDIOBJ oldpen = ::SelectObject(hdc, ::CreatePen(PS_SOLID, 0, bgPal[0]));
+	
+	// TODO Don't draw where the finished part will be drawn
+	::Rectangle(hdc, rc.left(), rc.top() - 1, rc.right(), rc.bottom());
+	
+	rc.pos.x += 1;
+	rc.size.x -= 2;
+	rc.size.y -= 1;
+	
+	long w = rc.width();
+	
+	::DeleteObject(::SelectObject(hdc, ::CreateSolidBrush(barPal[1])));
+	::DeleteObject(::SelectObject(hdc, ::CreatePen(PS_SOLID, 0, barPal[0])));
+	
+	// "Finished" part
+	rc.size.x = (int) (w * pos);
+
+	::Rectangle(hdc, rc.left(), rc.top(), rc.right(), rc.bottom());
+
+	RECT textRect = rc;
+
+	// draw progressbar highlight
+	if(rc.width()>2) {
+		::DeleteObject(::SelectObject(hdc, ::CreatePen(PS_SOLID, 1, barPal[2])));
+
+		rc.pos.y += 2;
+		::MoveToEx(hdc, rc.left()+1, rc.top(), (LPPOINT)NULL);
+		::LineTo(hdc, rc.right()-2, rc.top());
 	}
 
-	CRect rc;
-	LPNMLVCUSTOMDRAW cd = (LPNMLVCUSTOMDRAW)pnmh;
+	// draw status text
+	::DeleteObject(::SelectObject(hdc, oldpen));
+	::DeleteObject(::SelectObject(hdc, oldbr));
 
+	int oldMode = ::SetBkMode(hdc, TRANSPARENT);
+
+	textRect.left += 6;
+
+	long left = textRect.left;
+
+	// todo use dwt's canvas and put this there
+	TEXTMETRIC tm;
+	::GetTextMetrics(hdc, &tm);
+	long top = textRect.top + (textRect.bottom - textRect.top - tm.tmHeight) / 2;
+
+	::SetTextColor(hdc, RGB(255, 255, 255));
+	::ExtTextOut(hdc, left, top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
+
+	textRect.left = textRect.right;
+	textRect.right = rcItem.right();
+
+	::SetTextColor(hdc, WinUtil::textColor);
+	::ExtTextOut(hdc, left, top, ETO_CLIPPED, &textRect, text.c_str(), text.size(), NULL);
+
+	::SetBkMode(hdc, oldMode);
+}
+
+LRESULT TransferView::handleCustomDraw(WPARAM wParam, LPARAM lParam) {
+	LPNMLVCUSTOMDRAW cd = (LPNMLVCUSTOMDRAW)lParam;
+	int item = (int)cd->nmcd.dwItemSpec;
+	int column = cd->iSubItem;
+	
 	switch(cd->nmcd.dwDrawStage) {
 	case CDDS_PREPAINT:
 		return CDRF_NOTIFYITEMDRAW;
@@ -302,85 +372,35 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		// Let's draw a box if needed...
-		if(cd->iSubItem == COLUMN_STATUS) {
-			ConnectionInfo* ii = (ConnectionInfo*)cd->nmcd.lItemlParam;
-			if(ii->status == ConnectionInfo::STATUS_RUNNING) {
-				// draw something nice...
-				TCHAR buf[256];
-				COLORREF barBase = ii->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
-				COLORREF bgBase = WinUtil::bgColor;
-				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
-				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
-				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
-
-				connections->GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
-				buf[255] = 0;
-
-				connections->GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
-				CRect rc2 = rc;
-				rc2.left += 6;
-
-				// draw background
-				HGDIOBJ oldpen = ::SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,bgPal[0]));
-				HGDIOBJ oldbr = ::SelectObject(cd->nmcd.hdc, CreateSolidBrush(bgPal[1]));
-				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);
-				rc.DeflateRect(1, 0, 1, 1);
-
-				LONG left = rc.left;
-				int64_t w = rc.Width();
-				// draw start part
-				if(ii->size == 0)
-					ii->size = 1;
-				rc.right = left + (int) (w * ii->start / ii->size);
-				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[0])));
-				DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,barPal[0])));
-
-				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
-
-				// Draw actual part
-				rc.left = rc.right;
-				rc.right = left + (int) (w * ii->actual / ii->size);
-				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[1])));
-
-				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
-
-				// And the effective part...
-				if(ii->pos > ii->actual) {
-					rc.left = rc.right - 1;
-					rc.right = left + (int) (w * ii->pos / ii->size);
-					DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[2])));
-
-					::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
-
-				}
-				rc.left = left;
-				// draw progressbar highlight
-				if(rc.Width()>2) {
-					DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,1,barPal[2])));
-
-					rc.top += 2;
-					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
-					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
-				}
-
-				// draw status text
-				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
-				DeleteObject(::SelectObject(cd->nmcd.hdc, oldbr));
-
-				LONG right = rc2.right;
-				left = rc2.left;
-				rc2.right = rc.right;
-				LONG top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
-				SetTextColor(cd->nmcd.hdc, RGB(255, 255, 255));
-				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
-				//::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
-
-				rc2.left = rc2.right;
-				rc2.right = right;
-
-				SetTextColor(cd->nmcd.hdc, WinUtil::textColor);
-				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
-
+		if(cd->nmcd.hdr.hwndFrom == connections->handle() && column == CONNECTION_COLUMN_STATUS) {
+			HDC hdc = cd->nmcd.hdc;
+			ConnectionInfo* ci = reinterpret_cast<ConnectionInfo*>(cd->nmcd.lItemlParam);
+			
+			if(ci->status == ConnectionInfo::STATUS_RUNNING && ci->chunk > 0 && ci->chunkPos >= 0) {
+				const tstring& text = ci->columns[column];
+	
+				RECT r;
+				ListView_GetSubItemRect( connections->handle(), item, column, LVIR_BOUNDS, &r );
+	
+				double pos = static_cast<double>(ci->chunkPos) / ci->chunk;
+				
+				drawProgress(hdc, r, item, column, text, pos, ci->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR));
+				
+				return CDRF_SKIPDEFAULT;
+			}
+		} else if(cd->nmcd.hdr.hwndFrom == downloads->handle() && column == DOWNLOAD_COLUMN_STATUS) {
+			HDC hdc = cd->nmcd.hdc;
+			DownloadInfo* di = reinterpret_cast<DownloadInfo*>(cd->nmcd.lItemlParam);
+			if(di->size > 0 && di->done >= 0) {
+				const tstring& text = di->columns[column];
+	
+				RECT r;
+				ListView_GetSubItemRect( downloads->handle(), item, column, LVIR_BOUNDS, &r );
+	
+				double pos = static_cast<double>(di->done) / di->size;
+				
+				drawProgress(hdc, r, item, column, text, pos, SETTING(DOWNLOAD_BAR_COLOR));
+				
 				return CDRF_SKIPDEFAULT;
 			}
 		}
@@ -389,7 +409,6 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		return CDRF_DODEFAULT;
 	}
 }
-#endif
 
 void TransferView::handleDblClicked() {
 	ConnectionInfo* ii = connections->getSelectedData();
@@ -519,7 +538,9 @@ TransferView::ConnectionInfo::ConnectionInfo(const UserPtr& u, bool aDownload) :
 	transfered(0),
 	lastTransfered(0),
 	queued(0),
-	speed(0)	
+	speed(0),
+	chunk(0),
+	chunkPos(0)
 {
 	columns[CONNECTION_COLUMN_USER] = WinUtil::getNicks(u);
 	columns[CONNECTION_COLUMN_HUB] = WinUtil::getHubNames(u).first;
@@ -592,6 +613,7 @@ TransferView::DownloadInfo::DownloadInfo(const string& target, int64_t size_, co
 	path(target), 
 	done(QueueManager::getInstance()->getPos(target)), 
 	size(size_), 
+	bps(0),
 	users(1),
 	tth(tth_)
 {

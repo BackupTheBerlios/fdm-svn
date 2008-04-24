@@ -40,12 +40,12 @@
 
 #include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
-#include "../xCeption.h"
+#include "../util/check.h"
 
 namespace dwt {
 
@@ -67,7 +67,7 @@ class CoolBar :
 
 	// Aspects
 	public AspectEnabled< CoolBar >,
-	public AspectFocus< CoolBar >,
+	public AspectKeyboard< CoolBar >,
 	public AspectFont< CoolBar >,
 	public AspectRaw< CoolBar >,
 	private AspectSizable< CoolBar >,
@@ -142,24 +142,17 @@ inline CoolBar::CoolBar( Widget * parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
+	dwtassert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-inline void CoolBar::refresh()
-{
+inline void CoolBar::refresh() {
 	// This might look a bit stupid, but Windows API have some minor flaws. One of
 	// those flaws is that a Coolbar (and a Toolbar) control must be "resized" with
 	// a dummy value to make sure the Coolbar (&& the Toolbar) fills up the
 	// complete area of the container Widget...
-
-	// HC comment: sorry ;( but no smiley faces ;) anywhere, not even in comments.
-	// They mess up with my macros to check delimiters ...
-	Rectangle rect;
-	if ( ::MoveWindow( this->handle(),
-		rect.x(), rect.y(), rect.width(), rect.height(), TRUE ) == 0 )
-	{
-		xCeption err( _T( "Couldn't reposition windows" ) );
-		throw err;
+	
+	if ( ::MoveWindow( this->handle(), 0, 0, 0, 0, TRUE ) == 0 ) {
+		dwtWin32DebugFail("Couldn't reposition windows");
 	}
 }
 

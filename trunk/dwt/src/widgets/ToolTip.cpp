@@ -38,9 +38,8 @@ ToolTip::Seed::Seed() :
 {
 }
 
-void ToolTip::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_POPUP) == WS_POPUP, _T("Widget must have WS_POPUP style"));
+void ToolTip::create( const Seed & cs ) {
+	dwtassert((cs.style & WS_POPUP) == WS_POPUP, _T("Widget must have WS_POPUP style"));
 
 	BaseType::create(cs);
 }
@@ -51,9 +50,7 @@ void ToolTip::relayEvent(const MSG& msg) {
 }
 
 void ToolTip::setTool(Widget* widget, const Dispatcher::F& f) {
-	addCallback(
-		Message(WM_NOTIFY, TTN_GETDISPINFO), Dispatcher(f)
-	);
+	onGetTip(f);
 	
 	TOOLINFO ti = { sizeof(TOOLINFO) };
 	ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;

@@ -38,15 +38,16 @@ public:
 	typedef MDIChildFrame<T> ThisType;
 protected:
 
-	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, dwt::IconPtr icon = dwt::IconPtr(), bool activate = true) :
+	MDIChildFrame(dwt::TabView* tabView, const tstring& title, unsigned helpId = 0, unsigned resourceId = 0, bool activate = true) :
 		BaseType(tabView),
 		lastFocus(NULL),
 		alwaysSameFocus(false),
 		reallyClose(false)
 	{
+		dwt::IconPtr icon = resourceId ? dwt::IconPtr(new dwt::Icon(resourceId)) : dwt::IconPtr();
+
 		typename ThisType::Seed cs;
-		if(!activate)
-			cs.style &= ~WS_VISIBLE;
+		cs.style &= ~WS_VISIBLE;
 		cs.caption = title;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.icon = icon;
@@ -57,6 +58,11 @@ protected:
 			setHelpId(helpId);
 
 		tabView->add(this, icon);
+		
+		if(activate) {
+			tabView->setActive(this);
+		}
+
 		this->onTabContextMenu(std::tr1::bind(&ThisType::handleContextMenu, this, _1));
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
@@ -65,6 +71,7 @@ protected:
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
 		onCommand(std::tr1::bind(&ThisType::close, this, true), IDC_CLOSE_WINDOW);
 		addDlgCodeMessage(this);
+		
 	}
 	
 	virtual ~MDIChildFrame() {
@@ -121,7 +128,11 @@ protected:
 	dwt::TabView* getParent() {
 		return static_cast<dwt::TabView*>(BaseType::getParent());
 	}
-	
+
+	void setIcon(unsigned resourceId) {
+		getParent()->setTabIcon(this, dwt::IconPtr(new dwt::Icon(resourceId)));
+	}
+
 private:
 	HWND lastFocus; // last focused widget
 	bool alwaysSameFocus; // always focus the same widget
@@ -185,7 +196,7 @@ private:
 	}
 
 	bool handleContextMenu(const dwt::ScreenCoordinate& pt) {
-		dwt::Menu::ObjectType menu = createMenu(WinUtil::Seeds::menu);
+		dwt::Menu::ObjectType menu = addChild(WinUtil::Seeds::menu);
 		menu->setTitle(getParent()->getTabText(this));
 		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), dwt::BitmapPtr(new dwt::Bitmap(IDB_EXIT)));
 		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
@@ -195,6 +206,10 @@ private:
 	bool handleClosing() {
 		if(reallyClose) {
 			static_cast<T*>(this)->postClosing();
+			if(getParent()->getActive() == this) {
+				// Prevent flicker by selecting the next tab - WM_DESTROY would already be too late
+				getParent()->next();
+			}
 			return true;
 		} else if(static_cast<T*>(this)->preClosing()) {
 			reallyClose = true;

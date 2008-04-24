@@ -111,8 +111,8 @@ public:
 		this->sendMessage(WM_MDIICONARRANGE);
 	}
 	
-	HWND getActive() {
-		return reinterpret_cast<HWND>(this->sendMessage(WM_MDIGETACTIVE));
+	Widget* getActive() {
+		return hwnd_cast<Widget*>(reinterpret_cast<HWND>(this->sendMessage(WM_MDIGETACTIVE)));
 	}
 	
 	bool isActiveMaximized() {
@@ -148,7 +148,7 @@ inline MDIParent::MDIParent( Widget * parent )
 	: BaseType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a MDIParent without a parent..." ) );
+	dwtassert( parent, _T( "Can't have a MDIParent without a parent..." ) );
 }
 
 // end namespace dwt

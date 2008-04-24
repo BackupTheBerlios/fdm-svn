@@ -165,9 +165,9 @@ void FavHubsFrame::postClosing() {
 
 void FavHubsFrame::handleAdd() {
 	FavoriteHubEntry e;
-	FavHubProperties dlg(this, &e);
 
 	while(true) {
+		FavHubProperties dlg(this, &e);
 		if(dlg.run() == IDOK) {
 			if(FavoriteManager::getInstance()->isFavoriteHub(e.getServer())) {
 				createMessageBox().show(T_("Hub already exists as a favorite"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MessageBox::BOX_OK, MessageBox::BOX_ICONEXCLAMATION);
@@ -279,7 +279,7 @@ bool FavHubsFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 		pt = hubs->getContextMenuPos();
 	}
 
-	MenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr menu = addChild(WinUtil::Seeds::menu);
 	menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
