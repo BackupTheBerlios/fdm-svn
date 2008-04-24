@@ -48,6 +48,8 @@ const string SettingsManager::settingTags[] =
 	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath",
 	"Language", "DownloadsOrder", "DownloadsWidth",
 	"SoundMainChat", "SoundPM", "SoundPMWindow",
+	
+	"FdmLanguageFileLocation", "AutoSearchFrameOrder", "AutoSearchFrameWidths", "WinampFormat", 
 	"SENTRY",
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "AutoFollow", "ClearSearch",

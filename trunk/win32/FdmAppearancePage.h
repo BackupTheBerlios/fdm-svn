@@ -24,7 +24,7 @@
 class FdmAppearancePage : public PropPage
 {
 public:
-	FdmAppearancePage(SmartWin::Widget* parent);
+	FdmAppearancePage(dwt::Widget* parent);
 	virtual ~FdmAppearancePage();
 
 	virtual void write();
@@ -36,7 +36,7 @@ private:
 	static FdmListItem listItems[];
 
 	COLORREF opSpoke, notOpSpoke, iSpoke, myNickSpoken;
-	SmartWin::BrushPtr bgBrush;
+	dwt::BrushPtr bgBrush;
 	
 	void handleBrowse();
 	void handleOpSpoke();

@@ -257,12 +257,12 @@ void MainWindow::initMenu() {
 	}
 
 	{
-		WidgetMenuPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
+		MenuPtr fdmMenu = mainMenu->appendPopup(TSTRING(MENU_FDM));
 
 		fdmMenu->appendItem(IDC_FDM_ABOUT, TSTRING(MENU_FDM_ABOUT), std::tr1::bind(&MainWindow::handleFdmAbout, this));
 		fdmMenu->appendSeparatorItem();
-		fdmMenu->appendItem(IDC_AUTOSEARCH, TSTRING(MENU_FDM_AUTOSEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_AUTOSEARCH)));
-		fdmMenu->appendItem(IDC_FDM_NOTEPAD, TSTRING(MENU_FDM_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NOTEPAD)));
+		fdmMenu->appendItem(IDC_AUTOSEARCH, TSTRING(MENU_FDM_AUTOSEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_AUTOSEARCH)));
+		fdmMenu->appendItem(IDC_FDM_NOTEPAD, TSTRING(MENU_FDM_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), dwt::BitmapPtr(new dwt::Bitmap(IDB_NOTEPAD)));
 		fdmMenu->appendSeparatorItem();
 	}
 
@@ -320,8 +320,8 @@ void MainWindow::initToolbar() {
 		), std::tr1::bind(&MainWindow::handleWhatsThis, this));
 
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_AUTOSEARCH, image++, TSTRING(MENU_FDM_AUTOSEARCH_FRAME));
-	toolbar->appendItem(IDC_FDM_NOTEPAD, image++, TSTRING(MENU_FDM_NOTEPAD_FRAME));
+	toolbar->appendItem(image++, TSTRING(MENU_FDM_AUTOSEARCH_FRAME), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_AUTOSEARCH));
+	toolbar->appendItem(image++, TSTRING(MENU_FDM_NOTEPAD_FRAME), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FDM_NOTEPAD));
 }
 
 void MainWindow::initStatusBar() {

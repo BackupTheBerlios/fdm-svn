@@ -30,7 +30,7 @@ static const char fdmThanks[] = "Big thanks to everyone mentioned by Arnetheduck
 "I hope I haven't missed someone, they're in roughly alphabetical order...=) : "
 "arnetheduck, Carraya, colognic, DanShUK, Farcry, Flow84, fusbar, GargoyleMT, iceman50, Lightgirl_xp, Paka, poy, PPK, ullner, robertone, sulan, TheParanoidOne, TheNOP, Trem. ";
 
-FdmAboutDlg::FdmAboutDlg(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
+FdmAboutDlg::FdmAboutDlg(dwt::Widget* parent) : WidgetFactory<dwt::ModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&FdmAboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&FdmAboutDlg::handleSpeaker, this, _1, _2));
 }
@@ -43,7 +43,7 @@ bool FdmAboutDlg::handleInitDialog() {
 	setItemText(IDC_FDM_ABOUT_THANKS, Text::toT(fdmThanks));
 	setItemText(IDC_FDM_ABOUT_LATEST, T_("Downloading..."));
 
-	attachButton(IDOK)->onClicked(std::tr1::bind(&FdmAboutDlg::endDialog, this, IDOK));
+	attachChild<Button>(IDOK)->onClicked(std::tr1::bind(&FdmAboutDlg::endDialog, this, IDOK));
 
 	centerWindow();
 

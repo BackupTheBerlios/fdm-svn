@@ -24,7 +24,7 @@
 class FdmSpamPage : public PropPage
 {
 public:
-	FdmSpamPage(SmartWin::Widget* parent);
+	FdmSpamPage(dwt::Widget* parent);
 	virtual ~FdmSpamPage();
 
 	virtual void write();

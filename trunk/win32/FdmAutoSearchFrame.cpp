@@ -39,7 +39,7 @@ static ResourceManager::Strings columnNames[] = {
 	ResourceManager::ONLY_WHERE_OP
 };
 
-AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
+AutoSearchFrame::AutoSearchFrame(dwt::TabView* mdiParent) :
 	BaseType(mdiParent, TSTRING(MENU_FDM_AUTOSEARCH_FRAME), IDH_AUTO_SEARCH, IDR_AUTOSEARCH),
 	add(0),
 	properties(0),
@@ -51,7 +51,7 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		Table::Seed cs = WinUtil::Seeds::Table;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		items = createTable(cs);
+		items = addChild(cs);
 		addWidget(items);
 
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -60,7 +60,7 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		items->onDblClicked(std::tr1::bind(&AutoSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&AutoSearchFrame::handleKeyDown, this, _1));
-		items->onRaw(std::tr1::bind(&AutoSearchFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		items->onRaw(std::tr1::bind(&AutoSearchFrame::handleItemChanged, this, _1, _2), dwt::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 		items->onContextMenu(std::tr1::bind(&AutoSearchFrame::handleContextMenu, this, _1));
 	}
 
@@ -68,32 +68,32 @@ AutoSearchFrame::AutoSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		Button::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = T_("&New...");
-		add = createButton(cs);
+		add = addChild(cs);
 		add->onClicked(std::tr1::bind(&AutoSearchFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
-		properties = createButton(cs);
+		properties = addChild(cs);
 		properties->onClicked(std::tr1::bind(&AutoSearchFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
-		up = createButton(cs);
+		up = addChild(cs);
 		up->onClicked(std::tr1::bind(&AutoSearchFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
-		down = createButton(cs);
+		down = addChild(cs);
 		down->onClicked(std::tr1::bind(&AutoSearchFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
-		remove = createButton(cs);
+		remove = addChild(cs);
 		remove->onClicked(std::tr1::bind(&AutoSearchFrame::handleRemove, this));
 		addWidget(remove);
 
 		cs.caption = T_("&Help");
-		help = createButton(cs);
+		help = addChild(cs);
 		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_AUTO_SEARCH));
 		addWidget(help);
 	}
@@ -112,7 +112,7 @@ AutoSearchFrame::~AutoSearchFrame() {
 }
 
 void AutoSearchFrame::layout() {
-	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	dwt::Rectangle r(dwt::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
 
@@ -121,7 +121,7 @@ void AutoSearchFrame::layout() {
 	const int xbutton = 90;
 	const int xborder = 10;
 
-	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	dwt::Rectangle rb(r.getBottom(ybutton));
 	r.size.y -= ybutton;
 	items->setBounds(r);
 
@@ -280,12 +280,12 @@ LRESULT AutoSearchFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-bool AutoSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool AutoSearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 	if(pt.x() == -1 && pt.y() == -1) {
 		pt = items->getContextMenuPos();
 	}
 
-	WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
 	contextMenu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&AutoSearchFrame::handleAdd, this));
 	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&AutoSearchFrame::handleProperties, this));
 	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&AutoSearchFrame::handleRemove, this));

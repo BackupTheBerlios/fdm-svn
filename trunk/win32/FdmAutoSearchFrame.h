@@ -34,7 +34,7 @@ protected:
 	friend class StaticFrame<AutoSearchFrame>;
 	friend class MDIChildFrame<AutoSearchFrame>;
 
-	AutoSearchFrame(SmartWin::WidgetTabView* mdiParent);
+	AutoSearchFrame(dwt::TabView* mdiParent);
 	virtual ~AutoSearchFrame();
 
 	void layout();
@@ -73,7 +73,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	bool handleContextMenu(SmartWin::ScreenCoordinate sc);
+	bool handleContextMenu(dwt::ScreenCoordinate sc);
 
 	void addEntry(AutoSearch& search, int index = -1);
 	

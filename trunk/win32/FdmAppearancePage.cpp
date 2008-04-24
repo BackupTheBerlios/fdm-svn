@@ -50,7 +50,7 @@ PropPage::FdmListItem FdmAppearancePage::listItems[] = {
 	{ 0, ResourceManager::FDM_SETTINGS_AUTO_AWAY }
 };
 
-FdmAppearancePage::FdmAppearancePage(SmartWin::Widget* parent) : PropPage(parent) {
+FdmAppearancePage::FdmAppearancePage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_FDM_APPEARANCE_PAGE);
 
 	PropPage::fdmTranslate(handle(), texts);
@@ -61,19 +61,19 @@ FdmAppearancePage::FdmAppearancePage(SmartWin::Widget* parent) : PropPage(parent
 	iSpoke = SETTING(I_SPOKE_COLOUR);
 	myNickSpoken = SETTING(MY_NICK_SPOKEN_COLOUR);
 
-	ButtonPtr button = attachButton(IDC_FDM_SETTINGS_BROWSE);
+	ButtonPtr button = attachChild<Button>(IDC_FDM_SETTINGS_BROWSE);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleBrowse, this));
 
-	button = attachButton(IDC_FDM_SETTINGS_OP_SPOKE);
+	button = attachChild<Button>(IDC_FDM_SETTINGS_OP_SPOKE);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleOpSpoke, this));
 
-	button = attachButton(IDC_FDM_SETTINGS_NOT_OP_SPOKE);
+	button = attachChild<Button>(IDC_FDM_SETTINGS_NOT_OP_SPOKE);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleNotOpSpoke, this));
 
-	button = attachButton(IDC_FDM_SETTINGS_I_SPOKE);
+	button = attachChild<Button>(IDC_FDM_SETTINGS_I_SPOKE);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleISpoke, this));
 
-	button = attachButton(IDC_FDM_SETTINGS_MY_NICK_SPOKEN);
+	button = attachChild<Button>(IDC_FDM_SETTINGS_MY_NICK_SPOKEN);
 	button->onClicked(std::tr1::bind(&FdmAppearancePage::handleMyNickSpoken, this));
 
 	::EnableWindow(GetDlgItem(handle(), IDC_FDM_SETTINGS_OP_SPOKE), false);
@@ -103,9 +103,9 @@ void FdmAppearancePage::handleBrowse() {
 	::GetDlgItemText(handle(), IDC_FDM_LANGUAGE, buf, MAX_PATH);
 	tstring x = buf;
 
-	if(WinUtil::browseFile(x, handle(), false, Text::toT(Util::getDataPath()), types) == IDOK) {
-		::SetDlgItemText(handle(), IDC_FDM_LANGUAGE, x.c_str());
-	}
+//	if(WinUtil::browseFile(x, handle(), false, Text::toT(Util::getDataPath()), types) == IDOK) {
+		//::SetDlgItemText(handle(), IDC_FDM_LANGUAGE, x.c_str());
+//	}
 }
 
 void FdmAppearancePage::handleOpSpoke() {

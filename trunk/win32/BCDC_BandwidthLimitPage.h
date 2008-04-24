@@ -24,7 +24,7 @@
 class BandwidthLimitPage : public PropPage
 {
 public:
-	BandwidthLimitPage(SmartWin::Widget* parent);
+	BandwidthLimitPage(dwt::Widget* parent);
 	virtual ~BandwidthLimitPage();
 
 	virtual void write();

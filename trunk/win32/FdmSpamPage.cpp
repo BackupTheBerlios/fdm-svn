@@ -38,7 +38,7 @@ PropPage::FdmItem FdmSpamPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-FdmSpamPage::FdmSpamPage(SmartWin::Widget* parent) : PropPage(parent) {
+FdmSpamPage::FdmSpamPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_FDM_SPAM_PAGE);
 
 	PropPage::fdmTranslate(handle(), texts);

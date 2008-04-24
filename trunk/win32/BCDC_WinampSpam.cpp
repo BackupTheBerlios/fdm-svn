@@ -22,13 +22,11 @@
 #include <dcpp/SettingsManager.h>
 #include <dcpp/Util.h>
 
-#include "../Other-Projects/Nullsoft/Winamp.h"
-
 void MoreWinUtil::winampSpam(tstring param, tstring& message, tstring& status) {
 	HWND hwndWinamp = FindWindow(_T("Winamp v1.x"), NULL);
 	if (hwndWinamp) {
 		StringMap params;
-		int waVersion = SendMessage(hwndWinamp,WM_USER, 0, IPC_GETVERSION),
+		int waVersion = SendMessage(hwndWinamp,WM_USER, 0, 0),
 			majorVersion, minorVersion;
 		majorVersion = waVersion >> 12;
 		if (((waVersion & 0x00F0) >> 4) == 0) {
@@ -37,7 +35,7 @@ void MoreWinUtil::winampSpam(tstring param, tstring& message, tstring& status) {
 			minorVersion = ((waVersion & 0x00f0) >> 4) * 10 + (waVersion & 0x000f);
 		}
 		params["version"] = Util::toString(majorVersion + minorVersion / 100.0);
-		int state = SendMessage(hwndWinamp,WM_USER, 0, IPC_ISPLAYING);
+		int state = SendMessage(hwndWinamp,WM_USER, 0, 104);
 		switch (state) {
 			case 0: params["state"] = "stopped";
 				break;
@@ -67,8 +65,8 @@ void MoreWinUtil::winampSpam(tstring param, tstring& message, tstring& status) {
 		if (title.rfind(_T('-')) != string::npos) {
 			params["title"] = Text::fromT(title.substr(0, title.rfind(_T('-')) - 1));
 		}
-		int curPos = SendMessage(hwndWinamp,WM_USER, 0, IPC_GETOUTPUTTIME);
-		int length = SendMessage(hwndWinamp,WM_USER, 1, IPC_GETOUTPUTTIME);
+		int curPos = SendMessage(hwndWinamp,WM_USER, 0, 105);
+		int length = SendMessage(hwndWinamp,WM_USER, 1, 105);
 		if (curPos == -1) {
 			curPos = 0;
 		} else {

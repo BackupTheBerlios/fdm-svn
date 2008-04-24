@@ -22,10 +22,10 @@
 #include <dcpp/FdmAutoSearch.h>
 #include "WidgetFactory.h"
 
-class AutoSearchProperties : public WidgetFactory<SmartWin::WidgetModalDialog>
+class AutoSearchProperties : public WidgetFactory<dwt::ModalDialog>
 {
 public:
-	AutoSearchProperties(SmartWin::Widget* parent, AutoSearch *_search);
+	AutoSearchProperties(dwt::Widget* parent, AutoSearch *_search);
 	virtual ~AutoSearchProperties();
 
 	int run() { return createDialog(IDD_AUTOSEARCH_PROPERTIES); }

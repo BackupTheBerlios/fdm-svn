@@ -25,8 +25,8 @@
 #include <dcpp/FdmAutoSearch.h>
 #include <dcpp/ResourceManager.h>
 
-AutoSearchProperties::AutoSearchProperties(SmartWin::Widget* parent, AutoSearch *_search) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+AutoSearchProperties::AutoSearchProperties(dwt::Widget* parent, AutoSearch *_search) :
+	WidgetFactory<dwt::ModalDialog>(parent),
 	searchString(0),
 	sizeString(0),
 	matchString(0),
@@ -62,11 +62,11 @@ bool AutoSearchProperties::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_AS_MIN_SIZE, CT_("Min FileSize"));
 	::SetDlgItemText(handle(), IDC_AS_MAX_SIZE, CT_("Max FileSize"));
 
-	searchString = attachTextBox(IDC_AUTOS_SEARCH_STRING);
+	searchString = attachChild<TextBox>(IDC_AUTOS_SEARCH_STRING);
 	searchString->setText(Text::toT(search->searchString));
 	searchString->setFocus();
 
-	sourceType = attachComboBox(IDC_AUTOS_SOURCE_TYPE);
+	sourceType = attachChild<ComboBox>(IDC_AUTOS_SOURCE_TYPE);
 	sourceType->addValue(T_("Any"));
 	sourceType->addValue(T_("Audio"));
 	sourceType->addValue(T_("Compressed"));
@@ -78,56 +78,56 @@ bool AutoSearchProperties::handleInitDialog() {
 	sourceType->addValue(T_("TTH"));
 	sourceType->setSelected(search->sourceType);
 
-	sizeModes = attachComboBox(IDC_AUTOS_SIZE_MODES);
+	sizeModes = attachChild<ComboBox>(IDC_AUTOS_SIZE_MODES);
 	sizeModes->addValue(T_("Normal"));
 	sizeModes->addValue(T_("At least"));
 	sizeModes->addValue(T_("At most"));
 	sizeModes->setSelected(search->sizeModes);
 
-	sizeString = attachTextBox(IDC_AUTOS_FILE_SIZE);
+	sizeString = attachChild<TextBox>(IDC_AUTOS_FILE_SIZE);
 	sizeString->setText((search->size > 0) ? Text::toT(Util::toString(search->size)) : Util::emptyStringT);
 	
-	sizeType = attachComboBox(IDC_AUTOS_SIZE_TYPE);
+	sizeType = attachChild<ComboBox>(IDC_AUTOS_SIZE_TYPE);
 	sizeType->addValue(T_("B"));
 	sizeType->addValue(T_("KiB"));
 	sizeType->addValue(T_("MiB"));
 	sizeType->addValue(T_("GiB"));
 	sizeType->setSelected(search->typeFileSize);
 
-	onlyIfOp = attachCheckBox(IDC_AS_ONLY_IF_OP);
+	onlyIfOp = attachChild<CheckBox>(IDC_AS_ONLY_IF_OP);
 	onlyIfOp->setText(TSTRING(ONLY_WHERE_OP));
 	onlyIfOp->setChecked(search->onlyIfOp);
 
-	active = attachCheckBox(IDC_AS_IS_ACTIVE);
+	active = attachChild<CheckBox>(IDC_AS_IS_ACTIVE);
 	active->setText(T_("Enabled"));
 	active->setChecked(search->isActive);
 
-	matchString = attachTextBox(IDC_AUTOS_SEARCH_MATCH);
+	matchString = attachChild<TextBox>(IDC_AUTOS_SEARCH_MATCH);
 	matchString->setText(Text::toT(search->resultsMatch));
 
-	excludeString = attachTextBox(IDC_AUTOS_SEARCH_EXCLUDE);
+	excludeString = attachChild<TextBox>(IDC_AUTOS_SEARCH_EXCLUDE);
 	excludeString->setText(Text::toT(search->resultsExclude));
 
-	extensionString = attachTextBox(IDC_AUTOS_SEARCH_EXTENSION);
+	extensionString = attachChild<TextBox>(IDC_AUTOS_SEARCH_EXTENSION);
 	extensionString->setText(Text::toT(search->resultsExtensions));
 
-	minSize = attachTextBox(IDC_AUTOS_MIN_SIZE);
+	minSize = attachChild<TextBox>(IDC_AUTOS_MIN_SIZE);
 	minSize->setText((search->resultsMinSize > 0) ? Text::toT(Util::toString(search->resultsMinSize)) : Util::emptyStringT);
 
-	maxSize = attachTextBox(IDC_AUTOS_MAX_SIZE);
+	maxSize = attachChild<TextBox>(IDC_AUTOS_MAX_SIZE);
 	maxSize->setText((search->resultsMaxSize > 0) ? Text::toT(Util::toString(search->resultsMaxSize)) : Util::emptyStringT);
 
-	resSizeType = attachComboBox(IDC_AUTOS_RES_SIZE_TYPE);
+	resSizeType = attachChild<ComboBox>(IDC_AUTOS_RES_SIZE_TYPE);
 	resSizeType->addValue(T_("B"));
 	resSizeType->addValue(T_("KiB"));
 	resSizeType->addValue(T_("MiB"));
 	resSizeType->addValue(T_("GiB"));
 	resSizeType->setSelected(search->resultsTypeFileSize);
 
-	ButtonPtr button = attachButton(IDOK);
+	ButtonPtr button = attachChild<Button>(IDOK);
 	button->onClicked(std::tr1::bind(&AutoSearchProperties::handleOKClicked, this));
 
-	button = attachButton(IDCANCEL);
+	button = attachChild<Button>(IDCANCEL);
 	button->onClicked(std::tr1::bind(&AutoSearchProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();

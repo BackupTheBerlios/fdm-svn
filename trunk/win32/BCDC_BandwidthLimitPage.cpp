@@ -24,6 +24,8 @@
 
 #include <dcpp/SettingsManager.h>
 
+#include <dwt/widgets/Spinner.h>
+
 PropPage::FdmTextItem BandwidthLimitPage::texts[] = {
 	{ IDC_THROTTLE_ENABLE, ResourceManager::SETTINGS_BANDWIDTH_THROTTLE_ENABLE },
 	{ IDC_TEXT_TRANSFER_RATE_LIMITING, ResourceManager::SETTINGS_BANDWIDTH_TEXT_TRANSFER_RATE_LIMITING },
@@ -49,31 +51,31 @@ PropPage::FdmItem BandwidthLimitPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(parent) {
+BandwidthLimitPage::BandwidthLimitPage(dwt::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_BANDWIDTHPAGE);
 
 	PropPage::fdmTranslate(handle(), texts);
 	PropPage::fdmRead(handle(), items, 0, 0);
 
-	CheckBoxPtr throttleTickBox = attachCheckBox(IDC_THROTTLE_ENABLE);
+	CheckBoxPtr throttleTickBox = attachChild<CheckBox>(IDC_THROTTLE_ENABLE);
 	throttleTickBox->onClicked(std::tr1::bind(&BandwidthLimitPage::handleThrottleEnableClicked, this));
 
-	throttleTickBox = attachCheckBox(IDC_TIME_BASED_BW_LIMITING);
+	throttleTickBox = attachChild<CheckBox>(IDC_TIME_BASED_BW_LIMITING);
 	throttleTickBox->onClicked(std::tr1::bind(&BandwidthLimitPage::handleThrottleEnableClicked, this));
 
-	SpinnerPtr spinner = attachSpinner(IDC_UPLOADSPEEDSPIN);
+	SpinnerPtr spinner = attachChild<Spinner>(IDC_UPLOADSPEEDSPIN);
 	spinner->setRange(0, 999);
 
-	spinner = attachSpinner(IDC_DOWNLOADSPEEDSPIN);
+	spinner = attachChild<Spinner>(IDC_DOWNLOADSPEEDSPIN);
 	spinner->setRange(0, 999);
 
-	spinner = attachSpinner(IDC_UPLOADSPEEDSPIN_TIME);
+	spinner = attachChild<Spinner>(IDC_UPLOADSPEEDSPIN_TIME);
 	spinner->setRange(0, 999);
 
-	spinner = attachSpinner(IDC_DOWNLOADSPEEDSPIN_TIME);
+	spinner = attachChild<Spinner>(IDC_DOWNLOADSPEEDSPIN_TIME);
 	spinner->setRange(0, 999);
 
-	ComboBoxPtr times = attachComboBox(IDC_BW_START_TIME);
+	ComboBoxPtr times = attachChild<ComboBox>(IDC_BW_START_TIME);
 	times->addValue(TSTRING(SETTINGS_BANDWIDTH_MIDNIGHT));
 
 	for (int i = 1; i < 12; ++i)
@@ -86,7 +88,7 @@ BandwidthLimitPage::BandwidthLimitPage(SmartWin::Widget* parent) : PropPage(pare
 
 	times->setSelected(SETTING(BANDWIDTH_LIMIT_START));
 
-	times = attachComboBox(IDC_BW_END_TIME);
+	times = attachChild<ComboBox>(IDC_BW_END_TIME);
 	times->addValue(TSTRING(SETTINGS_BANDWIDTH_MIDNIGHT));
 
 	for (int i = 1; i < 12; ++i)

@@ -78,10 +78,10 @@ void MainWindow::handleOpenWindow(unsigned id) {
 		StatsFrame::openWindow(getTabView());
 		break;
 	case IDC_FDM_NOTEPAD:
-		FdmNotepadFrame::openWindow(getMDIParent());
+		FdmNotepadFrame::openWindow(getTabView());
 		break;
 	case IDC_AUTOSEARCH:
-		AutoSearchFrame::openWindow(getMDIParent());
+		AutoSearchFrame::openWindow(getTabView());
 		break;
 	default:
 		dcassert(0);

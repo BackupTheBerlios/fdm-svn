@@ -25,12 +25,12 @@
 #include "AspectSpeaker.h"
 
 class FdmAboutDlg :
-	public WidgetFactory<SmartWin::WidgetModalDialog>,
+	public WidgetFactory<dwt::ModalDialog>,
 	public AspectSpeaker<FdmAboutDlg>,
 	private HttpConnectionListener
 {
 public:
-	FdmAboutDlg(SmartWin::Widget* parent);
+	FdmAboutDlg(dwt::Widget* parent);
 	virtual ~FdmAboutDlg();
 
 	int run() { return createDialog(IDD_FDM_ABOUTBOX); }

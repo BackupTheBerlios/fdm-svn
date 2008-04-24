@@ -22,7 +22,10 @@
 #include "StaticFrame.h"
 #include "resource.h"
 
-class FdmNotepadFrame : public StaticFrame<FdmNotepadFrame> {
+class FdmNotepadFrame : 
+	public StaticFrame<FdmNotepadFrame> 
+{
+	typedef StaticFrame<FdmNotepadFrame> BaseType;
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -30,11 +33,10 @@ public:
 	};
 	
 protected:
-	typedef StaticFrame<FdmNotepadFrame> BaseType;
 	friend class StaticFrame<FdmNotepadFrame>;
 	friend class MDIChildFrame<FdmNotepadFrame>;
 	
-	FdmNotepadFrame(SmartWin::WidgetTabView* mdiParent);
+	FdmNotepadFrame(dwt::TabView* mdiParent);
 	virtual ~FdmNotepadFrame();
 
 	void layout();

@@ -24,14 +24,14 @@
 #include <dcpp/Text.h>
 #include <dcpp/ResourceManager.h>
 
-FdmNotepadFrame::FdmNotepadFrame(SmartWin::WidgetTabView* mdiParent) : 
+FdmNotepadFrame::FdmNotepadFrame(dwt::TabView* mdiParent) : 
 	BaseType(mdiParent, TSTRING(MENU_FDM_NOTEPAD_FRAME), IDH_NOTEPAD, IDR_NOTEPAD),
 	pad(0) 
 {
 	{
 		TextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
-		pad = createTextBox(cs);
+		cs.style |= WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
+		pad = addChild(cs);
 		addWidget(pad);
 	}
 	
@@ -67,7 +67,7 @@ bool FdmNotepadFrame::preClosing() {
 }
 
 void FdmNotepadFrame::layout() {
-	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	dwt::Rectangle r(dwt::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
 
