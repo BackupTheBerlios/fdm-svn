@@ -285,7 +285,7 @@ bool AutoSearchFrame::handleContextMenu(dwt::ScreenCoordinate pt) {
 		pt = items->getContextMenuPos();
 	}
 
-	MenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
+	MenuPtr contextMenu = addChild(WinUtil::Seeds::menu);
 	contextMenu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&AutoSearchFrame::handleAdd, this));
 	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&AutoSearchFrame::handleProperties, this));
 	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&AutoSearchFrame::handleRemove, this));

@@ -322,8 +322,8 @@ void MainWindow::initToolbar() {
 	toolbar->onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 
 	toolbar->appendSeparator();
-	toolbar->appendItem(image++, TSTRING(MENU_FDM_AUTOSEARCH_FRAME), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_AUTOSEARCH));
-	toolbar->appendItem(image++, TSTRING(MENU_FDM_NOTEPAD_FRAME), std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FDM_NOTEPAD));
+	toolbar->appendItem(image++, TSTRING(MENU_FDM_AUTOSEARCH_FRAME), IDH_TOOLBAR_AUTO_SEARCH, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_AUTOSEARCH));
+	toolbar->appendItem(image++, TSTRING(MENU_FDM_NOTEPAD_FRAME), IDH_TOOLBAR_NOTEPAD, std::tr1::bind(&MainWindow::handleOpenWindow, this, IDC_FDM_NOTEPAD));
 }
 
 void MainWindow::initStatusBar() {
